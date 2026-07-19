@@ -166,7 +166,6 @@
             border-radius: 12px;
         }
         
-        /* Two rows setup inside the rest area to keep it neat */
         .config-row {
             display: flex;
             flex-direction: column;
@@ -190,7 +189,7 @@
             font-weight: 600;
         }
         .item-label input[type="radio"], .item-label input[type="checkbox"] {
-            accent-color: #ff9500; /* Orange accent */
+            accent-color: #ff9500;
             transform: scale(1.05);
         }
         
@@ -201,15 +200,26 @@
         }
         .rest-wrapper { width: 87%; }
         .reset-wrapper { width: 10%; }
+
+        /* Hidden iOS Native Haptic Switch Hack */
+        .ios-haptic-trigger {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px; height: 1px;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Hidden native elements to force iOS device buzz -->
+    <input type="checkbox" id="hapticHack" class="ios-haptic-trigger" html-switch>
 
     <div class="container">
         <h1>📝 Workout Tracker</h1>
         
         <div class="app-grid">
-            <!-- COLUMN 1: Notes and Storage Input -->
+            <!-- COLUMN 1 -->
             <div class="note-column">
                 <div class="toggle-row">
                     <div class="toggle-item">
@@ -236,7 +246,7 @@
                 <button id="downloadBtn" class="btn btn-green" style="margin-top: 8px;">📥 Salvar</button>
             </div>
             
-            <!-- COLUMN 2: Control Panel Dock -->
+            <!-- COLUMN 2 -->
             <div class="control-column">
                 <button id="btSettingsBtn" class="btn btn-blue">⚙️ Bluetooth</button>
                 <button id="startWorkoutBtn" class="btn btn-green">▶️ Start</button>
@@ -244,17 +254,15 @@
             </div>
         </div>
 
-        <!-- BOTTOM COLUMN: Time & Alert Configurations -->
+        <!-- BOTTOM COLUMN -->
         <div class="bottom-section">
             <div class="config-row">
-                <!-- Row 1: Rest Intervals -->
                 <div class="settings-subrow" style="border-bottom: 1px solid #3a3a3c; padding-bottom: 6px;">
                     <label class="item-label"><input type="radio" name="restTime" value="40" checked> 40s</label>
                     <label class="item-label"><input type="radio" name="restTime" value="60"> 60s</label>
                     <label class="item-label"><input type="radio" name="restTime" value="90"> 90s</label>
                     <label class="item-label"><input type="radio" name="restTime" value="120"> 120s</label>
                 </div>
-                <!-- Row 2: Alert Types Checkboxes (Multiple choice selection allowed) -->
                 <div class="settings-subrow">
                     <label class="item-label" style="color: #ff9500;"><input type="checkbox" id="audioAlert" checked> Audio 🔊</label>
                     <label class="item-label" style="color: #ff9500;"><input type="checkbox" id="vibrateAlert" checked> Vibrate 📳</label>
@@ -285,31 +293,42 @@
         const resetBtn = document.getElementById('resetBtn');
         const audioAlert = document.getElementById('audioAlert');
         const vibrateAlert = document.getElementById('vibrateAlert');
+        const hapticHack = document.getElementById('hapticHack');
 
         let restTimer = null;
         let timeLeft = 0;
+        let globalAudioCtx = null; // Stored pre-authorized audio loop lane
 
-        // Web Audio Function to create a clean, crisp 1-second electronic beep
-        function playBeep() {
+        // Triggers the hidden iOS checkbox switch loop to physically force a hardware vibrate pulse
+        function forceDeviceVibrate() {
+            let limit = 8; // Loops the switch toggles to extend vibration run time
+            let count = 0;
+            let interval = setInterval(() => {
+                hapticHack.checked = !hapticHack.checked;
+                count++;
+                if (count >= limit) clearInterval(interval);
+            }, 100);
+        }
+
+        // Uses the pre-warmed audio channel to bypass security restrictions and play a 1-second beep
+        function playBypassBeep() {
+            if (!globalAudioCtx) return;
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+                const oscillator = globalAudioCtx.createOscillator();
+                const gainNode = globalAudioCtx.createGain();
 
                 oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // 880Hz pitch
-                gainNode.gain.setValueAtTime(1, audioCtx.currentTime); // Volume max
-                
-                // Set to sound for exactly 1 second (1000 milliseconds)
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+                oscillator.frequency.setValueAtTime(950, globalAudioCtx.currentTime); // Sharp clear pitch
+                gainNode.gain.setValueAtTime(1, globalAudioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + 1.0);
 
                 oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+                gainNode.connect(globalAudioCtx.destination);
 
                 oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 1.0);
+                oscillator.stop(globalAudioCtx.currentTime + 1.0);
             } catch (e) {
-                console.log("Audio failed to load:", e);
+                console.log("Audio pipeline crashed:", e);
             }
         }
 
@@ -372,14 +391,16 @@
             }
         });
 
-        // 7. Dynamic Variable Time Selection & Alert Triggers Engine
+        // 7. Timer Engine with Pre-Warming Setup
         restBtn.addEventListener('click', () => {
             if (restTimer !== null) return; 
 
-            // Initialize browser sound permissions early to bypass iOS audio lockouts
+            // IMPORTANT: "Pre-warm" the audio player while the user is actively touching the button
             if (audioAlert.checked) {
-                const silentCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (silentCtx.state === 'suspended') silentCtx.resume();
+                globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (globalAudioCtx.state === 'suspended') {
+                    globalAudioCtx.resume();
+                }
             }
 
             const selectedRadio = document.querySelector('input[name="restTime"]:checked');
@@ -397,16 +418,9 @@
                     clearInterval(restTimer);
                     restTimer = null;
                     
-                    // TIMER ENDED ACTIONS
-                    // Trigger Audio Beep alert
-                    if (audioAlert.checked) {
-                        playBeep();
-                    }
-                    
-                    // Trigger Hardware Vibration pattern alert for 1 second (1000ms)
-                    if (vibrateAlert.checked && navigator.vibrate) {
-                        navigator.vibrate(1000);
-                    }
+                    // ALERTS TRIGGERED AT ZERO
+                    if (audioAlert.checked) playBypassBeep();
+                    if (vibrateAlert.checked) forceDeviceVibrate();
 
                     restBtn.disabled = false;
                     restBtn.style.opacity = "1";
