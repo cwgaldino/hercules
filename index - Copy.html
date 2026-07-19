@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Private Notes</title>
+    <!-- Simple iOS App styling -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000000; /* Pure Black App Background */
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #ffffff; /* White title text */
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        /* Default state: Unlocked / Editing Enabled (Dark Red background, White text) */
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #5a0000;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #8b0000; /* Dark Red */
+            color: #ffffff; /* White characters */
+            resize: none;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.03);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #ff4d4d;
+        }
+        /* Locked state: Editing Disabled (Dark Blue background, White text) */
+        textarea:disabled {
+            background-color: #00008b; /* Dark Blue */
+            color: #ffffff; /* White characters */
+            border-color: #000055;
+            cursor: not-allowed;
+            opacity: 1; /* Prevents iOS from forcing its own grey fade on disabled elements */
+            -webkit-text-fill-color: #ffffff; /* Forces white text visibility on iOS Safari/Bluefy */
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #8e8e93;
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        /* Custom iOS style button designs */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            text-align: center;
+            box-sizing: border-box;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: opacity 0.2s ease;
+        }
+        .btn:active {
+            opacity: 0.7;
+        }
+        .btn-grey {
+            background-color: #2c2c2e; /* Darker charcoal button for black background */
+            color: #ffffff;
+        }
+        .btn-green {
+            background-color: #34c759;
+            color: white;
+        }
+        /* iOS Toggle Switch Layout */
+        .lock-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1c1c1e; /* Dark container for black background */
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.02);
+        }
+        .lock-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff; /* White label text */
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 51px;
+            height: 31px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #3a3a3c; /* Darker slider track */
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 27px;
+            width: 27px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        }
+        input:checked + .slider {
+            background-color: #007aff; /* Standard iOS blue color when active */
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📝 My Notes</h1>
+        
+        <!-- BUTTON TO OPEN OLD NOTE -->
+        <label for="fileInput" class="btn btn-grey">📂 Open Old Note from iPhone</label>
+        <input type="file" id="fileInput" accept=".txt" style="display: none;">
+
+        <!-- iOS LOCK EDITING SWITCH -->
+        <div class="lock-container">
+            <span class="lock-label" id="lockText">Aberto para Edição</span>
+            <label class="switch">
+                <input type="checkbox" id="lockSwitch">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- The note input box -->
+        <textarea id="noteArea" placeholder="Comece a digitar suas notas aqui..."></textarea>
+        <div id="status" class="status">Salvo localmente</div>
+
+        <!-- BUTTON TO SAVE / DOWNLOAD NOTE -->
+        <button id="downloadBtn" class="btn btn-green">📥 Salvar no iPhone</button>
+    </div>
+
+    <script>
+        const noteArea = document.getElementById('noteArea');
+        const status = document.getElementById('status');
+        const fileInput = document.getElementById('fileInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const lockSwitch = document.getElementById('lockSwitch');
+        const lockText = document.getElementById('lockText');
+
+        // 1. Load existing notes when the page opens
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedNotes = localStorage.getItem('myPrivateNotes');
+            if (savedNotes) {
+                noteArea.value = savedNotes;
+            }
+        });
+
+        // 2. Automatically save notes as you type (Auto-save)
+        noteArea.addEventListener('input', () => {
+            status.textContent = 'Salvando...';
+            
+            // Save the text into the browser's storage
+            localStorage.setItem('myPrivateNotes', noteArea.value);
+            
+            // Visual confirmation
+            setTimeout(() => {
+                status.textContent = 'Salvo localmente';
+            }, 500);
+        });
+
+        // 3. Logic to Download note as a TXT file onto your iPhone
+        downloadBtn.addEventListener('click', () => {
+            const textToWrite = noteArea.value;
+            const textBlob = new Blob([textToWrite], { type: 'text/plain' });
+            const downloadLink = document.createElement('a');
+            
+            downloadLink.download = 'minhas_notas.txt';
+            downloadLink.href = window.URL.createObjectURL(textBlob);
+            downloadLink.click();
+        });
+
+        // 4. Logic to Ingest an old TXT file from iPhone memory
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files;
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileContent = e.target.result;
+                
+                // Update the text box view
+                noteArea.value = fileContent;
+                
+                // Commit to browser local cache
+                localStorage.setItem('myPrivateNotes', fileContent);
+                
+                status.textContent = 'Nota antiga carregada com sucesso!';
+                setTimeout(() => { status.textContent = 'Salvo localmente'; }, 2000);
+            };
+            
+            reader.readAsText(file);
+        });
+
+        // 5. Lock/Unlock toggle feature with color swapping
+        lockSwitch.addEventListener('change', () => {
+            if (lockSwitch.checked) {
+                noteArea.disabled = true;
+                lockText.innerText = "Bloqueado para Edição";
+            } else {
+                noteArea.disabled = false;
+                lockText.innerText = "Aberto para Edição";
+            }
+        });
+    </script>
+</body>
+</html>
