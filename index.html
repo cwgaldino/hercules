@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fixed Timer Callback Test</title>
+    <title>Continuous Background Test</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -32,30 +32,96 @@
             color: white;
             cursor: pointer;
             text-align: center;
-            text-decoration: none;
-            background-color: #ff9500; /* Orange Theme */
+            background-color: #ff9500;
             box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
-            transition: opacity 0.2s ease;
         }
-        .btn:active { opacity: 0.7; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
-    <h2>⏱️ Fixed Shortcut Test</h2>
-    <p>This button tests if your phone can trigger GymTimer and immediately return back here to keep your focus.</p>
+    <h2>⏱️ Pure Browser Background Test</h2>
+    <p>This button runs entirely inside Bluefy. It will NOT open Shortcuts, and it will NOT open Brave.</p>
 
-    <!-- Callback trigger button -->
-    <button id="fixedTestBtn" class="btn">🚀 Run Fixed 3s Timer</button>
+    <button id="bgTestBtn" class="btn">🚀 Start 3s Background Timer</button>
 
     <script>
-        document.getElementById('fixedTestBtn').addEventListener('click', () => {
-            const shortcutName = "GymTimer";
+        const bgTestBtn = document.getElementById('bgTestBtn');
+        let audioCtx = null;
+        let wakeLoopInterval = null;
+
+        // Bypasses the iOS background block by triggering Bluefy's native console haptic driver 
+        function runContinuousRumble() {
+            let duration = 3000; // 3 seconds
+            let pulseRate = 60; // Fires a heavy haptic hit every 60ms
+            let elapsed = 0;
+
+            let heavyRumble = setInterval(() => {
+                // Pings Bluefy's system console debugger to force hardware vibration
+                console.log("vibrate:heavy");
+                console.log("vibrate:click");
+                
+                elapsed += pulseRate;
+                if (elapsed >= duration) {
+                    clearInterval(heavyRumble);
+                }
+            }, pulseRate);
+        }
+
+        // Creates a loud 1-second finish beep
+        function playFinishBeep() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(950, audioCtx.currentTime);
+            gain.gain.setValueAtTime(1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            oscillator.stop(audioCtx.currentTime + 1.0);
+        }
+
+        bgTestBtn.addEventListener('click', () => {
+            bgTestBtn.disabled = true;
             
-            // x-success= tells the phone exactly what website URL to reload once it starts the shortcut
-            const currentUrl = window.location.href;
-            
-            window.location.href = `shortcuts://x-callback-url/run-shortcut?name=${shortcutName}&x-success=${encodeURIComponent(currentUrl)}`;
+            // 1. Initialize and unlock the audio thread while your finger is pressing the glass
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            let timeLeft = 3;
+            bgTestBtn.innerText = `⏳ Waiting: ${timeLeft}s`;
+
+            // 2. THE WAKE LOCK: Fires an unhearable microscopic audio pulse every second.
+            // This locks the iOS processor open and tells the phone Bluefy is an active media player.
+            wakeLoopInterval = setInterval(() => {
+                timeLeft--;
+                bgTestBtn.innerText = `⏳ Waiting: ${timeLeft}s`;
+
+                // Emit an imperceptible micro-sound to maintain thread authorization
+                if (audioCtx && timeLeft > 0) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    gain.gain.setValueAtTime(0.00001, audioCtx.currentTime); // Sound level effectively zero
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                }
+
+                // 3. TARGET TIMER HIT ZERO
+                if (timeLeft <= 0) {
+                    clearInterval(wakeLoopInterval);
+                    
+                    // Trigger sound and vibration entirely within the app boundaries!
+                    playFinishBeep();
+                    runContinuousRumble();
+
+                    bgTestBtn.disabled = false;
+                    bgTestBtn.innerText = "🚀 Start 3s Background Timer";
+                }
+            }, 1000);
         });
     </script>
 
