@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bluefy Touch-Vibrate Test</title>
+    <title>New OS Vibration Test</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -17,8 +17,6 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            position: relative;
-            overflow: hidden;
         }
         h2 { margin-bottom: 10px; text-align: center; }
         p { color: #8e8e93; font-size: 14px; margin-bottom: 30px; text-align: center; max-width: 280px; }
@@ -34,111 +32,35 @@
             color: white;
             cursor: pointer;
             text-align: center;
-            background-color: #ff9500;
+            background-color: #ff9500; /* Orange Theme */
             box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
-            z-index: 10;
         }
-        
-        /* FULL SCREEN OVERLAY: Hidden by default, pops up at 0 seconds */
-        .vibe-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #ff3b30; /* Bright Red so you know it's done */
-            color: white;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            z-index: 9999;
-            cursor: pointer;
-            animation: flash 0.5s infinite alternate;
-        }
-        @keyframes flash {
-            from { background-color: #ff3b30; }
-            to { background-color: #8b0000; }
-        }
+        .btn:active { opacity: 0.7; }
     </style>
 </head>
 <body>
 
-    <!-- Giant invisible button that blocks the screen when the timer hits zero -->
-    <div id="vibeOverlay" class="vibe-overlay">
-        🚨 TIMER DONE!<br>Tap screen to Rumble & Stop Alert
-    </div>
+    <h2>🔄 New OS Haptic Test</h2>
+    <p>Tap below to see if the updated phone software permits Bluefy to fire the call rumble loop locally.</p>
 
-    <h2>⏱️ 3s Touch-Vibrate Test</h2>
-    <p>This method bypasses Apple's blocks by letting you tap the screen when the timer finishes.</p>
-
-    <button id="startBtn" class="btn">Start 3s Timer</button>
+    <button id="testBtn" class="btn">⚡ Run 3s Console Loop</button>
 
     <script>
-        const startBtn = document.getElementById('startBtn');
-        const vibeOverlay = document.getElementById('vibeOverlay');
-        let audioCtx = null;
-
-        // Creates the loud 1-second finish beep
-        function playLocalBeep() {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(950, audioCtx.currentTime); 
-                gain.gain.setValueAtTime(1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 1.0);
-            } catch (e) { console.log(e); }
-        }
-
-        // Simulates an aggressive call rattle when your finger is ON the screen
-        function triggerOnTouchRumble() {
-            let duration = 3000; // 3 seconds
+        document.getElementById('testBtn').addEventListener('click', () => {
+            let duration = 3000; // 3 seconds execution time
+            let pulseInterval = 40; // High speed pulse cycle 
             let elapsed = 0;
-            let loop = setInterval(() => {
-                // Because a finger is on the screen, these logs successfully bypass the block!
+
+            let testVibeLoop = setInterval(() => {
+                // Sends direct framework signals to see if the new software unblocks the channel
                 console.log("vibrate:heavy");
                 console.log("vibrate:click");
-                elapsed += 50;
-                if (elapsed >= duration) clearInterval(loop);
-            }, 50);
-        }
 
-        startBtn.addEventListener('click', () => {
-            startBtn.disabled = true;
-            // Pre-warm the iOS audio player
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
-            let timeLeft = 3;
-            startBtn.innerText = `⏳ Counting: ${timeLeft}s`;
-
-            let timer = setInterval(() => {
-                timeLeft--;
-                startBtn.innerText = `⏳ Counting: ${timeLeft}s`;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    playLocalBeep();
-                    
-                    // Show the giant flashing screen button
-                    vibeOverlay.style.display = 'flex'; 
+                elapsed += pulseInterval;
+                if (elapsed >= duration) {
+                    clearInterval(testVibeLoop);
                 }
-            }, 1000);
-        });
-
-        // When you hear the beep and tap the giant flashing red button:
-        vibeOverlay.addEventListener('click', () => {
-            // 1. Instantly trigger the call-style vibration loop with full Apple permissions!
-            triggerOnTouchRumble();
-            
-            // 2. Hide the overlay and reset the app back to normal
-            vibeOverlay.style.display = 'none';
-            startBtn.disabled = false;
-            startBtn.innerText = "Start 3s Timer";
+            }, pulseInterval);
         });
     </script>
 
