@@ -2,57 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Workout Notes & Monitor</title>
     <!-- Simple iOS App styling -->
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #000000; /* Pure Black App Background */
             margin: 0;
-            padding: 12px; /* Margins slightly tighter for small mobile screens */
+            padding: 8px; /* Extra narrow padding for small phone edges */
             color: #ffffff;
+            box-sizing: border-box;
         }
         .container {
-            max-width: 900px;
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
         }
         h1 {
             color: #ffffff;
-            font-size: 24px;
-            margin-bottom: 15px;
+            font-size: 20px; /* Scaled down header */
+            margin: 5px 0 10px 0;
+            text-align: center;
         }
         
-        /* Forces side-by-side columns on all screens (60% Note area, 40% Control area) */
+        /* HARD-FORCED TWO COLUMN GRID FOR CELL PHONES */
         .app-grid {
             display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
+            grid-template-columns: 55% 42%; /* Explicitly cuts width to prevent vertical breaking */
+            column-gap: 3%;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 12px;
         }
 
         /* Column 1: Left Note Structure */
         .note-column {
             display: flex;
             flex-direction: column;
+            width: 100%;
         }
 
         /* Tiny Inline Toggle Panel on Top of Text Area */
         .toggle-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 6px;
             background: #1c1c1e;
-            padding: 6px 10px;
+            padding: 5px;
             border-radius: 8px;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 6px;
+            width: 100%;
+            box-sizing: border-box;
         }
         .toggle-item {
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 11px; /* Slightly smaller text font to stay on one line */
+            gap: 3px;
+            font-size: 9px; /* Very tiny text to absolutely prevent wrapping text overlapping */
             font-weight: 500;
         }
         
@@ -60,8 +67,8 @@
         .switch {
             position: relative;
             display: inline-block;
-            width: 32px;
-            height: 18px;
+            width: 28px;
+            height: 16px;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -75,8 +82,8 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 14px;
-            width: 14px;
+            height: 12px;
+            width: 12px;
             left: 2px;
             bottom: 2px;
             background-color: white;
@@ -84,16 +91,16 @@
             border-radius: 50%;
         }
         input:checked + .slider { background-color: #007aff; }
-        input:checked + .slider:before { transform: translateX(14px); }
+        input:checked + .slider:before { transform: translateX(12px); }
 
         /* Text Area States */
         textarea {
             width: 100%;
-            height: 280px; /* Reduced vertical scale slightly for easier thumb control */
-            padding: 10px;
+            height: 260px; /* Scaled down box framework */
+            padding: 8px;
             border: 1px solid #5a0000;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             box-sizing: border-box;
             background-color: #8b0000; /* Dark Red */
             color: #ffffff;
@@ -116,7 +123,7 @@
         
         .status {
             margin-top: 4px;
-            font-size: 11px;
+            font-size: 10px;
             color: #8e8e93;
             text-align: right;
         }
@@ -125,25 +132,30 @@
         .control-column {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             background: #1c1c1e;
-            padding: 12px;
+            padding: 10px;
             border-radius: 12px;
             justify-content: flex-start;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* Custom iOS style button designs */
         .btn {
             display: block;
             width: 100%;
-            padding: 12px 6px; /* Optimized padding context for dual-column sizing */
-            font-size: 13px;
+            padding: 10px 4px; /* Tighter internal padding for side-by-side comfort */
+            font-size: 11px; /* Scaled down button text */
             font-weight: 600;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             text-align: center;
             box-sizing: border-box;
             cursor: pointer;
+            white-space: nowrap; /* Prevents long buttons text breaking into ugly double rows */
+            overflow: hidden;
+            text-overflow: ellipsis;
             transition: opacity 0.2s ease;
         }
         .btn:active { opacity: 0.7; }
@@ -151,12 +163,12 @@
         .btn-blue { background-color: #007aff; color: #ffffff; }
         .btn-green { background-color: #34c759; color: white; }
         .btn-red { background-color: #ff3b30; color: white; }
-        .btn-orange { background-color: #ff9500; color: white; font-size: 16px; padding: 16px; }
+        .btn-orange { background-color: #ff9500; color: white; font-size: 15px; padding: 14px; }
 
         /* Full Width Bottom Container */
         .bottom-section {
             width: 100%;
-            margin-top: 5px;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -165,7 +177,7 @@
     <div class="container">
         <h1>📝 Workout Tracker</h1>
         
-        <!-- Two Column Framework Locked Grid -->
+        <!-- Two Column Rigid Layout Grid -->
         <div class="app-grid">
             
             <!-- COLUMN 1: Notes and Storage Input -->
@@ -183,21 +195,21 @@
                             <input type="checkbox" id="scrollSwitch">
                             <span class="slider"></span>
                         </label>
-                        <span>Trancar Scroll</span>
+                        <span>Trancar</span>
                     </div>
                 </div>
 
-                <textarea id="noteArea" placeholder="Comece a digitar suas notas aqui..."></textarea>
+                <textarea id="noteArea" placeholder="Comece a digitar..."></textarea>
                 <div id="status" class="status">Salvo localmente</div>
                 
                 <label for="fileInput" class="btn btn-grey" style="margin-top: 10px;">📂 Abrir Nota</label>
                 <input type="file" id="fileInput" accept=".txt" style="display: none;">
-                <button id="downloadBtn" class="btn btn-green">📥 Salvar</button>
+                <button id="downloadBtn" class="btn btn-green" style="margin-top: 8px;">📥 Salvar</button>
             </div>
             
             <!-- COLUMN 2: Control Panel Dock -->
             <div class="control-column">
-                <button id="btSettingsBtn" class="btn btn-blue">⚙️ Bluetooth Settings</button>
+                <button id="btSettingsBtn" class="btn btn-blue">⚙️ Bluetooth</button>
                 <button id="startWorkoutBtn" class="btn btn-green">▶️ Start</button>
                 <button id="stopWorkoutBtn" class="btn btn-red">🛑 Stop</button>
             </div>
