@@ -42,6 +42,33 @@
             font-size: 14px;
             color: #8e8e93;
             text-align: right;
+            margin-bottom: 15px;
+        }
+        /* Custom iOS style button designs */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            text-align: center;
+            box-sizing: border-box;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: opacity 0.2s ease;
+        }
+        .btn:active {
+            opacity: 0.7;
+        }
+        .btn-grey {
+            background-color: #8e8e93;
+            color: white;
+        }
+        .btn-green {
+            background-color: #34c759;
+            color: white;
         }
     </style>
 </head>
@@ -49,14 +76,24 @@
 
     <div class="container">
         <h1>📝 My Notes</h1>
+        
+        <!-- 1. BUTTON TO OPEN OLD NOTE -->
+        <label for="fileInput" class="btn btn-grey">📂 Open Old Note from iPhone</label>
+        <input type="file" id="fileInput" accept=".txt" style="display: none;">
+
         <!-- The note input box -->
         <textarea id="noteArea" placeholder="Start typing your notes here..."></textarea>
         <div id="status" class="status">Saved locally</div>
+
+        <!-- 2. BUTTON TO SAVE / DOWNLOAD NOTE -->
+        <button id="downloadBtn" class="btn btn-green">📥 Save to iPhone Files</button>
     </div>
 
     <script>
         const noteArea = document.getElementById('noteArea');
         const status = document.getElementById('status');
+        const fileInput = document.getElementById('fileInput');
+        const downloadBtn = document.getElementById('downloadBtn');
 
         // 1. Load existing notes when the page opens
         window.addEventListener('DOMContentLoaded', () => {
@@ -77,6 +114,39 @@
             setTimeout(() => {
                 status.textContent = 'Saved locally';
             }, 500);
+        });
+
+        // 3. Logic to Download note as a TXT file onto your iPhone
+        downloadBtn.addEventListener('click', () => {
+            const textToWrite = noteArea.value;
+            const textBlob = new Blob([textToWrite], { type: 'text/plain' });
+            const downloadLink = document.createElement('a');
+            
+            downloadLink.download = 'my_private_notes.txt';
+            downloadLink.href = window.URL.createObjectURL(textBlob);
+            downloadLink.click();
+        });
+
+        // 4. Logic to Ingest an old TXT file from iPhone memory
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileContent = e.target.result;
+                
+                // Update the text box view
+                noteArea.value = fileContent;
+                
+                // Commit to browser local cache
+                localStorage.setItem('myPrivateNotes', fileContent);
+                
+                status.textContent = 'Old note loaded successfully!';
+                setTimeout(() => { status.textContent = 'Saved locally'; }, 2000);
+            };
+            
+            reader.readAsText(file);
         });
     </script>
 </body>
