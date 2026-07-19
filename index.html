@@ -293,24 +293,27 @@
         const resetBtn = document.getElementById('resetBtn');
         const audioAlert = document.getElementById('audioAlert');
         const vibrateAlert = document.getElementById('vibrateAlert');
-        const hapticHack = document.getElementById('hapticHack');
 
         let restTimer = null;
         let timeLeft = 0;
-        let globalAudioCtx = null; // Stored pre-authorized audio loop lane
+        let globalAudioCtx = null; 
 
-        // Triggers the hidden iOS checkbox switch loop to physically force a hardware vibrate pulse
+        // CRITICAL FIX: Sends a native trigger line to Bluefy's custom core console receiver
         function forceDeviceVibrate() {
-            let limit = 30; // Loops the switch toggles to extend vibration run time
-            let count = 0;
-            let interval = setInterval(() => {
-                hapticHack.checked = !hapticHack.checked;
-                count++;
-                if (count >= limit) clearInterval(interval);
-            }, 100);
+            try {
+                // Sends a direct signal command instructing Bluefy to vibrate for 3000ms (3 seconds)
+                console.log("vibrate:3000"); 
+                
+                // Fallback attempt in case an older build of Bluefy is running
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.vibrate) {
+                    window.webkit.messageHandlers.vibrate.postMessage(3000);
+                }
+            } catch (e) {
+                console.log("Native haptic pipeline unreachable:", e);
+            }
         }
 
-        // Uses the pre-warmed audio channel to bypass security restrictions and play a 1-second beep
+        // Web Audio Function to create a clean, crisp 1-second electronic beep
         function playBypassBeep() {
             if (!globalAudioCtx) return;
             try {
@@ -318,7 +321,7 @@
                 const gainNode = globalAudioCtx.createGain();
 
                 oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(950, globalAudioCtx.currentTime); // Sharp clear pitch
+                oscillator.frequency.setValueAtTime(950, globalAudioCtx.currentTime); 
                 gainNode.gain.setValueAtTime(1, globalAudioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + 1.0);
 
@@ -395,7 +398,6 @@
         restBtn.addEventListener('click', () => {
             if (restTimer !== null) return; 
 
-            // IMPORTANT: "Pre-warm" the audio player while the user is actively touching the button
             if (audioAlert.checked) {
                 globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (globalAudioCtx.state === 'suspended') {
