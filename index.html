@@ -10,7 +10,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #000000; /* Pure Black App Background */
             margin: 0;
-            padding: 8px; /* Extra narrow padding for small phone edges */
+            padding: 8px;
             color: #ffffff;
             box-sizing: border-box;
         }
@@ -21,15 +21,15 @@
         }
         h1 {
             color: #ffffff;
-            font-size: 20px; /* Scaled down header */
+            font-size: 20px;
             margin: 5px 0 10px 0;
             text-align: center;
         }
         
-        /* HARD-FORCED TWO COLUMN GRID FOR CELL PHONES */
+        /* Two Column Grid */
         .app-grid {
             display: grid;
-            grid-template-columns: 55% 42%; /* Explicitly cuts width to prevent vertical breaking */
+            grid-template-columns: 55% 42%;
             column-gap: 3%;
             width: 100%;
             box-sizing: border-box;
@@ -43,7 +43,7 @@
             width: 100%;
         }
 
-        /* Tiny Inline Toggle Panel on Top of Text Area */
+        /* Top Inline Toggle Panel */
         .toggle-row {
             display: flex;
             background: #1c1c1e;
@@ -59,7 +59,7 @@
             display: flex;
             align-items: center;
             gap: 3px;
-            font-size: 9px; /* Very tiny text to absolutely prevent wrapping text overlapping */
+            font-size: 9px;
             font-weight: 500;
         }
         
@@ -96,7 +96,7 @@
         /* Text Area States */
         textarea {
             width: 100%;
-            height: 260px; /* Scaled down box framework */
+            height: 260px;
             padding: 8px;
             border: 1px solid #5a0000;
             border-radius: 12px;
@@ -117,16 +117,8 @@
             opacity: 1;
             -webkit-text-fill-color: #ffffff;
         }
-        .no-scroll {
-            overflow: hidden !important;
-        }
-        
-        .status {
-            margin-top: 4px;
-            font-size: 10px;
-            color: #8e8e93;
-            text-align: right;
-        }
+        .no-scroll { overflow: hidden !important; }
+        .status { margin-top: 4px; font-size: 10px; color: #8e8e93; text-align: right; }
 
         /* Column 2: Right Control Panel */
         .control-column {
@@ -141,19 +133,19 @@
             box-sizing: border-box;
         }
 
-        /* Custom iOS style button designs */
+        /* Buttons Core Setup */
         .btn {
             display: block;
             width: 100%;
-            padding: 10px 4px; /* Tighter internal padding for side-by-side comfort */
-            font-size: 11px; /* Scaled down button text */
+            padding: 10px 4px;
+            font-size: 11px;
             font-weight: 600;
             border: none;
             border-radius: 10px;
             text-align: center;
             box-sizing: border-box;
             cursor: pointer;
-            white-space: nowrap; /* Prevents long buttons text breaking into ugly double rows */
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             transition: opacity 0.2s ease;
@@ -163,13 +155,52 @@
         .btn-blue { background-color: #007aff; color: #ffffff; }
         .btn-green { background-color: #34c759; color: white; }
         .btn-red { background-color: #ff3b30; color: white; }
-        .btn-orange { background-color: #ff9500; color: white; font-size: 15px; padding: 14px; }
+        .btn-orange { background-color: #ff9500; color: white; font-size: 15px; padding: 14px; border-radius: 12px; }
 
-        /* Full Width Bottom Container */
+        /* Rest System Block */
         .bottom-section {
             width: 100%;
             box-sizing: border-box;
+            background: #1c1c1e;
+            padding: 10px;
+            border-radius: 12px;
         }
+        
+        /* Two rows setup inside the rest area to keep it neat */
+        .config-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #2c2c2e;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .settings-subrow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+        }
+        .item-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .item-label input[type="radio"], .item-label input[type="checkbox"] {
+            accent-color: #ff9500; /* Orange accent */
+            transform: scale(1.05);
+        }
+        
+        .timer-row {
+            display: flex;
+            width: 100%;
+            column-gap: 3%;
+        }
+        .rest-wrapper { width: 87%; }
+        .reset-wrapper { width: 10%; }
     </style>
 </head>
 <body>
@@ -177,9 +208,7 @@
     <div class="container">
         <h1>📝 Workout Tracker</h1>
         
-        <!-- Two Column Rigid Layout Grid -->
         <div class="app-grid">
-            
             <!-- COLUMN 1: Notes and Storage Input -->
             <div class="note-column">
                 <div class="toggle-row">
@@ -213,12 +242,33 @@
                 <button id="startWorkoutBtn" class="btn btn-green">▶️ Start</button>
                 <button id="stopWorkoutBtn" class="btn btn-red">🛑 Stop</button>
             </div>
-            
         </div>
 
-        <!-- BOTTOM COLUMN: Full Width Rest Section -->
+        <!-- BOTTOM COLUMN: Time & Alert Configurations -->
         <div class="bottom-section">
-            <button id="restBtn" class="btn btn-orange">⏱️ Rest</button>
+            <div class="config-row">
+                <!-- Row 1: Rest Intervals -->
+                <div class="settings-subrow" style="border-bottom: 1px solid #3a3a3c; padding-bottom: 6px;">
+                    <label class="item-label"><input type="radio" name="restTime" value="40" checked> 40s</label>
+                    <label class="item-label"><input type="radio" name="restTime" value="60"> 60s</label>
+                    <label class="item-label"><input type="radio" name="restTime" value="90"> 90s</label>
+                    <label class="item-label"><input type="radio" name="restTime" value="120"> 120s</label>
+                </div>
+                <!-- Row 2: Alert Types Checkboxes (Multiple choice selection allowed) -->
+                <div class="settings-subrow">
+                    <label class="item-label" style="color: #ff9500;"><input type="checkbox" id="audioAlert" checked> Audio 🔊</label>
+                    <label class="item-label" style="color: #ff9500;"><input type="checkbox" id="vibrateAlert" checked> Vibrate 📳</label>
+                </div>
+            </div>
+            
+            <div class="timer-row">
+                <div class="rest-wrapper">
+                    <button id="restBtn" class="btn btn-orange">⏱️ Rest</button>
+                </div>
+                <div class="reset-wrapper">
+                    <button id="resetBtn" class="btn btn-red" style="font-size: 15px; padding: 14px 0; border-radius: 12px;">🔄</button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -232,8 +282,36 @@
         const scrollSwitch = document.getElementById('scrollSwitch');
         const btSettingsBtn = document.getElementById('btSettingsBtn');
         const restBtn = document.getElementById('restBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const audioAlert = document.getElementById('audioAlert');
+        const vibrateAlert = document.getElementById('vibrateAlert');
 
         let restTimer = null;
+        let timeLeft = 0;
+
+        // Web Audio Function to create a clean, crisp 1-second electronic beep
+        function playBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // 880Hz pitch
+                gainNode.gain.setValueAtTime(1, audioCtx.currentTime); // Volume max
+                
+                // Set to sound for exactly 1 second (1000 milliseconds)
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 1.0);
+            } catch (e) {
+                console.log("Audio failed to load:", e);
+            }
+        }
 
         // 1. Load existing cache notes when page executes
         window.addEventListener('DOMContentLoaded', () => {
@@ -294,11 +372,19 @@
             }
         });
 
-        // 7. 45-Second Interactive Counter Engine
+        // 7. Dynamic Variable Time Selection & Alert Triggers Engine
         restBtn.addEventListener('click', () => {
             if (restTimer !== null) return; 
 
-            let timeLeft = 45;
+            // Initialize browser sound permissions early to bypass iOS audio lockouts
+            if (audioAlert.checked) {
+                const silentCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (silentCtx.state === 'suspended') silentCtx.resume();
+            }
+
+            const selectedRadio = document.querySelector('input[name="restTime"]:checked');
+            timeLeft = parseInt(selectedRadio.value, 10);
+
             restBtn.disabled = true;
             restBtn.style.opacity = "0.6";
             restBtn.innerText = `⏳ Rest: ${timeLeft}s`;
@@ -310,6 +396,18 @@
                 if (timeLeft <= 0) {
                     clearInterval(restTimer);
                     restTimer = null;
+                    
+                    // TIMER ENDED ACTIONS
+                    // Trigger Audio Beep alert
+                    if (audioAlert.checked) {
+                        playBeep();
+                    }
+                    
+                    // Trigger Hardware Vibration pattern alert for 1 second (1000ms)
+                    if (vibrateAlert.checked && navigator.vibrate) {
+                        navigator.vibrate(1000);
+                    }
+
                     restBtn.disabled = false;
                     restBtn.style.opacity = "1";
                     restBtn.innerText = "⏱️ Rest";
@@ -317,22 +415,30 @@
             }, 1000);
         });
 
-        // 8. Bluetooth Settings Heart Monitor Pairing Routine
+        // 8. Instant Timer Override / Reset Routine
+        resetBtn.addEventListener('click', () => {
+            if (restTimer !== null) {
+                clearInterval(restTimer);
+                restTimer = null;
+            }
+            timeLeft = 0;
+            restBtn.disabled = false;
+            restBtn.style.opacity = "1";
+            restBtn.innerText = "⏱️ Rest";
+        });
+
+        // 9. Bluetooth Settings Heart Monitor Pairing Routine
         btSettingsBtn.addEventListener('click', async () => {
             try {
                 btSettingsBtn.innerText = "🔍 Scan...";
-                
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [{ services: ['heart_rate'] }]
                 });
-
                 btSettingsBtn.innerText = "⚡ Connect...";
                 const server = await device.gatt.connect();
-
                 btSettingsBtn.innerText = "📂 Read...";
                 const service = await server.getPrimaryService('heart_rate');
                 const characteristic = await service.getCharacteristic('heart_rate_measurement');
-
                 await characteristic.startNotifications();
                 btSettingsBtn.innerText = "❤️ Ok";
                 btSettingsBtn.style.backgroundColor = "#ff3b30"; 
@@ -342,16 +448,13 @@
                     const flags = value.getUint8(0);
                     const rate16Bits = flags & 0x01;
                     let heartRate;
-                    
                     if (rate16Bits) {
                         heartRate = value.getUint16(1, true);
                     } else {
                         heartRate = value.getUint8(1);
                     }
-                    
                     btSettingsBtn.innerText = `❤️ ${heartRate} BPM`;
                 });
-
             } catch (error) {
                 btSettingsBtn.innerText = "❌ Failed";
                 btSettingsBtn.style.backgroundColor = "#007aff"; 
