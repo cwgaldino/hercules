@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Native Timer Test</title>
+    <title>Fixed Timer Callback Test</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -42,16 +42,20 @@
 </head>
 <body>
 
-    <h2>⏱️ Shortcut Timer Test</h2>
-    <p>This button tests if your iPhone can count down 2 seconds natively and trigger the call rattle.</p>
+    <h2>⏱️ Fixed Shortcut Test</h2>
+    <p>This button tests if your phone can trigger GymTimer and immediately return back here to keep your focus.</p>
 
-    <!-- Handoff trigger button -->
-    <button id="testBtn" class="btn">🚀 Start 2s Test Timer</button>
+    <!-- Callback trigger button -->
+    <button id="fixedTestBtn" class="btn">🚀 Run Fixed 3s Timer</button>
 
     <script>
-        document.getElementById('testBtn').addEventListener('click', () => {
-            // Sends the number 2 as the native text input straight into the GymTimer shortcut workflow
-            window.location.href = "shortcuts://run-shortcut?name=GymTimer&input=2";
+        document.getElementById('fixedTestBtn').addEventListener('click', () => {
+            const shortcutName = "GymTimer";
+            
+            // x-success= tells the phone exactly what website URL to reload once it starts the shortcut
+            const currentUrl = window.location.href;
+            
+            window.location.href = `shortcuts://x-callback-url/run-shortcut?name=${shortcutName}&x-success=${encodeURIComponent(currentUrl)}`;
         });
     </script>
 
