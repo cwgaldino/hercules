@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>New OS Vibration Test</title>
+    <title>Native API Test</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -32,35 +32,27 @@
             color: white;
             cursor: pointer;
             text-align: center;
-            background-color: #ff9500; /* Orange Theme */
-            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
+            background-color: #34c759; /* Green Theme */
+            box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3);
         }
         .btn:active { opacity: 0.7; }
     </style>
 </head>
 <body>
 
-    <h2>🔄 New OS Haptic Test</h2>
-    <p>Tap below to see if the updated phone software permits Bluefy to fire the call rumble loop locally.</p>
+    <h2>⚡ Native API Test</h2>
+    <p>Testing if your phone's updated engine supports the official navigator.vibrate framework.</p>
 
-    <button id="testBtn" class="btn">⚡ Run 3s Console Loop</button>
+    <button id="vibrateApiBtn" class="btn">📳 Run Native API Test</button>
 
     <script>
-        document.getElementById('testBtn').addEventListener('click', () => {
-            let duration = 3000; // 3 seconds execution time
-            let pulseInterval = 40; // High speed pulse cycle 
-            let elapsed = 0;
-
-            let testVibeLoop = setInterval(() => {
-                // Sends direct framework signals to see if the new software unblocks the channel
-                console.log("vibrate:heavy");
-                console.log("vibrate:click");
-
-                elapsed += pulseInterval;
-                if (elapsed >= duration) {
-                    clearInterval(testVibeLoop);
-                }
-            }, pulseInterval);
+        document.getElementById('vibrateApiBtn').addEventListener('click', () => {
+            if (navigator.vibrate) {
+                // Tells the hardware to vibrate continuously for 3 full seconds (3000ms)
+                navigator.vibrate(3000);
+            } else {
+                alert("The web engine still indicates that standard navigator.vibrate is completely disabled.");
+            }
         });
     </script>
 
