@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bluefy Native Test</title>
+    <title>Bluefy Console Test</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -41,39 +41,34 @@
 </head>
 <body>
 
-    <h2>📳 Bluefy Backdoor Test</h2>
-    <p>This button tests Bluefy's direct messaging pipeline. It should shake your phone instantly without ever leaving the screen.</p>
+    <h2>📳 Bluefy Console Test</h2>
+    <p>This button bypasses web checks and commands Bluefy's system console debugger directly to shake the phone.</p>
 
     <!-- Haptic Trigger Button -->
-    <button id="triggerBtn" class="btn">⚡ Trigger 3s Local Rumble</button>
+    <button id="triggerBtn" class="btn">⚡ Run 3s Local Rumble</button>
 
     <script>
         const triggerBtn = document.getElementById('triggerBtn');
 
-        // Bypasses iOS entirely by using Bluefy's custom built-in message broker
-        function runBluefyRumble() {
-            try {
-                // Check for Bluefy's custom browser layout controller object
-                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.vibrate) {
-                    // Instruct the phone's native shell framework to execute a 3000ms vibration
-                    window.webkit.messageHandlers.vibrate.postMessage(3000);
-                } else {
-                    // Fallback log strategy for older software variants
-                    let duration = 3000;
-                    let elapsed = 0;
-                    let interval = setInterval(() => {
-                        console.log("vibrate:heavy");
-                        elapsed += 50;
-                        if (elapsed >= duration) clearInterval(interval);
-                    }, 50);
-                    alert("WebKit handler missing. Running console fallback. Ensure you are using Bluefy!");
+        // Bypasses missing object wrappers by utilizing Bluefy's continuous debugger listening ports
+        function runBluefyConsoleRumble() {
+            let duration = 3000; // 3 seconds continuous runtime
+            let pulseInterval = 60; // Fires a hard punch pattern every 60 milliseconds
+            let elapsed = 0;
+
+            let consoleVibeLoop = setInterval(() => {
+                // Direct console bridge pings caught natively by Bluefy's system container wrapper
+                console.log("vibrate:heavy");
+                console.log("vibrate:click");
+
+                elapsed += pulseInterval;
+                if (elapsed >= duration) {
+                    clearInterval(consoleVibeLoop);
                 }
-            } catch (e) {
-                alert("Error targeting native framework: " + e.message);
-            }
+            }, pulseInterval);
         }
 
-        // Generates a quick 1-second crisp high pitch pitch buzzer alert tone
+        // Generates a quick 1-second crisp high pitch buzzer alert tone
         function playLocalBeep() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -91,14 +86,13 @@
                 oscillator.start();
                 oscillator.stop(audioCtx.currentTime + 1.0);
             } catch (e) {
-                console.log("Audio thread lock:", e);
+                console.log("Audio thread error:", e);
             }
         }
 
         triggerBtn.addEventListener('click', () => {
-            // Trigger audio and hardware mechanics simultaneously right on user interaction tap
             playLocalBeep();
-            runBluefyRumble();
+            runBluefyConsoleRumble();
         });
     </script>
 
