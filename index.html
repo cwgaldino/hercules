@@ -10,7 +10,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #000000; /* Pure Black App Background */
             margin: 0;
-            padding: 20px;
+            padding: 12px; /* Margins slightly tighter for small mobile screens */
             color: #ffffff;
         }
         .container {
@@ -19,23 +19,16 @@
         }
         h1 {
             color: #ffffff;
-            font-size: 28px;
-            margin-bottom: 20px;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
         
-        /* Two-Column Responsive Grid Layout */
+        /* Forces side-by-side columns on all screens (60% Note area, 40% Control area) */
         .app-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        /* Adjust layout to stacked if screen is too narrow (like portrait iPhone) */
-        @media (max-width: 600px) {
-            .app-grid {
-                grid-template-columns: 1fr;
-            }
+            grid-template-columns: 1.5fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
         /* Column 1: Left Note Structure */
@@ -47,18 +40,19 @@
         /* Tiny Inline Toggle Panel on Top of Text Area */
         .toggle-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 8px;
+            gap: 10px;
+            margin-bottom: 6px;
             background: #1c1c1e;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             align-items: center;
+            justify-content: space-between;
         }
         .toggle-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
+            gap: 4px;
+            font-size: 11px; /* Slightly smaller text font to stay on one line */
             font-weight: 500;
         }
         
@@ -66,8 +60,8 @@
         .switch {
             position: relative;
             display: inline-block;
-            width: 36px;
-            height: 20px;
+            width: 32px;
+            height: 18px;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -81,8 +75,8 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 14px;
+            width: 14px;
             left: 2px;
             bottom: 2px;
             background-color: white;
@@ -90,16 +84,16 @@
             border-radius: 50%;
         }
         input:checked + .slider { background-color: #007aff; }
-        input:checked + .slider:before { transform: translateX(16px); }
+        input:checked + .slider:before { transform: translateX(14px); }
 
         /* Text Area States */
         textarea {
             width: 100%;
-            height: 320px;
-            padding: 15px;
+            height: 280px; /* Reduced vertical scale slightly for easier thumb control */
+            padding: 10px;
             border: 1px solid #5a0000;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 14px;
             box-sizing: border-box;
             background-color: #8b0000; /* Dark Red */
             color: #ffffff;
@@ -116,14 +110,13 @@
             opacity: 1;
             -webkit-text-fill-color: #ffffff;
         }
-        /* Class applied dynamically via script to lock scroll mapping */
         .no-scroll {
             overflow: hidden !important;
         }
         
         .status {
-            margin-top: 6px;
-            font-size: 12px;
+            margin-top: 4px;
+            font-size: 11px;
             color: #8e8e93;
             text-align: right;
         }
@@ -132,9 +125,9 @@
         .control-column {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             background: #1c1c1e;
-            padding: 16px;
+            padding: 12px;
             border-radius: 12px;
             justify-content: flex-start;
         }
@@ -143,8 +136,8 @@
         .btn {
             display: block;
             width: 100%;
-            padding: 14px;
-            font-size: 15px;
+            padding: 12px 6px; /* Optimized padding context for dual-column sizing */
+            font-size: 13px;
             font-weight: 600;
             border: none;
             border-radius: 12px;
@@ -158,12 +151,12 @@
         .btn-blue { background-color: #007aff; color: #ffffff; }
         .btn-green { background-color: #34c759; color: white; }
         .btn-red { background-color: #ff3b30; color: white; }
-        .btn-orange { background-color: #ff9500; color: white; font-size: 18px; padding: 18px; }
+        .btn-orange { background-color: #ff9500; color: white; font-size: 16px; padding: 16px; }
 
         /* Full Width Bottom Container */
         .bottom-section {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -172,12 +165,11 @@
     <div class="container">
         <h1>📝 Workout Tracker</h1>
         
-        <!-- Two Column Framework -->
+        <!-- Two Column Framework Locked Grid -->
         <div class="app-grid">
             
             <!-- COLUMN 1: Notes and Storage Input -->
             <div class="note-column">
-                <!-- Tiny Top Inline Switch Row -->
                 <div class="toggle-row">
                     <div class="toggle-item">
                         <label class="switch">
@@ -191,25 +183,23 @@
                             <input type="checkbox" id="scrollSwitch">
                             <span class="slider"></span>
                         </label>
-                        <span>Bloquear Scroll</span>
+                        <span>Trancar Scroll</span>
                     </div>
                 </div>
 
-                <!-- Text Area Element -->
                 <textarea id="noteArea" placeholder="Comece a digitar suas notas aqui..."></textarea>
                 <div id="status" class="status">Salvo localmente</div>
                 
-                <!-- Secondary file interactions stacked locally below text box -->
-                <label for="fileInput" class="btn btn-grey" style="margin-top: 15px;">📂 Abrir Nota Antiga</label>
+                <label for="fileInput" class="btn btn-grey" style="margin-top: 10px;">📂 Abrir Nota</label>
                 <input type="file" id="fileInput" accept=".txt" style="display: none;">
-                <button id="downloadBtn" class="btn btn-green">📥 Salvar no iPhone</button>
+                <button id="downloadBtn" class="btn btn-green">📥 Salvar</button>
             </div>
             
             <!-- COLUMN 2: Control Panel Dock -->
             <div class="control-column">
                 <button id="btSettingsBtn" class="btn btn-blue">⚙️ Bluetooth Settings</button>
-                <button id="startWorkoutBtn" class="btn btn-green">▶️ Start Workout</button>
-                <button id="stopWorkoutBtn" class="btn btn-red">🛑 Stop Workout</button>
+                <button id="startWorkoutBtn" class="btn btn-green">▶️ Start</button>
+                <button id="stopWorkoutBtn" class="btn btn-red">🛑 Stop</button>
             </div>
             
         </div>
@@ -318,21 +308,21 @@
         // 8. Bluetooth Settings Heart Monitor Pairing Routine
         btSettingsBtn.addEventListener('click', async () => {
             try {
-                btSettingsBtn.innerText = "🔍 Scanning...";
+                btSettingsBtn.innerText = "🔍 Scan...";
                 
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [{ services: ['heart_rate'] }]
                 });
 
-                btSettingsBtn.innerText = "⚡ Connecting...";
+                btSettingsBtn.innerText = "⚡ Connect...";
                 const server = await device.gatt.connect();
 
-                btSettingsBtn.innerText = "📂 Reading...";
+                btSettingsBtn.innerText = "📂 Read...";
                 const service = await server.getPrimaryService('heart_rate');
                 const characteristic = await service.getCharacteristic('heart_rate_measurement');
 
                 await characteristic.startNotifications();
-                btSettingsBtn.innerText = "❤️ Connected";
+                btSettingsBtn.innerText = "❤️ Ok";
                 btSettingsBtn.style.backgroundColor = "#ff3b30"; 
 
                 characteristic.addEventListener('characteristicvaluechanged', (event) => {
@@ -351,7 +341,7 @@
                 });
 
             } catch (error) {
-                btSettingsBtn.innerText = "❌ Connection Failed";
+                btSettingsBtn.innerText = "❌ Failed";
                 btSettingsBtn.style.backgroundColor = "#007aff"; 
                 setTimeout(() => { btSettingsBtn.innerText = "⚙️ Bluetooth Settings"; }, 3000);
             }
