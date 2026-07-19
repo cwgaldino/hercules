@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iOS Pseudo-Vibration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iOS 19 Haptic Test</title>
     <style>
         body {
             font-family: -apple-system, sans-serif;
@@ -12,62 +12,92 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            margin: 0;
             background: #f0f0f0;
+            touch-action: manipulation; /* Prevents zoom on double tap */
         }
-        button {
+
+        /* The visible button container */
+        .haptic-btn {
+            position: relative;
             padding: 20px 40px;
             font-size: 18px;
-            background: #007aff;
+            font-weight: 600;
             color: white;
-            border: none;
-            border-radius: 12px;
+            background: #007aff;
+            border-radius: 14px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+            overflow: hidden; /* Ensures click area is clipped */
         }
-        /* Hidden Switch Mechanism */
-        #haptic-switch {
+
+        .haptic-btn:active {
+            background: #0056b3;
+            transform: scale(0.98);
+        }
+
+        /* The Invisible Native Switch */
+        /* This sits exactly on top of the button. When you tap the button, 
+           you are actually tapping this input, which triggers the haptic. */
+        .native-switch {
             position: absolute;
-            opacity: 0;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* Invisible */
+            appearance: none; /* Reset default look */
+            -webkit-appearance: none;
+            margin: 0;
+            cursor: pointer;
+            /* Crucial: clip-path ensures the hit area matches the rounded button */
+            clip-path: inset(0 round 14px); 
+            z-index: 10;
         }
-        #haptic-label { display: none; }
-        .status { margin-top: 20px; color: #666; }
+
+        p {
+            margin-top: 25px;
+            color: #555;
+            text-align: center;
+            font-size: 14px;
+            max-width: 300px;
+        }
     </style>
 </head>
 <body>
 
-    <button id="start-btn">Hold for 'Vibration'</button>
-    <p class="status">Works on iOS 18–26.4 only.<br>iOS 26.5+ blocks this.</p>
+    <!-- Visible Button -->
+    <div class="haptic-btn" id="btn-visual">
+        Tap for Haptic
+    </div>
 
-    <input type="checkbox" id="haptic-switch" switch>
-    <label for="haptic-switch" id="haptic-label"></label>
+    <!-- Invisible Native Input (The actual trigger) -->
+    <input type="checkbox" class="native-switch" switch aria-label="Haptic Trigger">
+
+    <p>
+        Works on <strong>iOS 18.0 – 19.x</strong>.<br>
+        Requires a <strong>direct physical tap</strong>.<br>
+        Scripted clicks are blocked in iOS 26.5+.
+    </p>
 
     <script>
-        const btn = document.getElementById('start-btn');
-        const label = document.getElementById('haptic-label');
-        let intervalId = null;
+        const visualBtn = document.getElementById('btn-visual');
+        const nativeSwitch = document.querySelector('.native-switch');
 
-        // Function to trigger a single tick
-        const triggerTick = () => label.click();
-
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevent mouse emulation
-            triggerTick(); // Immediate feedback
-            // Attempt to simulate continuous vibration by ticking rapidly
-            // This feels like a rattle, not a buzz.
-            intervalId = setInterval(triggerTick, 50); 
+        // Optional: Add visual feedback logic if needed, 
+        // but the native switch handles the haptic automatically on 'change' or 'click'.
+        
+        nativeSwitch.addEventListener('change', (e) => {
+            // Reset the switch immediately so it can be tapped again
+            // The haptic fires on the initial tap, before this event fully resolves
+            setTimeout(() => {
+                nativeSwitch.checked = false;
+            }, 10);
+            
+            console.log("Haptic triggered via direct tap");
         });
-
-        const stopVibration = (e) => {
-            if (e.cancelable) e.preventDefault();
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
-            }
-        };
-
-        btn.addEventListener('touchend', stopVibration);
-        btn.addEventListener('touchcancel', stopVibration);
-        btn.addEventListener('mouseup', stopVibration);
-        btn.addEventListener('mouseleave', stopVibration);
     </script>
 </body>
 </html>   
