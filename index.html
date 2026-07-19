@@ -201,8 +201,8 @@
         .rest-wrapper { width: 87%; }
         .reset-wrapper { width: 10%; }
 
-        /* Invisible Haptic Loop Anchor */
-        .ios-haptic-injector {
+        /* New iOS 17.4+ Native Switch Haptic Anchor */
+        .haptic-switch-layout {
             position: absolute;
             opacity: 0;
             pointer-events: none;
@@ -212,14 +212,15 @@
 </head>
 <body>
 
-    <!-- This native structural element lets us punch intense rumble cycles directly onto the phone chassis -->
-    <input type="checkbox" id="hapticRumbleHack" class="ios-haptic-injector" style="display:inline-block; width:0; height:0;">
+    <!-- Target Labels linked to native iOS 17.4 switch patterns to bypass code-clicking filters -->
+    <label id="triggerLabel" for="iosSwitch" class="haptic-switch-layout"></label>
+    <input type="checkbox" id="iosSwitch" switch class="haptic-switch-layout">
 
     <div class="container">
         <h1>📝 Workout Tracker</h1>
         
         <div class="app-grid">
-            <!-- COLUMN 1: Notes and Storage Input -->
+            <!-- COLUMN 1 -->
             <div class="note-column">
                 <div class="toggle-row">
                     <div class="toggle-item">
@@ -246,7 +247,7 @@
                 <button id="downloadBtn" class="btn btn-green" style="margin-top: 8px;">📥 Salvar</button>
             </div>
             
-            <!-- COLUMN 2: Control Panel Dock -->
+            <!-- COLUMN 2 -->
             <div class="control-column">
                 <button id="btSettingsBtn" class="btn btn-blue">⚙️ Bluetooth</button>
                 <button id="startWorkoutBtn" class="btn btn-green">▶️ Start</button>
@@ -254,11 +255,11 @@
             </div>
         </div>
 
-        <!-- BOTTOM COLUMN: Configuration Row Layout -->
+        <!-- BOTTOM COLUMN -->
         <div class="bottom-section">
             <div class="config-row">
                 <div class="settings-subrow" style="border-bottom: 1px solid #3a3a3c; padding-bottom: 6px;">
-                    <label class="item-label"><input type="radio" name="restTime" value="10" checked> 10s</label>
+                    <label class="item-label"><input type="radio" name="restTime" value="5" checked> 5s</label>
                     <label class="item-label"><input type="radio" name="restTime" value="60"> 60s</label>
                     <label class="item-label"><input type="radio" name="restTime" value="90"> 90s</label>
                     <label class="item-label"><input type="radio" name="restTime" value="120"> 120s</label>
@@ -293,35 +294,33 @@
         const resetBtn = document.getElementById('resetBtn');
         const audioAlert = document.getElementById('audioAlert');
         const vibrateAlert = document.getElementById('vibrateAlert');
-        const hapticRumbleHack = document.getElementById('hapticRumbleHack');
+        const triggerLabel = document.getElementById('triggerLabel');
 
         let restTimer = null;
         let timeLeft = 0;
         let globalAudioCtx = null; 
 
-        // CALL-STYLE VIBRATION MACHINE: Fires heavy continuous hardware pulses for 3000ms
-        function forceHeavyVibrationLoop() {
-            let duration = 3000; // 3 seconds total runtime
-            let pulseInterval = 40; // Fires a hard punch pattern every 40 milliseconds
+        // RUMBLE ENGINE: Simulates call-style vibration by clicking structural labels rapidly
+        function forceCallStyleVibration() {
+            let duration = 3000; // 3 seconds continuous duration
+            let intervalTime = 50; // Triggers every 50ms to form a heavy call rattle
             let elapsed = 0;
 
-            let heavyVibeEngine = setInterval(() => {
-                // 1. Direct deep bridge console alert loop to Bluefy's framework receiver
-                console.log("vibrate:click");
+            let vibeLoop = setInterval(() => {
+                // Alternates native clicks on the switch container element to force haptics
+                triggerLabel.click(); 
+                
+                // Secondary backup bridge ping sent to Bluefy engine profile channels
                 console.log("vibrate:heavy");
-                
-                // 2. Programmatically triggers the hardware level input haptic toggle pattern
-                hapticRumbleHack.checked = !hapticRumbleHack.checked;
-                hapticRumbleHack.setAttribute('html-switch', hapticRumbleHack.checked ? 'true' : 'false');
-                
-                elapsed += pulseInterval;
+
+                elapsed += intervalTime;
                 if (elapsed >= duration) {
-                    clearInterval(heavyVibeEngine);
+                    clearInterval(vibeLoop);
                 }
-            }, pulseInterval);
+            }, intervalTime);
         }
 
-        // Web Audio Function to create a clean, crisp 1-second electronic beep
+        // Creates a crisp 1-second high pitch sound alert
         function playBypassBeep() {
             if (!globalAudioCtx) return;
             try {
@@ -339,7 +338,7 @@
                 oscillator.start();
                 oscillator.stop(globalAudioCtx.currentTime + 1.0);
             } catch (e) {
-                console.log("Audio pipeline crashed:", e);
+                console.log("Audio node error:", e);
             }
         }
 
@@ -402,16 +401,23 @@
             }
         });
 
-        // 7. Timer Engine with Pre-Warming Setup
+        // 7. Timer Engine with Pre-Warming Thread Persistence Setup
         restBtn.addEventListener('click', () => {
             if (restTimer !== null) return; 
 
-            if (audioAlert.checked) {
-                globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (globalAudioCtx.state === 'suspended') {
-                    globalAudioCtx.resume();
-                }
+            // Warms the audio hardware system and registers interaction rules early
+            globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (globalAudioCtx.state === 'suspended') {
+                globalAudioCtx.resume();
             }
+
+            // CRITICAL STEP: Creates a completely silent wave tracker thread loop.
+            // This forces iOS to keep your app container fully active, keeping activation status alive.
+            const buffer = globalAudioCtx.createBuffer(1, 1, 22050);
+            const source = globalAudioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(globalAudioCtx.destination);
+            source.start(0);
 
             const selectedRadio = document.querySelector('input[name="restTime"]:checked');
             timeLeft = parseInt(selectedRadio.value, 10);
@@ -424,13 +430,24 @@
                 timeLeft--;
                 restBtn.innerText = `⏳ Rest: ${timeLeft}s`;
 
+                // Subtly pulses the audio hardware node to keep iOS thread activation locked
+                if (globalAudioCtx && timeLeft > 0) {
+                    const silentOsc = globalAudioCtx.createOscillator();
+                    const silentGain = globalAudioCtx.createGain();
+                    silentGain.gain.setValueAtTime(0.0001, globalAudioCtx.currentTime); // Sound level effectively zero
+                    silentOsc.connect(silentGain);
+                    silentGain.connect(globalAudioCtx.destination);
+                    silentOsc.start();
+                    silentOsc.stop(globalAudioCtx.currentTime + 0.01);
+                }
+
                 if (timeLeft <= 0) {
                     clearInterval(restTimer);
                     restTimer = null;
                     
-                    // ALERTS TRIGGERED AT ZERO
+                    // TARGET NOTIFICATIONS FINISHED
                     if (audioAlert.checked) playBypassBeep();
-                    if (vibrateAlert.checked) forceHeavyVibrationLoop();
+                    if (vibrateAlert.checked) forceCallStyleVibration();
 
                     restBtn.disabled = false;
                     restBtn.style.opacity = "1";
