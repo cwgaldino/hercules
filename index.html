@@ -301,7 +301,7 @@
 
         // Triggers the hidden iOS checkbox switch loop to physically force a hardware vibrate pulse
         function forceDeviceVibrate() {
-            let limit = 8; // Loops the switch toggles to extend vibration run time
+            let limit = 30; // Loops the switch toggles to extend vibration run time
             let count = 0;
             let interval = setInterval(() => {
                 hapticHack.checked = !hapticHack.checked;
