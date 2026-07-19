@@ -3,101 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iOS 19 Haptic Test</title>
+    <title>Bluefy Native Test</title>
     <style>
         body {
-            font-family: -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            background: #f0f0f0;
-            touch-action: manipulation; /* Prevents zoom on double tap */
+            padding: 20px;
+            box-sizing: border-box;
         }
-
-        /* The visible button container */
-        .haptic-btn {
-            position: relative;
-            padding: 20px 40px;
-            font-size: 18px;
-            font-weight: 600;
-            color: white;
-            background: #007aff;
-            border-radius: 14px;
-            cursor: pointer;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
-            overflow: hidden; /* Ensures click area is clipped */
-        }
-
-        .haptic-btn:active {
-            background: #0056b3;
-            transform: scale(0.98);
-        }
-
-        /* The Invisible Native Switch */
-        /* This sits exactly on top of the button. When you tap the button, 
-           you are actually tapping this input, which triggers the haptic. */
-        .native-switch {
-            position: absolute;
-            top: 0;
-            left: 0;
+        h2 { margin-bottom: 10px; text-align: center; }
+        p { color: #8e8e93; font-size: 14px; margin-bottom: 30px; text-align: center; max-width: 280px; }
+        .btn {
+            display: block;
             width: 100%;
-            height: 100%;
-            opacity: 0; /* Invisible */
-            appearance: none; /* Reset default look */
-            -webkit-appearance: none;
-            margin: 0;
-            cursor: pointer;
-            /* Crucial: clip-path ensures the hit area matches the rounded button */
-            clip-path: inset(0 round 14px); 
-            z-index: 10;
-        }
-
-        p {
-            margin-top: 25px;
-            color: #555;
-            text-align: center;
-            font-size: 14px;
             max-width: 300px;
+            padding: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 14px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            background-color: #ff9500; /* Orange Theme */
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
+            transition: opacity 0.2s ease;
         }
+        .btn:active { opacity: 0.7; }
     </style>
 </head>
 <body>
 
-    <!-- Visible Button -->
-    <div class="haptic-btn" id="btn-visual">
-        Tap for Haptic
-    </div>
+    <h2>📳 Bluefy Backdoor Test</h2>
+    <p>This button tests Bluefy's direct messaging pipeline. It should shake your phone instantly without ever leaving the screen.</p>
 
-    <!-- Invisible Native Input (The actual trigger) -->
-    <input type="checkbox" class="native-switch" switch aria-label="Haptic Trigger">
-
-    <p>
-        Works on <strong>iOS 18.0 – 19.x</strong>.<br>
-        Requires a <strong>direct physical tap</strong>.<br>
-        Scripted clicks are blocked in iOS 26.5+.
-    </p>
+    <!-- Haptic Trigger Button -->
+    <button id="triggerBtn" class="btn">⚡ Trigger 3s Local Rumble</button>
 
     <script>
-        const visualBtn = document.getElementById('btn-visual');
-        const nativeSwitch = document.querySelector('.native-switch');
+        const triggerBtn = document.getElementById('triggerBtn');
 
-        // Optional: Add visual feedback logic if needed, 
-        // but the native switch handles the haptic automatically on 'change' or 'click'.
-        
-        nativeSwitch.addEventListener('change', (e) => {
-            // Reset the switch immediately so it can be tapped again
-            // The haptic fires on the initial tap, before this event fully resolves
-            setTimeout(() => {
-                nativeSwitch.checked = false;
-            }, 10);
-            
-            console.log("Haptic triggered via direct tap");
+        // Bypasses iOS entirely by using Bluefy's custom built-in message broker
+        function runBluefyRumble() {
+            try {
+                // Check for Bluefy's custom browser layout controller object
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.vibrate) {
+                    // Instruct the phone's native shell framework to execute a 3000ms vibration
+                    window.webkit.messageHandlers.vibrate.postMessage(3000);
+                } else {
+                    // Fallback log strategy for older software variants
+                    let duration = 3000;
+                    let elapsed = 0;
+                    let interval = setInterval(() => {
+                        console.log("vibrate:heavy");
+                        elapsed += 50;
+                        if (elapsed >= duration) clearInterval(interval);
+                    }, 50);
+                    alert("WebKit handler missing. Running console fallback. Ensure you are using Bluefy!");
+                }
+            } catch (e) {
+                alert("Error targeting native framework: " + e.message);
+            }
+        }
+
+        // Generates a quick 1-second crisp high pitch pitch buzzer alert tone
+        function playLocalBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(950, audioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 1.0);
+            } catch (e) {
+                console.log("Audio thread lock:", e);
+            }
+        }
+
+        triggerBtn.addEventListener('click', () => {
+            // Trigger audio and hardware mechanics simultaneously right on user interaction tap
+            playLocalBeep();
+            runBluefyRumble();
         });
     </script>
+
 </body>
-</html>   
+</html>
