@@ -3,70 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iOS Haptic Test</title>
+    <title>iOS Pseudo-Vibration</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            background: #f0f0f0;
         }
         button {
-            padding: 15px 30px;
+            padding: 20px 40px;
             font-size: 18px;
-            background-color: #007aff;
+            background: #007aff;
             color: white;
             border: none;
             border-radius: 12px;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
-        button:active {
-            background-color: #0056b3;
-        }
-        /* Hide the actual switch input */
+        /* Hidden Switch Mechanism */
         #haptic-switch {
             position: absolute;
             opacity: 0;
             pointer-events: none;
         }
-        /* Hide the label used as the trigger proxy */
-        #haptic-label {
-            display: none;
-        }
-        p {
-            margin-top: 20px;
-            color: #666;
-            text-align: center;
-            max-width: 300px;
-        }
+        #haptic-label { display: none; }
+        .status { margin-top: 20px; color: #666; }
     </style>
 </head>
 <body>
 
-    <button id="trigger-btn">Tap for Haptic</button>
-    <p>Requires iOS 18.0 - 26.4.<br>Must be a direct user tap.</p>
+    <button id="start-btn">Hold for 'Vibration'</button>
+    <p class="status">Works on iOS 18–26.4 only.<br>iOS 26.5+ blocks this.</p>
 
-    <!-- The Hidden Switch Mechanism -->
     <input type="checkbox" id="haptic-switch" switch>
     <label for="haptic-switch" id="haptic-label"></label>
 
     <script>
-        const btn = document.getElementById('trigger-btn');
+        const btn = document.getElementById('start-btn');
         const label = document.getElementById('haptic-label');
+        let intervalId = null;
 
-        btn.addEventListener('click', () => {
-            // Trigger the click on the LABEL, not the input directly.
-            // WebKit requires the event to propagate through the label 
-            // to fire the non-standard haptic pulse.
-            label.click();
-            
-            console.log("Haptic trigger attempted");
+        // Function to trigger a single tick
+        const triggerTick = () => label.click();
+
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent mouse emulation
+            triggerTick(); // Immediate feedback
+            // Attempt to simulate continuous vibration by ticking rapidly
+            // This feels like a rattle, not a buzz.
+            intervalId = setInterval(triggerTick, 50); 
         });
+
+        const stopVibration = (e) => {
+            if (e.cancelable) e.preventDefault();
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+        };
+
+        btn.addEventListener('touchend', stopVibration);
+        btn.addEventListener('touchcancel', stopVibration);
+        btn.addEventListener('mouseup', stopVibration);
+        btn.addEventListener('mouseleave', stopVibration);
     </script>
 </body>
 </html>   
