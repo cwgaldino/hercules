@@ -3,61 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fixed Bluefy Callback Test</title>
+    <title>iOS Haptic Test</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #000000;
-            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            background-color: #f0f0f0;
         }
-        h2 { margin-bottom: 10px; text-align: center; }
-        p { color: #8e8e93; font-size: 14px; margin-bottom: 30px; text-align: center; max-width: 280px; }
-        .btn {
-            display: block;
-            width: 100%;
-            max-width: 300px;
-            padding: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 14px;
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #007aff;
             color: white;
+            border: none;
+            border-radius: 12px;
             cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            background-color: #ff9500;
-            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn:active { opacity: 0.7; }
+        button:active {
+            background-color: #0056b3;
+        }
+        /* Hide the actual switch input */
+        #haptic-switch {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Hide the label used as the trigger proxy */
+        #haptic-label {
+            display: none;
+        }
+        p {
+            margin-top: 20px;
+            color: #666;
+            text-align: center;
+            max-width: 300px;
+        }
     </style>
 </head>
 <body>
 
-    <h2>⏱️ Fixed Bluefy Shortcut Test</h2>
-    <p>This button triggers GymTimer and forces iOS to bounce straight back to Bluefy instead of Brave.</p>
+    <button id="trigger-btn">Tap for Haptic</button>
+    <p>Requires iOS 18.0 - 26.4.<br>Must be a direct user tap.</p>
 
-    <!-- Handoff button -->
-    <button id="bluefyTestBtn" class="btn">🚀 Run 3s Timer (Return to Bluefy)</button>
+    <!-- The Hidden Switch Mechanism -->
+    <input type="checkbox" id="haptic-switch" switch>
+    <label for="haptic-switch" id="haptic-label"></label>
 
     <script>
-        document.getElementById('bluefyTestBtn').addEventListener('click', () => {
-            const shortcutName = "GymTimer";
+        const btn = document.getElementById('trigger-btn');
+        const label = document.getElementById('haptic-label');
+
+        btn.addEventListener('click', () => {
+            // Trigger the click on the LABEL, not the input directly.
+            // WebKit requires the event to propagate through the label 
+            // to fire the non-standard haptic pulse.
+            label.click();
             
-            // CRITICAL FIX: We encode Bluefy's system app handle instead of a web URL link.
-            // This forces iOS to re-open Bluefy directly instead of default system browsers like Brave.
-            const returnToBluefy = "bluefy://";
-            
-            window.location.href = `shortcuts://x-callback-url/run-shortcut?name=${shortcutName}&x-success=${encodeURIComponent(returnToBluefy)}`;
+            console.log("Haptic trigger attempted");
         });
     </script>
-
 </body>
-</html>
+</html>   
