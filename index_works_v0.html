@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Workout Notes & Monitor</title>
+    <!-- Simple iOS App styling -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #000000; /* Pure Black App Background */
+            margin: 0;
+            padding: 8px;
+            color: #ffffff;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 20px;
+            margin: 5px 0 10px 0;
+            text-align: center;
+        }
+        
+        /* Two Column Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 55% 42%;
+            column-gap: 3%;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+        }
+
+        /* Column 1: Left Note Structure */
+        .note-column {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Top Inline Toggle Panel */
+        .toggle-row {
+            display: flex;
+            background: #1c1c1e;
+            padding: 5px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 9px;
+            font-weight: 500;
+        }
+        
+        /* Custom Small iOS Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 28px;
+            height: 16px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #3a3a3c;
+            transition: .3s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #007aff; }
+        input:checked + .slider:before { transform: translateX(12px); }
+
+        /* Text Area States */
+        textarea {
+            width: 100%;
+            height: 260px;
+            padding: 8px;
+            border: 1px solid #5a0000;
+            border-radius: 12px;
+            font-size: 13px;
+            box-sizing: border-box;
+            background-color: #8b0000; /* Dark Red */
+            color: #ffffff;
+            resize: none;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.03);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        textarea:focus { outline: none; border-color: #ff4d4d; }
+        textarea:disabled {
+            background-color: #00008b; /* Dark Blue */
+            color: #ffffff;
+            border-color: #000055;
+            cursor: not-allowed;
+            opacity: 1;
+            -webkit-text-fill-color: #ffffff;
+        }
+        .no-scroll { overflow: hidden !important; }
+        .status { margin-top: 4px; font-size: 10px; color: #8e8e93; text-align: right; }
+
+        /* Column 2: Right Control Panel */
+        .control-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #1c1c1e;
+            padding: 10px;
+            border-radius: 12px;
+            justify-content: flex-start;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Buttons Core Setup */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px 4px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            text-align: center;
+            box-sizing: border-box;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: opacity 0.2s ease;
+        }
+        .btn:active { opacity: 0.7; }
+        .btn-grey { background-color: #2c2c2e; color: #ffffff; }
+        .btn-blue { background-color: #007aff; color: #ffffff; }
+        .btn-green { background-color: #34c759; color: white; }
+        .btn-red { background-color: #ff3b30; color: white; }
+        .btn-orange { background-color: #ff9500; color: white; font-size: 15px; padding: 14px; border-radius: 12px; }
+
+        /* Rest System Block */
+        .bottom-section {
+            width: 100%;
+            box-sizing: border-box;
+            background: #1c1c1e;
+            padding: 10px;
+            border-radius: 12px;
+        }
+        
+        .config-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #2c2c2e;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .settings-subrow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+        }
+        .item-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .item-label input[type="radio"], .item-label input[type="checkbox"] {
+            accent-color: #ff9500;
+            transform: scale(1.05);
+        }
+        
+        .timer-row {
+            display: flex;
+            width: 100%;
+            column-gap: 3%;
+        }
+        .rest-wrapper { width: 87%; }
+        .reset-wrapper { width: 10%; }
+
+        /* Invisible Iframe used to silently ping the iCloud Shortcut */
+        #secretHapticIframe {
+            position: absolute;
+            width: 1px; height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- This invisible iframe lets us trigger the shortcut link cleanly without changing the page -->
+    <iframe id="secretHapticIframe"></iframe>
+
+    <div class="container">
+        <h1>📝 Workout Tracker</h1>
+        
+        <div class="app-grid">
+            <!-- COLUMN 1: Notes and Storage Input -->
+            <div class="note-column">
+                <div class="toggle-row">
+                    <div class="toggle-item">
+                        <label class="switch">
+                            <input type="checkbox" id="lockSwitch">
+                            <span class="slider"></span>
+                        </label>
+                        <span id="lockText">Aberto</span>
+                    </div>
+                    <div class="toggle-item">
+                        <label class="switch">
+                            <input type="checkbox" id="scrollSwitch">
+                            <span class="slider"></span>
+                        </label>
+                        <span>Trancar</span>
+                    </div>
+                </div>
+
+                <textarea id="noteArea" placeholder="Comece a digitar..."></textarea>
+                <div id="status" class="status">Salvo localmente</div>
+                
+                <label for="fileInput" class="btn btn-grey" style="margin-top: 10px;">📂 Abrir Nota</label>
+                <input type="file" id="fileInput" accept=".txt" style="display: none;">
+                <button id="downloadBtn" class="btn btn-green" style="margin-top: 8px;">📥 Salvar</button>
+            </div>
+            
+            <!-- COLUMN 2: Control Panel Dock -->
+            <div class="control-column">
+                <button id="btSettingsBtn" class="btn btn-blue">⚙️ Bluetooth</button>
+                <button id="startWorkoutBtn" class="btn btn-green">▶️ Start</button>
+                <button id="stopWorkoutBtn" class="btn btn-red">🛑 Stop</button>
+            </div>
+        </div>
+
+        <!-- BOTTOM COLUMN: Time & Alert Configurations -->
+        <div class="bottom-section">
+            <div class="config-row">
+                <div class="settings-subrow" style="border-bottom: 1px solid #3a3a3c; padding-bottom: 6px;">
+                    <label class="item-label"><input type="radio" name="restTime" value="40" checked> 40s</label>
+                    <label class="item-label"><input type="radio" name="restTime" value="60"> 60s</label>
+                    <label class="item-label"><input type="radio" name="restTime" value="90"> 90s</label>
+                    <label class="item-label"><input type="radio" name="restTime" value="120"> 120s</label>
+                </div>
+                <div class="settings-subrow">
+                    <label class="item-label" style="color: #ff9500;"><input type="checkbox" id="audioAlert" checked> Audio 🔊</label>
+                    <label class="item-label" style="color: #ff9500;"><input type="checkbox" id="vibrateAlert" checked> Vibrate 📳</label>
+                </div>
+            </div>
+            
+            <div class="timer-row">
+                <div class="rest-wrapper">
+                    <button id="restBtn" class="btn btn-orange">⏱️ Rest</button>
+                </div>
+                <div class="reset-wrapper">
+                    <button id="resetBtn" class="btn btn-red" style="font-size: 15px; padding: 14px 0; border-radius: 12px;">🔄</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        const noteArea = document.getElementById('noteArea');
+        const status = document.getElementById('status');
+        const fileInput = document.getElementById('fileInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const lockSwitch = document.getElementById('lockSwitch');
+        const lockText = document.getElementById('lockText');
+        const scrollSwitch = document.getElementById('scrollSwitch');
+        const btSettingsBtn = document.getElementById('btSettingsBtn');
+        const restBtn = document.getElementById('restBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const audioAlert = document.getElementById('audioAlert');
+        const vibrateAlert = document.getElementById('vibrateAlert');
+        const secretHapticIframe = document.getElementById('secretHapticIframe');
+
+        let restTimer = null;
+        let timeLeft = 0;
+        let globalAudioCtx = null; 
+
+        // Creates a clean 1-second crisp high pitch beep sound alert
+        function playBypassBeep() {
+            if (!globalAudioCtx) return;
+            try {
+                const oscillator = globalAudioCtx.createOscillator();
+                const gainNode = globalAudioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(950, globalAudioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(1, globalAudioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + 1.0);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(globalAudioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(globalAudioCtx.currentTime + 1.0);
+            } catch (e) {
+                console.log("Audio node error:", e);
+            }
+        }
+
+        // ICLOUD CLOUD BRIDGE: Fires the native vibration shortcut cleanly through the background iframe
+        function forceCallStyleVibration() {
+            if (vibrateAlert.checked) {
+                // !!! PASTE YOUR COPIED ICLOUD LINK INSIDE THE QUOTES BELOW !!!
+                secretHapticIframe.src = "https://www.icloud.com/shortcuts/0269c6de86fe4eb2b9de2558be2f23dd";
+            }
+        }
+
+        // 1. Load existing cache notes when page executes
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedNotes = localStorage.getItem('myPrivateNotes');
+            if (savedNotes) {
+                noteArea.value = savedNotes;
+            }
+        });
+
+        // 2. Local cache background auto-saver routine
+        noteArea.addEventListener('input', () => {
+            status.textContent = 'Salvando...';
+            localStorage.setItem('myPrivateNotes', noteArea.value);
+            setTimeout(() => { status.textContent = 'Salvo localmente'; }, 500);
+        });
+
+        // 3. Export File download compiler
+        downloadBtn.addEventListener('click', () => {
+            const textToWrite = noteArea.value;
+            const textBlob = new Blob([textToWrite], { type: 'text/plain' });
+            const downloadLink = document.createElement('a');
+            downloadLink.download = 'minhas_notas.txt';
+            downloadLink.href = window.URL.createObjectURL(textBlob);
+            downloadLink.click();
+        });
+
+        // 4. Ingest File document handler
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files;
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                noteArea.value = e.target.result;
+                localStorage.setItem('myPrivateNotes', e.target.result);
+                status.textContent = 'Nota carregada!';
+                setTimeout(() => { status.textContent = 'Salvo localmente'; }, 2000);
+            };
+            reader.readAsText(file);
+        });
+
+        // 5. Mini Lock/Unlock Editing toggle logic
+        lockSwitch.addEventListener('change', () => {
+            if (lockSwitch.checked) {
+                noteArea.disabled = true;
+                lockText.innerText = "Bloqueado";
+            } else {
+                noteArea.disabled = false;
+                lockText.innerText = "Aberto";
+            }
+        });
+
+        // 6. Mini Lock/Unlock Scrolling toggle logic
+        scrollSwitch.addEventListener('change', () => {
+            if (scrollSwitch.checked) {
+                noteArea.classList.add('no-scroll');
+            } else {
+                noteArea.classList.remove('no-scroll');
+            }
+        });
+
+        // 7. Timer Engine with Pre-Warming Persistence Thread Setup
+        restBtn.addEventListener('click', () => {
+            if (restTimer !== null) return; 
+
+            // Warms the web audio system nodes to bypass system sleep locks
+            globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (globalAudioCtx.state === 'suspended') {
+                globalAudioCtx.resume();
+            }
+
+            // Injects a continuous baseline thread wave to keep the iOS application runtime container fully active
+            const buffer = globalAudioCtx.createBuffer(1, 1, 22050);
+            const source = globalAudioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(globalAudioCtx.destination);
+            source.start(0);
+
+            const selectedRadio = document.querySelector('input[name="restTime"]:checked');
+            timeLeft = parseInt(selectedRadio.value, 10);
+
+            restBtn.disabled = true;
+            restBtn.style.opacity = "0.6";
+            restBtn.innerText = `⏳ Rest: ${timeLeft}s`;
+
+            restTimer = setInterval(() => {
+                timeLeft--;
+                restBtn.innerText = `⏳ Rest: ${timeLeft}s`;
+
+                // Subtle audio node heartbeat to keep the background active
+                if (globalAudioCtx && timeLeft > 0) {
+                    const silentOsc = globalAudioCtx.createOscillator();
+                    const silentGain = globalAudioCtx.createGain();
+                    silentGain.gain.setValueAtTime(0.0001, globalAudioCtx.currentTime);
+                    silentOsc.connect(silentGain);
+                    silentGain.connect(globalAudioCtx.destination);
+                    silentOsc.start();
+                    silentOsc.stop(globalAudioCtx.currentTime + 0.01);
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(restTimer);
+                    restTimer = null;
+                    
+                    // ALERTS TRIGGERED AT ZERO
+                    if (audioAlert.checked) playBypassBeep();
+                    if (vibrateAlert.checked) forceCallStyleVibration();
+
+                    restBtn.disabled = false;
+                    restBtn.style.opacity = "1";
+                    restBtn.innerText = "⏱️ Rest";
+                }
+            }, 1000);
+        });
+
+        // 8. Instant Timer Override / Reset Routine
+        resetBtn.addEventListener('click', () => {
+            if (restTimer !== null) {
+                clearInterval(restTimer);
+                restTimer = null;
+            }
+            timeLeft = 0;
+            restBtn.disabled = false;
+            restBtn.style.opacity = "1";
+            secretHapticIframe.src = ""; // Clears the background trigger source
+            restBtn.innerText = "⏱️ Rest";
+        });
+
+        // 9. Bluetooth Settings Heart Monitor Pairing Routine
+        btSettingsBtn.addEventListener('click', async () => {
+            try {
+                btSettingsBtn.innerText = "🔍 Scan...";
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: ['heart_rate'] }]
+                });
+                btSettingsBtn.innerText = "⚡ Connect...";
+                const server = await device.gatt.connect();
+                btSettingsBtn.innerText = "📂 Read...";
+                const service = await server.getPrimaryService('heart_rate');
+                const characteristic = await service.getCharacteristic('heart_rate_measurement');
+                await characteristic.startNotifications();
+                btSettingsBtn.innerText = "❤️ Ok";
+                btSettingsBtn.style.backgroundColor = "#ff3b30"; 
+
+                characteristic.addEventListener('characteristicvaluechanged', (event) => {
+                    const value = event.target.value;
+                    const flags = value.getUint8(0);
+                    const rate16Bits = flags & 0x01;
+                    let heartRate;
+                    if (rate16Bits) {
+                        heartRate = value.getUint16(1, true);
+                    } else {
+                        heartRate = value.getUint8(1);
+                    }
+                    btSettingsBtn.innerText = `❤️ ${heartRate} BPM`;
+                });
+            } catch (error) {
+                btSettingsBtn.innerText = "❌ Failed";
+                btSettingsBtn.style.backgroundColor = "#007aff"; 
+                setTimeout(() => { btSettingsBtn.innerText = "⚙️ Bluetooth Settings"; }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
