@@ -3,87 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Haptic Test</title>
+    <title>Workout Tracker</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
+            padding: 16px;
             background-color: #0b0f19;
             color: #ffffff;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            transition: background-color 0.1s ease;
         }
-        .card {
-            text-align: center;
-            background: #161b26;
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            width: 280px;
+
+        /* Top Section: Two Columns */
+        .top-section {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+            margin-bottom: 16px;
         }
-        h1 {
-            font-size: 20px;
-            color: #8f9cae;
-            margin: 0 0 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+
+        /* Left Column: Input Box */
+        .left-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
-        button {
+
+        textarea {
             width: 100%;
-            padding: 16px;
+            flex: 1;
+            background: #161b26;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        /* Right Column: Interaction Buttons */
+        .right-col {
+            width: 140px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Global Button Styles */
+        button {
+            padding: 14px;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            background-color: #34c759;
             color: white;
-            margin: 10px 0;
-            transition: background-color 0.2s;
+            transition: opacity 0.2s;
         }
+
         button:active {
-            background-color: #28a745;
+            opacity: 0.7;
         }
-        #status {
+
+        .btn-blue { background-color: #007aff; }
+        .btn-gray { background-color: #2c354a; color: #cbd5e1; }
+        .btn-orange { background-color: #ff9500; }
+        .btn-green { background-color: #34c759; }
+
+        /* Bottom Section: Rest Timers */
+        .bottom-section {
+            background: #161b26;
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .timer-presets {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timer-presets button {
+            flex: 1;
+            padding: 12px;
             font-size: 14px;
-            color: #64748b;
-            margin-top: 20px;
+            background-color: #202736;
+            border: 2px solid transparent;
+        }
+
+        /* Highlight selected preset button */
+        .timer-presets button.selected-preset {
+            border-color: #007aff;
+            background-color: #007aff;
+        }
+
+        .btn-rest-full {
+            width: 100%;
+            padding: 18px;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>Haptic Hack Test</h1>
-        <button onclick="triggerAudioHaptic()">Test Vibe (Audio)</button>
-        <p id="status">Tap the button to test</p>
+    <!-- Top Section -->
+    <div class="top-section">
+        <div class="left-col">
+            <textarea placeholder="Write your workout routine here..."></textarea>
+        </div>
+        
+        <div class="right-col">
+            <button class="btn-gray" onclick="toggleSettings(true)">⚙️ Settings</button>
+            <button class="btn-blue" id="connectBtn" onclick="connectPolar()">Connect HR</button>
+            <button class="btn-gray">Action 1</button>
+            <button class="btn-gray">Action 2</button>
+        </div>
     </div>
+    <!-- Settings Modal Overlays and Styles Extension -->
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
-    <script>
-        const statusElement = document.getElementById('status');
+        .modal-content {
+            background: #161b26;
+            padding: 24px;
+            border-radius: 20px;
+            width: 310px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+        }
 
-        // A base64-encoded, ultra-low frequency sub-bass pulse audio clip
-        const subBassAudioSrc = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
-        const audioNode = new Audio(subBassAudioSrc);
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
 
-        function triggerAudioHaptic() {
-            statusElement.innerText = "Playing sub-bass pulse...";
+        .setting-section {
+            margin-bottom: 20px;
+        }
+
+        .setting-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .checkbox-label.disabled {
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            accent-color: #007aff;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #ef4444;
+            margin-left: 4px;
+            font-weight: normal;
+        }
+
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .input-row input[type="number"], .input-row input[type="text"] {
+            padding: 6px;
+            background: #0b0f19;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .input-row input[type="number"] {
+            width: 60px;
+            text-align: center;
+        }
+
+        .input-row input[type="text"] {
+            width: 140px;
+        }
+
+        .grid-presets-config {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .color-pickers {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        input[type="color"] {
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: none;
+            cursor: pointer;
+        }
+
+        @keyframes customFlicker {
+            0%, 49% { background-color: var(--flicker-c1); }
+            50%, 100% { background-color: var(--flicker-c2); }
+        }
+
+        .flickering-active {
+            animation: customFlicker 0.2s infinite;
+        }
+    </style>
+
+    <!-- Bottom Section Dashboard Panel -->
+    <div class="bottom-section">
+        <div class="timer-presets" id="presetsContainer">
+            <button id="pBtn1" onclick="selectPreset(1)">40s</button>
+            <button id="pBtn2" onclick="selectPreset(2)">60s</button>
+            <button id="pBtn3" onclick="selectPreset(3)">90s</button>
+            <button id="pBtn4" onclick="selectPreset(4)">120s</button>
+        </div>
+
+        <button id="restButton" class="btn-orange btn-rest-full" onclick="startRestCountdown()">Rest</button>
+    </div>
+    <!-- Settings Overlay Module Block -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h3>Alert Preferences</h3>
             
-            // Rewind to start and play
-            audioNode.currentTime = 0;
-            audioNode.play()
-                .then(() => {
-                    statusElement.innerText = "Pulse triggered! Did it vibrate?";
-                })
-                .catch((error) => {
-                    console.error(error);
-                    statusElement.innerText = "Audio blocked: " + error.message;
-                });
+            <!-- Target Choice Checks -->
+            <div class="setting-section">
+                <h4>Alert Modes (Select Multi)</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="modeAudio" checked>
+                        <span>Audio Alerts (Beep)</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="modeVisual">
+                        <span>Visual Alerts (Flicker)</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="modeVoice">
+                        <span>Voice Alerts</span>
+                    </label>
+                    <label class="checkbox-label disabled">
+                        <input type="checkbox" id="modeVibrate" disabled>
+                        <span>Vibration <span class="note">(not available)</span></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Speech Configurations -->
+            <div class="setting-section">
+                <h4>Voice Alert Options</h4>
+                <div class="input-row">
+                    <label for="voicePhrase">Voice Phrase:</label>
+                    <input type="text" id="voicePhrase" value="Rest over">
+                </div>
+            </div>
+
+            <!-- Run Intervals Fields -->
+            <div class="setting-section">
+                <h4>Independent Durations</h4>
+                <div class="input-row" id="rowAudioDur">
+                    <label for="audioDuration">Audio Run Time (s):</label>
+                    <input type="number" id="audioDuration" value="3" min="1" max="10">
+                </div>
+                <div class="input-row" id="rowVisualDur">
+                    <label for="visualDuration">Visual Run Time (s):</label>
+                    <input type="number" id="visualDuration" value="3" min="1" max="10">
+                </div>
+                <div class="input-row" id="rowVoiceDur">
+                    <label for="voiceDuration">Voice Speak Times:</label>
+                    <input type="number" id="voiceDuration" value="1" min="1" max="5">
+                </div>
+            </div>
+
+            <!-- Global Preset Settings Modification -->
+            <div class="setting-section">
+                <h4>Preset Timer Options (s)</h4>
+                <div class="grid-presets-config">
+                    <div class="input-row">
+                        <label>1:</label>
+                        <input type="number" id="cfgPreset1" value="40" min="1" onchange="updateMainPresets()">
+                    </div>
+                    <div class="input-row">
+                        <label>2:</label>
+                        <input type="number" id="cfgPreset2" value="60" min="1" onchange="updateMainPresets()">
+                    </div>
+                    <div class="input-row">
+                        <label>3:</label>
+                        <input type="number" id="cfgPreset3" value="90" min="1" onchange="updateMainPresets()">
+                    </div>
+                    <div class="input-row">
+                        <label>4:</label>
+                        <input type="number" id="cfgPreset4" value="120" min="1" onchange="updateMainPresets()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hues Config Rules -->
+            <div class="setting-section">
+                <h4>Flicker Palette</h4>
+                <div class="color-pickers">
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="color1" value="#ffffff">
+                        <span>1</span>
+                    </div>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="color2" value="#ff3b30">
+                        <span>2</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-green" style="width:100%; margin-bottom: 10px;" onclick="triggerTestAlert()">⚡ Test Alert</button>
+            <button class="btn-blue" style="width:100%;" onclick="toggleSettings(false)">Save & Close</button>
+        </div>
+    </div>
+    <!-- Application Script Engine Routing Modules -->
+    <script>
+        let audioCtx = null;
+        let audioTimeout = null;
+        let visualTimeout = null;
+        let activeOscillator = null;
+        let countdownInterval = null;
+        
+        let currentPresets = { 1: 40, 2: 60, 3: 90, 4: 120 };
+        let activePresetIndex = 1; 
+        let timeRemainingSeconds = 40;
+        let isCountingDown = false;
+
+        // Initialize display configuration on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            selectPreset(1);
+        });
+
+        function toggleSettings(show) {
+            document.getElementById('settingsModal').style.display = show ? 'flex' : 'none';
+        }
+
+        function updateMainPresets() {
+            for (let i = 1; i <= 4; i++) {
+                const val = parseInt(document.getElementById(`cfgPreset${i}`).value, 10) || 10;
+                currentPresets[i] = val;
+                document.getElementById(`pBtn${i}`).innerText = `${val}s`;
+            }
+            if (!isCountingDown && activePresetIndex !== null) {
+                timeRemainingSeconds = currentPresets[activePresetIndex];
+            }
+        }
+
+        function selectPreset(index) {
+            if (isCountingDown) return; 
+            activePresetIndex = index;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`pBtn${i}`).classList.remove('selected-preset');
+            }
+            document.getElementById(`pBtn${index}`).classList.add('selected-preset');
+            timeRemainingSeconds = currentPresets[index];
+        }
+
+        function startRestCountdown() {
+            const restBtn = document.getElementById('restButton');
+            
+            if (isCountingDown) {
+                clearInterval(countdownInterval);
+                isCountingDown = false;
+                restBtn.innerText = "Rest";
+                selectPreset(activePresetIndex);
+                stopAllAlerts();
+                return;
+            }
+
+            stopAllAlerts();
+            isCountingDown = true;
+            restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
+
+            countdownInterval = setInterval(() => {
+                timeRemainingSeconds--;
+
+                if (timeRemainingSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    isCountingDown = false;
+                    restBtn.innerText = "Rest";
+                    triggerActiveAlerts();
+                    timeRemainingSeconds = currentPresets[activePresetIndex];
+                } else {
+                    restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
+                }
+            }, 1000);
+        }
+
+        function triggerActiveAlerts() {
+            const isAudioChecked = document.getElementById('modeAudio').checked;
+            const isVisualChecked = document.getElementById('modeVisual').checked;
+            const isVoiceChecked = document.getElementById('modeVoice').checked;
+
+            if (isAudioChecked) {
+                const audioSec = parseInt(document.getElementById('audioDuration').value, 10) || 3;
+                runAudioAlert(audioSec * 1000);
+            }
+            if (isVisualChecked) {
+                const visualSec = parseInt(document.getElementById('visualDuration').value, 10) || 3;
+                runVisualAlert(visualSec * 1000);
+            }
+            if (isVoiceChecked) {
+                const voiceCount = parseInt(document.getElementById('voiceDuration').value, 10) || 1;
+                runVoiceAlert(voiceCount);
+            }
+        }
+
+        function stopAllAlerts() {
+            if (audioTimeout) clearTimeout(audioTimeout);
+            if (activeOscillator) {
+                try { activeOscillator.stop(); } catch(e){}
+                activeOscillator = null;
+            }
+            if (visualTimeout) clearTimeout(visualTimeout);
+            document.body.classList.remove('flickering-active');
+            document.body.style.backgroundColor = "#0b0f19"; 
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function triggerTestAlert() {
+            stopAllAlerts();
+            triggerActiveAlerts();
+        }
+
+        function runAudioAlert(durationMs) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                activeOscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                activeOscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                activeOscillator.type = 'sine';
+                activeOscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                activeOscillator.start();
+                audioTimeout = setTimeout(() => {
+                    if (activeOscillator) { activeOscillator.stop(); activeOscillator = null; }
+                }, durationMs);
+            } catch (e) { console.error(e); }
+        }
+
+        function runVisualAlert(durationMs) {
+            const c1 = document.getElementById('color1').value;
+            const c2 = document.getElementById('color2').value;
+            document.documentElement.style.setProperty('--flicker-c1', c1);
+            document.documentElement.style.setProperty('--flicker-c2', c2);
+            document.body.classList.add('flickering-active');
+            visualTimeout = setTimeout(() => {
+                document.body.classList.remove('flickering-active');
+                if (!document.body.classList.contains('flickering-active')) {
+                    document.body.style.backgroundColor = "#0b0f19";
+                }
+            }, durationMs);
+        }
+
+        function runVoiceAlert(repeatCount) {
+            if ('speechSynthesis' in window) {
+                const customText = document.getElementById('voicePhrase').value || "Rest over";
+                for (let i = 0; i < repeatCount; i++) {
+                    const utterance = new SpeechSynthesisUtterance(customText);
+                    utterance.rate = 1.0; utterance.pitch = 1.0; utterance.lang = 'en-US'; 
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+        }
+
+        async function connectPolar() {
+            console.log("Starting Web BLE handshake with Polar H10...");
         }
     </script>
-
 </body>
 </html>
