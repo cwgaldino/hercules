@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Workout Tracker Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Tracker</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
@@ -16,11 +16,9 @@
             flex-direction: column;
             height: 100vh;
             transition: background-color 0.1s ease;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
-        /* Top Section Layout Columns */
+        /* Top Section: Two Columns */
         .top-section {
             display: flex;
             gap: 16px;
@@ -29,7 +27,7 @@
             margin-bottom: 12px;
         }
 
-        /* Left Workspace Column Setup */
+        /* Left Column: Input Box & Navigation */
         .left-col {
             flex: 1;
             display: flex;
@@ -38,6 +36,7 @@
         }
     </style>
     <style>
+        /* Dropdown Navigation Menu */
         .section-dropdown {
             width: 100%;
             padding: 12px;
@@ -65,19 +64,18 @@
             box-sizing: border-box;
             overflow-y: hidden;
             scroll-behavior: smooth;
-            -webkit-user-select: text;
-            user-select: text;
         }
-
-        /* Right Column Navigation Panel */
+    </style>
+    <style>
+        /* Right Column: Interaction Buttons */
         .right-col {
             width: 140px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-    </style>
-    <style>
+
+        /* Compact Single-Row Switch Box */
         .switch-row-container {
             display: flex;
             justify-content: space-between;
@@ -96,7 +94,8 @@
             flex: 1;
             gap: 4px;
         }
-
+    </style>
+    <style>
         .toggle-item span {
             font-size: 10px;
             font-weight: 800;
@@ -105,6 +104,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* Small Custom Toggle Switches */
         .switch {
             position: relative;
             display: inline-block;
@@ -130,11 +130,11 @@
         input:checked + .slider-switch:before { transform: translateX(16px); }
     </style>
     <style>
+        /* Global Button Styles */
         button {
             padding: 14px; border: none; border-radius: 12px;
             font-size: 15px; font-weight: bold; cursor: pointer;
             color: white; transition: opacity 0.2s;
-            touch-action: manipulation;
         }
 
         button:active { opacity: 0.7; }
@@ -144,9 +144,8 @@
         .btn-gray { background-color: #2c354a; color: #cbd5e1; }
         .btn-orange { background-color: #ff9500; }
         .btn-green { background-color: #34c759; }
-        .btn-red { background-color: #ff3b30; }
 
-        /* Dynamic Heart Rate Metric Workspace */
+        /* Heart Rate Visual Box */
         .hr-container {
             background-color: #161b26;
             border: 1px solid #273142;
@@ -160,25 +159,26 @@
             gap: 2px;
             flex-grow: 1;
         }
-
+    </style>
+    <style>
         .hr-value-row { display: flex; align-items: center; justify-content: center; gap: 4px; }
         .hr-value { font-size: 34px; font-weight: 800; color: #ff3b30; font-variant-numeric: tabular-nums; line-height: 1; }
         
         .heart-icon { font-size: 16px; color: #ff3b30; display: inline-block; transition: transform 0.1s ease; }
         .heart-pulse { animation: heartBeatEffect 0.6s infinite alternate ease-in-out; }
         @keyframes heartBeatEffect { 0% { transform: scale(1); } 100% { transform: scale(1.25); } }
-    </style>
-    <style>
+
+        /* Small Clock Dashboard Display */
         .clock-sub-box { display: flex; flex-direction: column; width: 100%; border-top: 1px solid #232d3f; padding-top: 4px; gap: 2px; text-align: left; }
         .clock-data-row { display: flex; justify-content: space-between; font-size: 11px; font-variant-numeric: tabular-nums; }
         .clock-label { font-weight: bold; color: #64748b; text-transform: uppercase; }
         .clock-time { color: #cbd5e1; font-weight: 600; }
 
         /* Full Width Real-time Canvas Graph Module */
-        .graph-section { width: 100%; height: 105px; background-color: #161b26; border: 1px solid #273142; border-radius: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
+        .graph-section { width: 100%; height: 90px; background-color: #161b26; border: 1px solid #273142; border-radius: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
         .graph-canvas { width: 100%; height: 100%; display: block; }
 
-        /* Bottom Section Dashboard Panel */
+        /* Bottom Section: Rest Timers */
         .bottom-section { background: #161b26; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .timer-presets { display: flex; gap: 8px; }
         .timer-presets button { flex: 1; padding: 12px; font-size: 14px; background-color: #202736; border: 2px solid transparent; }
@@ -187,33 +187,32 @@
         .btn-rest-full { width: 100%; padding: 18px; font-size: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
     <style>
+        /* Modals Overlay Styling Rules Framework */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; z-index: 1000;
         }
 
         .modal-content {
-            background: #161b26; padding: 24px; border-radius: 20px; width: 320px;
+            background: #161b26; padding: 24px; border-radius: 20px; width: 310px;
             max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155;
-            box-sizing: border-box;
         }
 
         .modal-content h3 { margin-top: 0; margin-bottom: 20px; color: #cbd5e1; border-bottom: 1px solid #334155; padding-bottom: 10px; }
-        .setting-section { margin-bottom: 16px; background: #202736; padding: 12px; border-radius: 12px; border: 1px solid #2d3748; }
-        .setting-section h4 { margin: 0 0 10px 0; font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .setting-section { margin-bottom: 20px; }
+        .setting-section h4 { margin: 0 0 10px 0; font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
-        .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
-        .checkbox-label input { width: 16px; height: 18px; accent-color: #007aff; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+        .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; }
+        .checkbox-label input { width: 18px; height: 18px; accent-color: #007aff; }
 
-        .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; }
+        .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
         .input-row input[type="number"], .input-row input[type="text"] {
             padding: 6px; background: #0b0f19; border: 1px solid #334155; border-radius: 6px; color: white; font-size: 14px;
         }
         .input-row input[type="number"] { width: 60px; text-align: center; }
         .input-row input[type="text"] { width: 140px; }
-    </style>
-    <style>
+
         .slider-block { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
         .slider-label-row { display: flex; justify-content: space-between; font-size: 13px; color: #cbd5e1; }
         .slider-block input[type="range"] { width: 100%; accent-color: #007aff; cursor: pointer; }
@@ -227,19 +226,6 @@
             border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 10px;
         }
 
-        .alert-options-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-        .alert-sub-check { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #cbd5e1; }
-        .alert-sub-check input { accent-color: #34c759; }
-
-        /* Calendar Grid Design Elements */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; font-size: 12px; }
-        .calendar-day-header { font-weight: bold; color: #64748b; padding-bottom: 4px; }
-        .calendar-cell { padding: 8px 0; border-radius: 8px; background: #0b0f19; position: relative; cursor: pointer; font-weight: 600; }
-        .calendar-cell.has-workout:after { content: ""; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #ff3b30; border-radius: 50%; }
-        .calendar-cell.empty { background: transparent; cursor: default; }
-
-        .history-viewer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #202736; padding: 10px; border-radius: 10px; }
-
         @keyframes customFlicker { 0%, 49% { background-color: var(--flicker-c1); } 50%, 100% { background-color: var(--flicker-c2); } }
         .flickering-active { animation: customFlicker 0.2s infinite; }
     </style>
@@ -249,6 +235,7 @@
     <!-- Top Section App Workspace -->
     <div class="top-section">
         <div class="left-col">
+            <!-- Dynamic Section Navigation Dropdown -->
             <select id="sectionSelector" class="section-dropdown" onchange="jumpToWorkoutSection()">
                 <option value="">-- Select Workout Session --</option>
             </select>
@@ -256,6 +243,7 @@
         </div>
         
         <div class="right-col">
+            <!-- Compact Single-Row Switches Frame -->
             <div class="switch-row-container">
                 <div class="toggle-item">
                     <span>Block</span>
@@ -273,14 +261,12 @@
                 </div>
             </div>
 
-            <!-- Sorted Action Stack Elements -->
             <button id="settingsBtn" class="btn-gray" onclick="toggleModal('settingsModal', true)">⚙️ Settings</button>
             <button id="textBoxBtn" class="btn-gray" onclick="toggleModal('textBoxModal', true)">📝 Text Box</button>
-            <button id="historyBtn" class="btn-gray" onclick="openHistoryCalendarModal()">📅 History</button>
-            <button id="hrSettingsBtn" class="btn-gray" onclick="toggleModal('hrSettingsModal', true)">❤️ HR Settings</button>
-            <button id="connectBtn" class="btn-blue" onclick="connectPolar()">Connect HR</button>
-            <button id="startBtn" class="btn-green" onclick="handleStartButtonClick()">Start</button>
-            <!-- Dynamic Heart Rate Workspace and Real-time Session Clocks -->
+            <button class="btn-blue" id="connectBtn" onclick="connectPolar()">Connect HR</button>
+            <button class="btn-gray" id="actionBtn1">Action 1</button>
+            
+            <!-- Dynamic Heart Rate Workspace -->
             <div class="hr-container">
                 <div class="hr-value-row">
                     <div id="hrDisplayValue" class="hr-value">--</div>
@@ -294,7 +280,6 @@
             </div>
         </div>
     </div>
-
     <!-- Real-time Full Width History Chart Section Canvas -->
     <div class="graph-section">
         <canvas id="bpmHistoryCanvas" class="graph-canvas"></canvas>
@@ -311,6 +296,7 @@
 
         <button id="restButton" class="btn-orange btn-rest-full" onclick="startRestCountdown()">Rest</button>
     </div>
+
     <!-- Settings Overlay Modal -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
@@ -395,111 +381,6 @@
             <button class="btn-blue" style="width:100%; margin-top: 10px;" onclick="toggleModal('textBoxModal', false)">Close</button>
         </div>
     </div>
-    <!-- Heart Rate Alarm Zones Setup Modal Configuration Component Layout -->
-    <div class="modal" id="hrSettingsModal">
-        <div class="modal-content">
-            <h3>❤️ HR Alarm Zones</h3>
-            
-            <!-- Warning Tier 1: Small Warning -->
-            <div class="setting-section">
-                <label class="checkbox-label" style="font-weight:bold; color:#ff9500;">
-                    <input type="checkbox" id="warn1Enabled" checked onchange="triggerStateSave()"><span>⚠️ Low Zone Alarm</span>
-                </label>
-                <div class="slider-block" style="margin-top:8px;"><div class="slider-label-row"><span>Trigger BPM:</span><span id="lblWarn1Bpm">140</span></div><input type="range" id="warn1Bpm" min="40" max="200" value="140" oninput="document.getElementById('lblWarn1Bpm').innerText = this.value; triggerStateSave();"></div>
-                <div class="slider-block"><div class="slider-label-row"><span>Beep Vol:</span><span id="lblW1BeepVol">60%</span></div><input type="range" id="warn1BeepVol" min="0" max="100" value="60" oninput="document.getElementById('lblW1BeepVol').innerText = this.value + '%'; triggerStateSave();"></div>
-                <div class="slider-block"><div class="slider-label-row"><span>Voice Vol:</span><span id="lblW1VoiceVol">80%</span></div><input type="range" id="warn1VoiceVol" min="0" max="100" value="80" oninput="document.getElementById('lblW1VoiceVol').innerText = this.value + '%'; triggerStateSave();"></div>
-                <div class="input-row"><label>Phrase:</label><input type="text" id="warn1Phrase" value="Zone 1 Warning" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Beep (s):</label><input type="number" id="warn1AudioDur" value="2" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Flicker (s):</label><input type="number" id="warn1VisualDur" value="2" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Voice Count:</label><input type="number" id="warn1VoiceDur" value="1" min="1" max="5" oninput="triggerStateSave()"></div>
-                <div class="color-pickers" style="margin-top:6px;"><div class="color-picker-wrapper"><input type="color" id="w1Color1" value="#ff9500" onchange="triggerStateSave()"><span>C1</span></div><div class="color-picker-wrapper"><input type="color" id="w1Color2" value="#0b0f19" onchange="triggerStateSave()"><span>C2</span></div></div>
-                <div class="alert-options-row">
-                    <label class="alert-sub-check"><input type="checkbox" id="warn1Audio" checked onchange="triggerStateSave()"><span>Beep</span></label>
-                    <label class="alert-sub-check"><input type="checkbox" id="warn1Visual" onchange="triggerStateSave()"><span>Flicker</span></label>
-                    <label class="alert-sub-check"><input type="checkbox" id="warn1Voice" onchange="triggerStateSave()"><span>Voice</span></label>
-                </div>
-            </div>
-
-            <!-- Warning Tier 2: Medium Warning -->
-            <div class="setting-section">
-                <label class="checkbox-label" style="font-weight:bold; color:#ff5e00;">
-                    <input type="checkbox" id="warn2Enabled" onchange="triggerStateSave()"><span>🔥 Mid Zone Alarm</span>
-                </label>
-                <div class="slider-block" style="margin-top:8px;"><div class="slider-label-row"><span>Trigger BPM:</span><span id="lblWarn2Bpm">160</span></div><input type="range" id="warn2Bpm" min="40" max="200" value="160" oninput="document.getElementById('lblWarn2Bpm').innerText = this.value; triggerStateSave();"></div>
-                <div class="slider-block"><div class="slider-label-row"><span>Beep Vol:</span><span id="lblW2BeepVol">80%</span></div><input type="range" id="warn2BeepVol" min="0" max="100" value="80" oninput="document.getElementById('lblW2BeepVol').innerText = this.value + '%'; triggerStateSave();"></div>
-                <div class="slider-block"><div class="slider-label-row"><span>Voice Vol:</span><span id="lblW2VoiceVol">90%</span></div><input type="range" id="warn2VoiceVol" min="0" max="100" value="90" oninput="document.getElementById('lblW2VoiceVol').innerText = this.value + '%'; triggerStateSave();"></div>
-                <div class="input-row"><label>Phrase:</label><input type="text" id="warn2Phrase" value="Zone 2 Warning" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Beep (s):</label><input type="number" id="warn2AudioDur" value="3" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Flicker (s):</label><input type="number" id="warn2VisualDur" value="3" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Voice Count:</label><input type="number" id="warn2VoiceDur" value="1" min="1" max="5" oninput="triggerStateSave()"></div>
-                <div class="color-pickers" style="margin-top:6px;"><div class="color-picker-wrapper"><input type="color" id="w2Color1" value="#ff5e00" onchange="triggerStateSave()"><span>C1</span></div><div class="color-picker-wrapper"><input type="color" id="w2Color2" value="#0b0f19" onchange="changeStateSave()"><span>C2</span></div></div>
-                <div class="alert-options-row">
-                    <label class="alert-sub-check"><input type="checkbox" id="warn2Audio" checked onchange="triggerStateSave()"><span>Beep</span></label>
-                    <label class="alert-sub-check"><input type="checkbox" id="warn2Visual" onchange="triggerStateSave()"><span>Flicker</span></label>
-                    <label class="alert-sub-check"><input type="checkbox" id="warn2Voice" onchange="triggerStateSave()"><span>Voice</span></label>
-                </div>
-            </div>
-            <!-- Warning Tier 3: Red Emergency Warning -->
-            <div class="setting-section" style="border-color:#ff3b30;">
-                <label class="checkbox-label" style="font-weight:bold; color:#ff3b30;">
-                    <input type="checkbox" id="warn3Enabled" onchange="triggerStateSave()"><span>🚨 Emergency Red Alarm</span>
-                </label>
-                <div class="slider-block" style="margin-top:8px;"><div class="slider-label-row"><span>Trigger BPM:</span><span id="lblWarn3Bpm">180</span></div><input type="range" id="warn3Bpm" min="40" max="200" value="180" oninput="document.getElementById('lblWarn3Bpm').innerText = this.value; triggerStateSave();"></div>
-                <div class="slider-block"><div class="slider-label-row"><span>Beep Vol:</span><span id="lblW3BeepVol">100%</span></div><input type="range" id="warn3BeepVol" min="0" max="100" value="100" oninput="document.getElementById('lblW3BeepVol').innerText = this.value + '%'; triggerStateSave();"></div>
-                <div class="slider-block"><div class="slider-label-row"><span>Voice Vol:</span><span id="lblW3VoiceVol">100%</span></div><input type="range" id="warn3VoiceVol" min="0" max="100" value="100" oninput="document.getElementById('lblW3VoiceVol').innerText = this.value + '%'; triggerStateSave();"></div>
-                <div class="input-row"><label>Phrase:</label><input type="text" id="warn3Phrase" value="Critical Alert" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Beep (s):</label><input type="number" id="warn3AudioDur" value="4" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Flicker (s):</label><input type="number" id="warn3VisualDur" value="4" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label>Voice Count:</label><input type="number" id="warn3VoiceDur" value="2" min="1" max="5" oninput="triggerStateSave()"></div>
-                <div class="color-pickers" style="margin-top:6px;"><div class="color-picker-wrapper"><input type="color" id="w3Color1" value="#ff3b30" onchange="triggerStateSave()"><span>C1</span></div><div class="color-picker-wrapper"><input type="color" id="w3Color2" value="#ffffff" onchange="triggerStateSave()"><span>C2</span></div></div>
-                <div class="alert-options-row">
-                    <label class="alert-sub-check"><input type="checkbox" id="warn3Audio" checked onchange="triggerStateSave()"><span>Beep</span></label>
-                    <label class="alert-sub-check"><input type="checkbox" id="warn3Visual" onchange="triggerStateSave()"><span>Flicker</span></label>
-                    <label class="alert-sub-check"><input type="checkbox" id="warn3Voice" onchange="triggerStateSave()"><span>Voice</span></label>
-                </div>
-            </div>
-            <button class="btn-blue" style="width:100%;" onclick="toggleModal('hrSettingsModal', false)">Save & Close</button>
-        </div>
-    </div>
-
-    <!-- History Calendar Grid View Modal Overlay Component -->
-    <div class="modal" id="historyCalendarModal">
-        <div class="modal-content" style="width:340px;">
-            <div class="history-viewer-header">
-                <button class="btn-gray" style="padding:6px 12px;" onclick="adjustCalendarMonth(-1)">◀</button>
-                <div id="calendarMonthTitle" style="font-weight:bold; color:white;">Month Year</div>
-                <button class="btn-gray" style="padding:6px 12px;" onclick="adjustCalendarMonth(1)">▶</button>
-            </div>
-            <div id="calendarGridBox" class="calendar-grid"></div>
-            <button class="btn-blue" style="width:100%; margin-top:16px;" onclick="toggleModal('historyCalendarModal', false)">Close Calendar</button>
-        </div>
-    </div>
-    <!-- History Day Workouts Record Explorer Screen Overlay Component -->
-    <div class="modal" id="historyRecordModal">
-        <div class="modal-content" style="width:330px;">
-            <h3 style="margin-bottom:10px;">Workout Details</h3>
-            <div style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:12px;" id="lblRecordDateHeader">Date Title</div>
-            
-            <div id="historyRecordContainer" style="background:#0b0f19; padding:12px; border-radius:12px; font-size:14px; border:1px solid #2d3748;">
-                <div class="input-row"><span class="clock-label">Start Time:</span><span id="lblHistStart" style="color:white; font-weight:bold;">--:--</span></div>
-                <div class="input-row"><span class="clock-label">Elapsed Duration:</span><span id="lblHistElapsed" style="color:white; font-weight:bold;">00:00</span></div>
-                <div class="input-row"><span class="clock-label">Average Session BPM:</span><span id="lblHistAvg" style="color:#ff3b30; font-weight:bold;">--</span></div>
-                
-                <div style="margin-top:10px; font-weight:bold; font-size:12px; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">BPM Vector Graph Chart:</div>
-                <div style="width:100%; height:75px; background:#161b26; border-radius:8px; overflow:hidden; border:1px solid #232d3f;">
-                    <canvas id="historyRecordCanvas" style="width:100%; height:100%; display:block;"></canvas>
-                </div>
-            </div>
-
-            <!-- Horizontal Record Flipping Footer Nav Nodes Stack Component -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:10px;">
-                <button class="btn-gray" style="flex:1;" id="btnPrevRecord" onclick="flipActiveDayRecord(-1)">◀ Prev</button>
-                <div id="lblRecordIndexIndicator" style="font-size:12px; font-weight:bold; color:#94a3b8;">1 / 1</div>
-                <button class="btn-gray" style="flex:1;" id="btnNextRecord" onclick="flipActiveDayRecord(1)">Next ▶</button>
-            </div>
-            <button class="btn-blue" style="width:100%; margin-top:12px;" onclick="closeHistoryRecordModal()">Back to Calendar</button>
-        </div>
-    </div>
     <script>
         let audioCtx = null;
         let audioTimeout = null;
@@ -513,20 +394,9 @@
         let timeRemainingSeconds = 40;
         let isCountingDown = false;
 
-        // Session Clocks & History Arrays State Profiles
         let workoutStartTime = null;
         let elapsedClockInterval = null;
         let bpmHistoryDataArray = [];
-        let currentlyThrottledAlarmZone = 0;
-
-        // Structured Exercises Log Profile Objects Cache Structures Arrays
-        let globalWorkoutsDatabase = [];
-        let calendarTargetDate = new Date();
-        let selectedDayRecordsArray = [];
-        let selectedRecordActiveIndex = 0;
-
-        // Long Press Stop Safeguard States
-        let stopPressHoldTimer = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             loadSavedState();
@@ -568,7 +438,9 @@
             if (selector.value === "") return;
             const targetCharPosition = parseInt(selector.value, 10);
             textarea.focus(); textarea.setSelectionRange(targetCharPosition, targetCharPosition);
-            textarea.scrollTop = (textarea.value.substring(0, targetCharPosition).split('\n').length - 1) * 19.2;
+            const textUpToTarget = textarea.value.substring(0, targetCharPosition);
+            const lineBreaksCount = textUpToTarget.split('\n').length - 1;
+            textarea.scrollTop = lineBreaksCount * 19.2;
         }
 
         function applyBlockRules() {
@@ -576,87 +448,93 @@
             document.getElementById('workoutNotes').readOnly = isBlocked;
             document.getElementById('settingsBtn').disabled = isBlocked;
             document.getElementById('textBoxBtn').disabled = isBlocked;
-            document.getElementById('historyBtn').disabled = isBlocked;
-            document.getElementById('hrSettingsBtn').disabled = isBlocked;
             document.getElementById('connectBtn').disabled = isBlocked;
+            document.getElementById('actionBtn1').disabled = isBlocked;
             document.getElementById('sectionSelector').disabled = isBlocked;
         }
 
-        function applyScrollRules() { document.getElementById('workoutNotes').style.overflowY = document.getElementById('scrollToggle').checked ? 'auto' : 'hidden'; }
-        function applySelectionBoxVisibility() { document.getElementById('sectionSelector').style.display = document.getElementById('toggleSelectionBox').checked ? 'block' : 'none'; }
+        function applyScrollRules() {
+            document.getElementById('workoutNotes').style.overflowY = document.getElementById('scrollToggle').checked ? 'auto' : 'hidden';
+        }
+
+        function applySelectionBoxVisibility() {
+            document.getElementById('sectionSelector').style.display = document.getElementById('toggleSelectionBox').checked ? 'block' : 'none';
+        }
+
         function toggleModal(modalId, show) { document.getElementById(modalId).style.display = show ? 'flex' : 'none'; }
 
         function initHistoryCanvasGrid() {
             const canvas = document.getElementById('bpmHistoryCanvas');
             canvas.width = canvas.parentElement.clientWidth * window.devicePixelRatio;
-            canvas.height = 105 * window.devicePixelRatio;
+            canvas.height = 90 * window.devicePixelRatio;
             drawBpmGraphPipeline();
         }
 
         function pushBpmToGraphArray(bpmValue) {
-            if (workoutStartTime) { // Only log data point sequences if active recording sessions are running
-                bpmHistoryDataArray.push(bpmValue);
-                if (bpmHistoryDataArray.length > 600) bpmHistoryDataArray.shift();
-                drawBpmGraphPipeline();
-            }
-            evaluateHeartRateAlarms(bpmValue);
+            bpmHistoryDataArray.push(bpmValue);
+            if (bpmHistoryDataArray.length > 300) { bpmHistoryDataArray.shift(); }
+            drawBpmGraphPipeline();
         }
-
+    </script>
+    <script>
         function drawBpmGraphPipeline() {
             const canvas = document.getElementById('bpmHistoryCanvas');
             const ctx = canvas.getContext('2d');
             const w = canvas.width; const h = canvas.height;
             ctx.clearRect(0, 0, w, h);
-            
-            const minBpmFloor = 40; const maxBpmCeiling = 200;
-            const referenceGridMarks =;
-            
-            ctx.lineWidth = 1 * window.devicePixelRatio; ctx.strokeStyle = '#232d3f';
-            ctx.fillStyle = '#475569'; ctx.font = `${10 * window.devicePixelRatio}px sans-serif`;
-            ctx.textAlign = 'left';
-            
-            referenceGridMarks.forEach(val => {
-                const pct = (val - minBpmFloor) / (maxBpmCeiling - minBpmFloor);
-                const yPos = h - (pct * h);
-                ctx.beginPath(); ctx.moveTo(0, yPos); ctx.lineTo(w, yPos); ctx.stroke();
-                ctx.fillText(val + " BPM", 6 * window.devicePixelRatio, yPos - (4 * window.devicePixelRatio));
-            });
-
-            if (bpmHistoryDataArray.length < 2) return;
-
+            if (bpmHistoryDataArray.length < 2) {
+                ctx.fillStyle = '#475569'; ctx.font = `${12 * window.devicePixelRatio}px sans-serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText("Awaiting continuous stream data history...", w / 2, h / 2); return;
+            }
             ctx.beginPath(); ctx.lineWidth = 3 * window.devicePixelRatio; ctx.strokeStyle = '#ff3b30';
             ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-            const stepSpacing = w / (Math.max(bpmHistoryDataArray.length - 1, 50));
-            
+            const pointSpacingSpacing = w / (Math.max(bpmHistoryDataArray.length - 1, 50));
+            const minBpmFloor = 40; const maxBpmCeiling = 200;
             for (let i = 0; i < bpmHistoryDataArray.length; i++) {
-                const x = i * stepSpacing;
-                const y = h - ((Math.max(40, Math.min(200, bpmHistoryDataArray[i])) - minBpmFloor) / (maxBpmCeiling - minBpmFloor) * h);
+                const x = i * pointSpacingSpacing;
+                const bpmNormalizedPct = (bpmHistoryDataArray[i] - minBpmFloor) / (maxBpmCeiling - minBpmFloor);
+                const constrainedBpmPct = Math.max(0, Math.min(1, bpmNormalizedPct));
+                const y = h - (constrainedBpmPct * h);
                 if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.stroke();
         }
-    </script>
-    <script>
+
+        function saveNotesToFile() {
+            const textContent = document.getElementById('workoutNotes').value;
+            const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
+            link.download = "workout_routine.txt"; link.click(); URL.revokeObjectURL(link.href);
+        }
+
+        function loadNotesFromFile(inputElement) {
+            const files = inputElement.files; if (!files || files.length === 0) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('workoutNotes').value = e.target.result;
+                parseWorkoutHeaders(); triggerStateSave(); toggleModal('textBoxModal', false); inputElement.value = ""; 
+            };
+            reader.readAsText(files);
+        }
+
         function triggerStateSave() {
             if (!document.getElementById('toggleLocalStorage').checked) return;
-            const appCacheStateProfile = {
+            const state = {
                 notes: document.getElementById('workoutNotes').value, modeAudio: document.getElementById('modeAudio').checked,
                 modeVisual: document.getElementById('modeVisual').checked, modeVoice: document.getElementById('modeVoice').checked,
                 voicePhrase: document.getElementById('voicePhrase').value, beepVol: document.getElementById('beepVolume').value,
                 voiceVol: document.getElementById('voiceVolume').value, durAudio: document.getElementById('audioDuration').value,
                 durVisual: document.getElementById('visualDuration').value, durVoice: document.getElementById('voiceDuration').value,
                 presets: currentPresets, activePresetIdx: activePresetIndex, showSelection: document.getElementById('toggleSelectionBox').checked,
-                color1: document.getElementById('color1').value, color2: document.getElementById('color2').value,
-                w1E: document.getElementById('warn1Enabled').checked, w1B: document.getElementById('warn1Bpm').value, w1AuV: document.getElementById('warn1BeepVol').value, w1VoV: document.getElementById('warn1VoiceVol').value, w1Ph: document.getElementById('warn1Phrase').value, w1AuD: document.getElementById('warn1AudioDur').value, w1ViD: document.getElementById('warn1VisualDur').value, w1VoD: document.getElementById('warn1VoiceDur').value, w1C1: document.getElementById('w1Color1').value, w1C2: document.getElementById('w1Color2').value, w1Au: document.getElementById('warn1Audio').checked, w1Vi: document.getElementById('warn1Visual').checked, w1Vo: document.getElementById('warn1Voice').checked,
-                w2E: document.getElementById('warn2Enabled').checked, w2B: document.getElementById('warn2Bpm').value, w2AuV: document.getElementById('warn2BeepVol').value, w2VoV: document.getElementById('warn2VoiceVol').value, w2Ph: document.getElementById('warn2Phrase').value, w2AuD: document.getElementById('warn2AudioDur').value, w2ViD: document.getElementById('warn2VisualDur').value, w2VoD: document.getElementById('warn2VoiceDur').value, w2C1: document.getElementById('w2Color1').value, w2C2: document.getElementById('w2Color2').value, w2Au: document.getElementById('warn2Audio').checked, w2Vi: document.getElementById('warn2Visual').checked, w2Vo: document.getElementById('warn2Voice').checked,
-                w3E: document.getElementById('warn3Enabled').checked, w3B: document.getElementById('warn3Bpm').value, w3AuV: document.getElementById('warn3BeepVol').value, w3VoV: document.getElementById('warn3VoiceVol').value, w3Ph: document.getElementById('warn3Phrase').value, w3AuD: document.getElementById('warn3AudioDur').value, w3ViD: document.getElementById('warn3VisualDur').value, w3VoD: document.getElementById('warn3VoiceDur').value, w3C1: document.getElementById('w3Color1').value, w3C2: document.getElementById('w3Color2').value, w3Au: document.getElementById('warn3Audio').checked, w3Vi: document.getElementById('warn3Visual').checked, w3Vo: document.getElementById('warn3Voice').checked,
-                workoutsDB: globalWorkoutsDatabase
+                color1: document.getElementById('color1').value, color2: document.getElementById('color2').value
             };
-            localStorage.setItem('workoutAppStateDataPro', JSON.stringify(appCacheStateProfile));
+            localStorage.setItem('workoutAppStateData', JSON.stringify(state));
         }
-
+    </script>
+    <script>
         function loadSavedState() {
-            const stored = localStorage.getItem('workoutAppStateDataPro');
+            const stored = localStorage.getItem('workoutAppStateData');
             if (!stored) { document.getElementById('toggleLocalStorage').checked = false; return; }
             try {
                 const s = JSON.parse(stored); document.getElementById('toggleLocalStorage').checked = true;
@@ -665,250 +543,71 @@
                 document.getElementById('modeVisual').checked = s.modeVisual ?? false;
                 document.getElementById('modeVoice').checked = s.modeVoice ?? false;
                 document.getElementById('voicePhrase').value = s.voicePhrase || "Rest over";
-                document.getElementById('beepVolume').value = s.beepVol ?? 50; document.getElementById('lblBeepVol').innerText = (s.beepVol ?? 50) + '%';
-                document.getElementById('voiceVolume').value = s.voiceVol ?? 100; document.getElementById('lblVoiceVol').innerText = (s.voiceVol ?? 100) + '%';
-                document.getElementById('audioDuration').value = s.durAudio ?? 3; document.getElementById('visualDuration').value = s.durVisual ?? 3; document.getElementById('voiceDuration').value = s.durVoice ?? 1;
+                document.getElementById('beepVolume').value = s.beepVol ?? 50;
+                document.getElementById('lblBeepVol').innerText = (s.beepVol ?? 50) + '%';
+                document.getElementById('voiceVolume').value = s.voiceVol ?? 100;
+                document.getElementById('lblVoiceVol').innerText = (s.voiceVol ?? 100) + '%';
+                document.getElementById('audioDuration').value = s.durAudio ?? 3;
+                document.getElementById('visualDuration').value = s.durVisual ?? 3;
+                document.getElementById('voiceDuration').value = s.durVoice ?? 1;
                 if (s.presets) {
                     currentPresets = s.presets;
                     for (let i = 1; i <= 4; i++) {
                         document.getElementById(`cfgPreset${i}`).value = currentPresets[i];
-                        document.getElementById(`lblCfg${i}`).innerText = currentPresets[i] + 's'; document.getElementById(`pBtn${i}`).innerText = currentPresets[i] + 's';
+                        document.getElementById(`lblCfg${i}`).innerText = currentPresets[i] + 's';
+                        document.getElementById(`pBtn${i}`).innerText = currentPresets[i] + 's';
                     }
                 }
-                activePresetIndex = s.activePresetIdx ?? 1; document.getElementById('toggleSelectionBox').checked = s.showSelection ?? true; applySelectionBoxVisibility();
+                activePresetIndex = s.activePresetIdx ?? 1;
+                document.getElementById('toggleSelectionBox').checked = s.showSelection ?? true;
+                applySelectionBoxVisibility();
                 document.getElementById('color1').value = s.color1 || "#ffffff"; document.getElementById('color2').value = s.color2 || "#ff3b30";
-                
-                document.getElementById('warn1Enabled').checked = s.w1E ?? true; document.getElementById('warn1Bpm').value = s.w1B ?? 140; document.getElementById('lblWarn1Bpm').innerText = s.w1B ?? 140; document.getElementById('warn1BeepVol').value = s.w1AuV ?? 60; document.getElementById('lblW1BeepVol').innerText = (s.w1AuV ?? 60) + '%'; document.getElementById('warn1VoiceVol').value = s.w1VoV ?? 80; document.getElementById('lblW1VoiceVol').innerText = (s.w1VoV ?? 80) + '%'; document.getElementById('warn1Phrase').value = s.w1Ph || "Zone 1 Warning"; document.getElementById('warn1AudioDur').value = s.w1AuD ?? 2; document.getElementById('warn1VisualDur').value = s.w1ViD ?? 2; document.getElementById('warn1VoiceDur').value = s.w1VoD ?? 1; document.getElementById('w1Color1').value = s.w1C1 || "#ff9500"; document.getElementById('w1Color2').value = s.w1C2 || "#0b0f19"; document.getElementById('warn1Audio').checked = s.w1Au ?? true; document.getElementById('warn1Visual').checked = s.w1Vi ?? false; document.getElementById('warn1Voice').checked = s.w1Vo ?? false;
-                
-                document.getElementById('warn2Enabled').checked = s.w2E ?? false; document.getElementById('warn2Bpm').value = s.w2B ?? 160; document.getElementById('lblWarn2Bpm').innerText = s.w2B ?? 160; document.getElementById('warn2BeepVol').value = s.w2AuV ?? 80; document.getElementById('lblW2BeepVol').innerText = (s.w2AuV ?? 80) + '%'; document.getElementById('warn2VoiceVol').value = s.w2VoV ?? 90; document.getElementById('lblW2VoiceVol').innerText = (s.w2VoV ?? 90) + '%'; document.getElementById('warn2Phrase').value = s.w2Ph || "Zone 2 Warning"; document.getElementById('warn2AudioDur').value = s.w2AuD ?? 3; document.getElementById('warn2VisualDur').value = s.w2ViD ?? 3; document.getElementById('warn2VoiceDur').value = s.w2VoD ?? 1; document.getElementById('w2Color1').value = s.w2C1 || "#ff5e00"; document.getElementById('w2Color2').value = s.w2C2 || "#0b0f19"; document.getElementById('warn2Audio').checked = s.w2Au ?? true; document.getElementById('warn2Visual').checked = s.w2Vi ?? false; document.getElementById('warn2Voice').checked = s.w2Vo ?? false;
-                
-                document.getElementById('warn3Enabled').checked = s.w3E ?? false; document.getElementById('warn3Bpm').value = s.w3B ?? 180; document.getElementById('lblWarn3Bpm').innerText = s.w3B ?? 180; document.getElementById('warn3BeepVol').value = s.w3AuV ?? 100; document.getElementById('lblW3BeepVol').innerText = (s.w3AuV ?? 100) + '%'; document.getElementById('warn3VoiceVol').value = s.w3VoV ?? 100; document.getElementById('lblW3VoiceVol').innerText = (s.w3VoV ?? 100) + '%'; document.getElementById('warn3Phrase').value = s.w3Ph || "Critical Alert"; document.getElementById('warn3AudioDur').value = s.w3AuD ?? 4; document.getElementById('warn3VisualDur').value = s.w3ViD ?? 4; document.getElementById('warn3VoiceDur').value = s.w3VoD ?? 2; document.getElementById('w3Color1').value = s.w3C1 || "#ff3b30"; document.getElementById('w3Color2').value = s.w3C2 || "#ffffff"; document.getElementById('warn3Audio').checked = s.w3Au ?? true; document.getElementById('warn3Visual').checked = s.w3Vi ?? false; document.getElementById('warn3Voice').checked = s.w3Vo ?? false;
-                
-                globalWorkoutsDatabase = s.workoutsDB || [];
             } catch(e) { console.error(e); }
         }
 
-        function handleLocalStorageToggle() { if (document.getElementById('toggleLocalStorage').checked) triggerStateSave(); else localStorage.removeItem('workoutAppStateDataPro'); }
-        function updateSliderLabel(num, val) { document.getElementById(`lblCfg${num}`).innerText = `${val}s`; document.getElementById(`pBtn${num}`).innerText = `${val}s`; currentPresets[num] = parseInt(val, 10); if (!isCountingDown && activePresetIndex === num) timeRemainingSeconds = currentPresets[num]; triggerStateSave(); }
-        function selectPreset(index) { if (isCountingDown) return; activePresetIndex = index; for (let i = 1; i <= 4; i++) document.getElementById(`pBtn${i}`).classList.remove('selected-preset'); document.getElementById(`pBtn${index}`).classList.add('selected-preset'); timeRemainingSeconds = currentPresets[index]; triggerStateSave(); }
-    </script>
-    <script>
-        function saveNotesToFile() {
-            const blob = new Blob([document.getElementById('workoutNotes').value], { type: "text/plain;charset=utf-8" });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
-            link.download = "workout_routine.txt"; link.click(); URL.revokeObjectURL(link.href);
+        function handleLocalStorageToggle() {
+            if (document.getElementById('toggleLocalStorage').checked) triggerStateSave(); else localStorage.removeItem('workoutAppStateData');
         }
 
-        function loadNotesFromFile(inputElement) {
-            const files = inputElement.files; if (!files || files.length === 0) return;
-            const reader = new FileReader();
-            reader.onload = function(e) { document.getElementById('workoutNotes').value = e.target.result; parseWorkoutHeaders(); triggerStateSave(); toggleModal('textBoxModal', false); inputElement.value = ""; };
-            reader.readAsText(files[0]);
+        function updateSliderLabel(num, val) {
+            document.getElementById(`lblCfg${num}`).innerText = `${val}s`; document.getElementById(`pBtn${num}`).innerText = `${val}s`;
+            currentPresets[num] = parseInt(val, 10); if (!isCountingDown && activePresetIndex === num) timeRemainingSeconds = currentPresets[num];
+            triggerStateSave();
+        }
+
+        function selectPreset(index) {
+            if (isCountingDown) return; activePresetIndex = index;
+            for (let i = 1; i <= 4; i++) document.getElementById(`pBtn${i}`).classList.remove('selected-preset');
+            document.getElementById(`pBtn${index}`).classList.add('selected-preset');
+            timeRemainingSeconds = currentPresets[index]; triggerStateSave();
         }
 
         function startRestCountdown() {
             const restBtn = document.getElementById('restButton');
-            if (isCountingDown) { clearInterval(countdownInterval); isCountingDown = false; restBtn.innerText = "Rest"; selectPreset(activePresetIndex); stopAllAlerts(); return; }
-            stopAllAlerts(); isCountingDown = true; restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
-            countdownInterval = setInterval(() => {
-                timeRemainingSeconds--;
-                if (timeRemainingSeconds <= 0) { clearInterval(countdownInterval); isCountingDown = false; restBtn.innerText = "Rest"; triggerActiveAlerts(); timeRemainingSeconds = currentPresets[activePresetIndex]; }
-                else restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
-            }, 1000);
-        }
-
-        // Active Session Controls Engine Routing Pipeline
-        function handleStartButtonClick() {
-            const startBtn = document.getElementById('startBtn');
             if (!workoutStartTime) {
-                // Engage and trigger starting sequence rules
                 const now = new Date(); workoutStartTime = now;
                 document.getElementById('lblStartTime').innerText = now.toTimeString().substring(0, 5);
-                bpmHistoryDataArray = []; initHistoryCanvasGrid();
-                
-                if (elapsedClockInterval) clearInterval(elapsedClockInterval);
                 elapsedClockInterval = setInterval(() => {
                     const diffSec = Math.floor((new Date() - workoutStartTime) / 1000);
                     const m = Math.floor(diffSec / 60).toString().padStart(2, '0');
                     const s = (diffSec % 60).toString().padStart(2, '0');
                     document.getElementById('lblElapsedTime').innerText = `${m}:${s}`;
                 }, 1000);
-
-                startBtn.innerText = "Stop (Hold)"; startBtn.className = "btn-red";
-                setupStopLongPressSafeguard();
             }
-        }
-    </script>
-    <script>
-        function setupStopLongPressSafeguard() {
-            const startBtn = document.getElementById('startBtn');
-            
-            const initPressTrigger = (e) => {
-                e.preventDefault(); if (!workoutStartTime) return;
-                let tickCounter = 3; startBtn.innerText = `Holding... ${tickCounter}s`;
-                
-                stopPressHoldTimer = setInterval(() => {
-                    tickCounter--;
-                    if (tickCounter <= 0) {
-                        clearInterval(stopPressHoldTimer); stopPressHoldTimer = null;
-                        processActiveSessionTermination();
-                    } else startBtn.innerText = `Holding... ${tickCounter}s`;
-                }, 1000);
-            };
-
-            const clearPressTrigger = () => {
-                if (stopPressHoldTimer) {
-                    clearInterval(stopPressHoldTimer); stopPressHoldTimer = null;
-                    if (workoutStartTime) { startBtn.innerText = "Stop (Hold)"; startBtn.className = "btn-red"; }
-                }
-            };
-
-            // Bind native Webkit touch interfaces
-            startBtn.addEventListener('touchstart', initPressTrigger, { passive: false });
-            startBtn.addEventListener('touchend', clearPressTrigger);
-            startBtn.addEventListener('mousedown', initPressTrigger);
-            startBtn.addEventListener('mouseup', clearPressTrigger);
-            startBtn.addEventListener('mouseleave', clearPressTrigger);
-        }
-
-        function processActiveSessionTermination() {
-            clearInterval(elapsedClockInterval);
-            const userDecision = confirm("Workout finished! Would you like to log this session into your profile history?");
-            if (userDecision) {
-                const totalEntriesSum = bpmHistoryDataArray.reduce((a, b) => a + b, 0);
-                const computedAvg = bpmHistoryDataArray.length > 0 ? Math.round(totalEntriesSum / bpmHistoryDataArray.length) : null;
-                
-                const exerciseRecordItem = {
-                    id: "ex_" + Date.now(),
-                    dateString: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-                    startTimeText: workoutStartTime.toTimeString().substring(0, 5),
-                    elapsedDurationText: document.getElementById('lblElapsedTime').innerText,
-                    averageBpmValue: computedAvg,
-                    vectorGraphPointsArray: [...bpmHistoryDataArray]
-                };
-                globalWorkoutsDatabase.push(exerciseRecordItem); triggerStateSave();
+            if (isCountingDown) {
+                clearInterval(countdownInterval); isCountingDown = false; restBtn.innerText = "Rest";
+                selectPreset(activePresetIndex); stopAllAlerts(); return;
             }
-            // Clean interface workspace back to dark baseline parameters
-            workoutStartTime = null;
-            document.getElementById('lblStartTime').innerText = "--:--";
-            document.getElementById('lblElapsedTime').innerText = "00:00";
-            const startBtn = document.getElementById('startBtn');
-            startBtn.innerText = "Start"; startBtn.className = "btn-green";
-            // Strip structural custom touch event handlers implicitly by overwriting framework configurations
-            const freshBtn = startBtn.cloneNode(true); startBtn.parentNode.replaceChild(freshBtn, startBtn);
-            document.getElementById('startBtn').onclick = handleStartButtonClick;
+            stopAllAlerts(); isCountingDown = true; restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
+            countdownInterval = setInterval(() => {
+                timeRemainingSeconds--;
+                if (timeRemainingSeconds <= 0) {
+                    clearInterval(countdownInterval); isCountingDown = false; restBtn.innerText = "Rest";
+                    triggerActiveAlerts(); timeRemainingSeconds = currentPresets[activePresetIndex];
+                } else restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
+            }, 1000);
         }
 
-        // Calendar Infrastructure Component Builders
-        function openHistoryCalendarModal() { calendarTargetDate = new Date(); renderCalendarGridDOM(); toggleModal('historyCalendarModal', true); }
-        function adjustCalendarMonth(direction) { calendarTargetDate.setMonth(calendarTargetDate.getMonth() + direction); renderCalendarGridDOM(); }
-
-        function renderCalendarGridDOM() {
-            const yr = calendarTargetDate.getFullYear(); const mo = calendarTargetDate.getMonth();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            document.getElementById('calendarMonthTitle').innerText = `${monthNames[mo]} ${yr}`;
-            
-            const gridBox = document.getElementById('calendarGridBox');
-            gridBox.innerHTML = '';
-            
-            const daysShortLabels = ["S", "M", "T", "W", "T", "F", "S"];
-            daysShortLabels.forEach(d => { const h = document.createElement('div'); h.className = "calendar-day-header"; h.innerText = d; gridBox.appendChild(h); });
-            
-            const firstDayIdx = new Date(yr, mo, 1).getDay();
-            const totalDaysInMonth = new Date(yr, mo + 1, 0).getDate();
-            
-            for (let i = 0; i < firstDayIdx; i++) { const e = document.createElement('div'); e.className = "calendar-cell empty"; gridBox.appendChild(e); }
-            
-            for (let day = 1; day <= totalDaysInMonth; day++) {
-                const cell = document.createElement('div'); cell.className = "calendar-cell"; cell.innerText = day;
-                const formattedIsoDate = `${yr}-${(mo + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                
-                const hasMatchingRecord = globalWorkoutsDatabase.some(item => item.dateString === formattedIsoDate);
-                if (hasMatchingRecord) { cell.classList.add('has-workout'); }
-                
-                cell.onclick = () => { if (hasMatchingRecord) openHistoryDayRecordsViewer(formattedIsoDate); };
-                gridBox.appendChild(cell);
-            }
-        }
-    </script>
-    <script>
-        // Open the day viewer slide card overlay
-        function openHistoryDayRecordsViewer(targetIsoDate) {
-            currentHistoryViewerLogsArray = globalWorkoutsDatabase.filter(item => item.dateString === targetIsoDate);
-            currentHistoryViewerLogIndex = 0;
-            
-            if (currentHistoryViewerLogsArray.length === 0) return;
-            
-            toggleModal('historyCalendarModal', false);
-            toggleModal('workoutLogViewerModal', true);
-            renderLogViewerDashboardCard();
-        }
-
-        // Left/Right arrow click flipping engine mechanics
-        function flipWorkoutViewerCard(directionDelta) {
-            const targetIndex = currentHistoryViewerLogIndex + directionDelta;
-            if (targetIndex >= 0 && targetIndex < currentHistoryViewerLogsArray.length) {
-                currentHistoryViewerLogIndex = targetIndex;
-                renderLogViewerDashboardCard();
-            }
-        }
-
-        // Draw the historical summary template card and trace metrics canvas graph
-        function renderLogViewerDashboardCard() {
-            const currentLog = currentHistoryViewerLogsArray[currentHistoryViewerLogIndex];
-            
-            document.getElementById('viewLogIdxMeta').innerText = `Record ${currentHistoryViewerLogIndex + 1} of ${currentHistoryViewerLogsArray.length}`;
-            document.getElementById('lblViewStartTime').innerText = currentLog.startTimeText || "--:--";
-            document.getElementById('lblViewElapsedTime').innerText = currentLog.elapsedDurationText || "00:00";
-            document.getElementById('lblViewAvgBpm').innerText = currentLog.averageBpmValue ? `${currentLog.averageBpmValue} BPM` : "--";
-
-            const canvas = document.getElementById('viewerHistoryCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = canvas.parentElement.clientWidth * window.devicePixelRatio;
-            canvas.height = 105 * window.devicePixelRatio;
-            
-            const w = canvas.width; const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-
-            const points = currentLog.vectorGraphPointsArray || [];
-            const minBpmFloor = 40; const maxBpmCeiling = 200;
-
-            // Draw Y-Axis baseline guide vectors inside historical display preview window
-            const yLines =;
-            ctx.lineWidth = 1 * window.devicePixelRatio; ctx.strokeStyle = '#232d3f';
-            ctx.fillStyle = '#475569'; ctx.font = `${9 * window.devicePixelRatio}px sans-serif`;
-            ctx.textAlign = 'left';
-
-            yLines.forEach(val => {
-                const pct = (val - minBpmFloor) / (maxBpmCeiling - minBpmFloor);
-                const yPos = h - (pct * h);
-                ctx.beginPath(); ctx.moveTo(0, yPos); ctx.lineTo(w, yPos); ctx.stroke();
-                ctx.fillText(val + " BPM", 4 * window.devicePixelRatio, yPos - (3 * window.devicePixelRatio));
-            });
-
-            if (points.length < 2) {
-                ctx.fillStyle = '#64748b'; ctx.font = `${11 * window.devicePixelRatio}px sans-serif`;
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText("No heart rate profile captured", w / 2, h / 2);
-                return;
-            }
-
-            // Paint historical data vectors trace mapping line
-            ctx.beginPath(); ctx.lineWidth = 2.5 * window.devicePixelRatio; ctx.strokeStyle = '#ff3b30';
-            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-
-            const spacing = w / (points.length - 1);
-            for (let i = 0; i < points.length; i++) {
-                const x = i * spacing;
-                const pct = (Math.max(40, Math.min(200, points[i])) - minBpmFloor) / (maxBpmCeiling - minBpmFloor);
-                const y = h - (pct * h);
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-        }
-
-        // Web Bluetooth GATT handshake connection pipeline wrapper (Polished and Fixed)
         async function connectPolar() {
             const connectBtn = document.getElementById('connectBtn');
             const hrDisplay = document.getElementById('hrDisplayValue');
@@ -917,110 +616,26 @@
                 connectBtn.innerText = "Searching...";
                 const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['heart_rate'] }] });
                 bleDeviceInstance = device; connectBtn.innerText = "Connecting...";
-                
                 const server = await device.gatt.connect(); connectBtn.innerText = "Services...";
                 const service = await server.getPrimaryService('heart_rate');
                 const characteristic = await service.getCharacteristic('heart_rate_measurement');
-                
                 await characteristic.startNotifications();
                 characteristic.addEventListener('characteristicvaluechanged', (event) => {
-                    const value = event.target.value; const flags = value.getUint8(0);
-                    let heartRate = (flags & 0x01) ? value.getUint16(1, true) : value.getUint8(1);
-                    
-                    hrDisplay.innerText = heartRate; 
-                    pushBpmToGraphArray(heartRate);
-                    
-                    heartIcon.classList.add('heart-pulse'); 
-                    setTimeout(() => heartIcon.classList.remove('heart-pulse'), 200);
+                    const value = event.target.value; const flags = value.getUint8(0); const is16Bit = flags & 0x01;
+                    let heartRate = is16Bit ? value.getUint16(1, true) : value.getUint8(1);
+                    hrDisplay.innerText = heartRate; pushBpmToGraphArray(heartRate);
+                    heartIcon.classList.add('heart-pulse'); setTimeout(() => heartIcon.classList.remove('heart-pulse'), 200);
                 });
-
                 connectBtn.innerText = "Connected"; connectBtn.style.backgroundColor = "#34c759";
                 device.addEventListener('gattserverdisconnected', () => {
                     hrDisplay.innerText = "--"; connectBtn.innerText = "Connect HR"; connectBtn.style.backgroundColor = "#007aff";
                 });
             } catch (error) {
                 console.error(error); connectBtn.innerText = "Connect HR"; connectBtn.style.backgroundColor = "#007aff";
-                alert("Bluetooth Handshake Error: " + error.message);
-            }
-        }
-        // Evaluate live heart metrics variations against triple safety zones configuration rules
-        function evaluateHeartRateAlarms(currentBpm) {
-            if (currentlyThrottledAlarmZone > 0) return;
-
-            for (let tier = 3; tier >= 1; tier--) {
-                if (document.getElementById(`warn${tier}Enabled`).checked) {
-                    const triggerLimit = parseInt(document.getElementById(`warn${tier}Bpm`).value, 10);
-                    if (currentBpm >= triggerLimit) {
-                        executeZoneAlarmNotification(tier);
-                        break;
-                    }
-                }
+                alert("Bluetooth Error: " + error.message);
             }
         }
 
-        // Execute dynamic independent alert actions per warning zone tier configurations
-        function executeZoneAlarmNotification(tierLevel) {
-            currentlyThrottledAlarmZone = tierLevel;
-            
-            const audioSec = parseInt(document.getElementById(`warn${tierLevel}AudioDur`).value, 10) || 2;
-            const visualSec = parseInt(document.getElementById(`warn${tierLevel}VisualDur`).value, 10) || 2;
-            const voiceCount = parseInt(document.getElementById(`warn${tierLevel}VoiceDur`).value, 10) || 1;
-            
-            const volPct = parseInt(document.getElementById(`warn${tierLevel}Vol`).value, 10) / 100;
-            const phrase = document.getElementById(`warn${tierLevel}Phrase`).value || ("Warning zone " + tierLevel);
-
-            const playAudio = document.getElementById(`warn${tierLevel}Audio`).checked;
-            const playVisual = document.getElementById(`warn${tierLevel}Visual`).checked;
-            const playVoice = document.getElementById(`warn${tierLevel}Voice`).checked;
-
-            const maxDurationMs = Math.max(audioSec, visualSec, voiceCount * 2) * 1000;
-
-            const c1 = document.getElementById(`warn${tierLevel}Color1`).value;
-            const c2 = document.getElementById(`warn${tierLevel}Color2`).value;
-            document.documentElement.style.setProperty('--flicker-c1', c1);
-            document.documentElement.style.setProperty('--flicker-c2', c2);
-
-            if (playAudio) runCustomBeep(audioSec * 1000, volPct);
-            
-            if (playVisual) {
-                document.body.classList.add('flickering-active');
-                if (visualTimeout) clearTimeout(visualTimeout);
-                visualTimeout = setTimeout(() => {
-                    document.body.classList.remove('flickering-active');
-                    document.body.style.backgroundColor = "#0b0f19";
-                }, visualSec * 1000);
-            }
-            
-            if (playVoice) {
-                for (let i = 0; i < voiceCount; i++) {
-                    runCustomSpeech(phrase, volPct);
-                }
-            }
-
-            setTimeout(() => { stopAllAlerts(); currentlyThrottledAlarmZone = 0; }, maxDurationMs);
-        }
-
-        // Audio node sound wave driver oscillators
-        function runCustomBeep(durationMs, volume) {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                activeOscillator = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
-                activeOscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
-                activeOscillator.type = 'triangle'; activeOscillator.frequency.setValueAtTime(660, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(volume * 0.4, audioCtx.currentTime); activeOscillator.start();
-                audioTimeout = setTimeout(() => { if (activeOscillator) { activeOscillator.stop(); activeOscillator = null; } }, durationMs);
-            } catch(e){}
-        }
-
-        // Core synthesizer computerized text to speech worker
-        function runCustomSpeech(phrase, volume) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(phrase);
-                utterance.volume = volume; utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        // Rest alarm output channel triggers
         function triggerActiveAlerts() {
             if (document.getElementById('modeAudio').checked) runAudioAlert((parseInt(document.getElementById('audioDuration').value, 10) || 3) * 1000);
             if (document.getElementById('modeVisual').checked) runVisualAlert((parseInt(document.getElementById('visualDuration').value, 10) || 3) * 1000);
@@ -1065,7 +680,8 @@
                 const voiceVolLevel = parseInt(document.getElementById('voiceVolume').value, 10) / 100;
                 for (let i = 0; i < repeatCount; i++) {
                     const utterance = new SpeechSynthesisUtterance(customText);
-                    utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = voiceVolLevel; utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance);
+                    utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = voiceVolLevel; utterance.lang = 'en-US'; 
+                    window.speechSynthesis.speak(utterance);
                 }
             }
         }
