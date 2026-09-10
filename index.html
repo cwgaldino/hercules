@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #157717;
+            background-color: #771515;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -432,6 +432,8 @@
             applyBlockRules2();
             applyScrollRules(true); 
 
+            applyPullRefreshBlock(); 
+
             // these prevents the text area to become too small when keyboard is on
             const textarea = document.getElementById('workoutNotes');
             const graph = document.querySelector('.graph-section');
@@ -534,7 +536,7 @@
         }
     </script>
     <script>
-        function jumpToWorkoutSection2() {
+        function jumpToWorkoutSection() {
             const selector = document.getElementById('sectionSelector');
             const textarea = document.getElementById('workoutNotes');
             
@@ -576,8 +578,11 @@
             
             // 5. Scroll the textarea smoothly to the top boundary
             textarea.scrollTop = exactScrollTop;
+            
+            //
+            textarea.blur(); 
         }
-        function jumpToWorkoutSection() {
+        function jumpToWorkoutSection2() {
             const selector = document.getElementById('sectionSelector');
             const textarea = document.getElementById('workoutNotes');
             
