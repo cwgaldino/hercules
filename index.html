@@ -250,21 +250,21 @@
                 <div class="toggle-item">
                     <span style="font-size: 6px;">Buttons</span>
                     <label class="switch">
-                        <input type="checkbox" id="blockToggle" onchange="applyBlockRules1()">
+                        <input type="checkbox" id="buttonToggle" checked onchange="applyBlockRules1()">
                         <span class="slider-switch"></span>
                     </label>
                 </div>
                 <div class="toggle-item">
                     <span style="font-size: 6px;">Text</span>
                     <label class="switch">
-                        <input type="checkbox" id="scrollToggle" onchange="applyBlockRules2()">
+                        <input type="checkbox" id="textToggle" checked onchange="applyBlockRules2()">
                         <span class="slider-switch"></span>
                     </label>
                 </div>
                 <div class="toggle-item">
                     <span style="font-size: 6px;">Scroll</span>
                     <label class="switch">
-                        <input type="checkbox" id="scrollToggle" onchange="applyScrollRules()">
+                        <input type="checkbox" id="scrollToggle" checked onchange="applyScrollRules()">
                         <span class="slider-switch"></span>
                     </label>
                 </div>
@@ -535,7 +535,7 @@
         }
 
         function applyBlockRules1() {
-            const isBlocked = !document.getElementById('blockToggle').checked;
+            const isBlocked = !document.getElementById('buttonToggle').checked;
             document.getElementById('settingsBtn').disabled = isBlocked;
             document.getElementById('textBoxBtn').disabled = isBlocked;
             document.getElementById('connectBtn').disabled = isBlocked;
@@ -544,7 +544,7 @@
         }
 
         function applyBlockRules2() {
-            const isBlocked = !document.getElementById('blockToggle').checked;
+            const isBlocked = !document.getElementById('textToggle').checked;
             document.getElementById('workoutNotes').readOnly = isBlocked;
         }
 
@@ -552,7 +552,7 @@
         //     document.getElementById('workoutNotes').style.overflowY = document.getElementById('scrollToggle').checked ? 'auto' : 'hidden';
         // }
         function applyScrollRules() {
-            const textarea = !document.getElementById('workoutNotes');
+            const textarea = document.getElementById('workoutNotes');
             const isScrollAllowed = document.getElementById('scrollToggle').checked;
 
             if (isScrollAllowed) {
