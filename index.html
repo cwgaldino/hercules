@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #77151c;
+            background-color: #157717;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -246,6 +246,7 @@
             placeholder="Use # to name sessions (e.g., # Chest)&#10;Write your workout routine here..." 
             oninput="handleNotesInput()" 
             onclick="handleTextareaTap(event)"
+            onfocus="handleTextareaFocus(event)"
             style="font-size: 16px;">
         </textarea>
         </div>
@@ -533,7 +534,7 @@
         }
     </script>
     <script>
-        function jumpToWorkoutSection() {
+        function jumpToWorkoutSection2() {
             const selector = document.getElementById('sectionSelector');
             const textarea = document.getElementById('workoutNotes');
             
@@ -574,6 +575,51 @@
             document.body.removeChild(mirror);
             
             // 5. Scroll the textarea smoothly to the top boundary
+            textarea.scrollTop = exactScrollTop;
+        }
+        function jumpToWorkoutSection() {
+            const selector = document.getElementById('sectionSelector');
+            const textarea = document.getElementById('workoutNotes');
+            
+            if (!selector.value || selector.value === "") return;
+            
+            const targetCharPosition = parseInt(selector.value, 10);
+            
+            // 1. SILENT FOCUS BYPASS: Tell the browser NOT to show a virtual keyboard
+            const originalInputMode = textarea.inputMode; // Save original state
+            textarea.inputMode = 'none'; 
+            
+            // 2. Perform focus and move cursor quietly
+            textarea.focus(); 
+            textarea.setSelectionRange(targetCharPosition, targetCharPosition);
+            
+            // 3. Immediately restore the input mode so typing still works if they click it later
+            setTimeout(() => {
+                textarea.inputMode = originalInputMode || '';
+            }, 50);
+            
+            // 4. Create a temporary element to mimic the textarea layout structure
+            const textUpToTarget = textarea.value.substring(0, targetCharPosition);
+            const mirror = document.createElement('div');
+            const style = window.getComputedStyle(textarea);
+            
+            mirror.style.whiteSpace = 'pre-wrap';
+            mirror.style.wordWrap = 'break-word';
+            mirror.style.position = 'absolute';
+            mirror.style.visibility = 'hidden';
+            mirror.style.width = style.width;
+            mirror.style.font = style.font;
+            mirror.style.padding = style.padding;
+            mirror.style.boxSizing = style.boxSizing;
+            
+            mirror.textContent = textUpToTarget;
+            document.body.appendChild(mirror);
+            
+            // 5. Read the exact height calculation up to the target line
+            const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0) - parseFloat(style.paddingBottom || 0);
+            document.body.removeChild(mirror);
+            
+            // 6. Scroll the text view smoothly to the top boundary
             textarea.scrollTop = exactScrollTop;
         }
 
@@ -640,6 +686,15 @@
             if (!isTextSliderOn) {
                 e.preventDefault();  // Stops the blue selection outline from appearing
                 e.target.blur();     // Forcibly removes any focus from the element
+            }
+        }
+        function handleTextareaFocus(e) {
+            const isTextSliderOn = document.getElementById('textToggle').checked;
+            
+            // Catch ANY focus attempt (click, tab, or touch) when the slider is OFF
+            if (!isTextSliderOn) {
+                e.preventDefault(); 
+                e.target.blur(); // Instantly reject the focus, preventing the blue border
             }
         }
 
