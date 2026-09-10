@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #15773e;
+            background-color: #677715;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -311,18 +311,18 @@
         <div class="modal-content">
             <h3>Settings</h3>
             <div class="setting-section">
+                <h4>Browser options</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-label"><input type="checkbox" id="blockPullRefresh" onchange="applyPullRefreshBlock()"><span>Prevent Drag-to-Refresh</span></label>
+                </div>
+            </div>
+
+            <div class="setting-section">
                 <h4>Alert Modes</h4>
                 <div class="checkbox-group">
                     <label class="checkbox-label"><input type="checkbox" id="modeAudio" checked onchange="triggerStateSave()"><span>Audio Alerts (Beep)</span></label>
                     <label class="checkbox-label"><input type="checkbox" id="modeVisual" onchange="triggerStateSave()"><span>Visual Alerts (Flicker)</span></label>
                     <label class="checkbox-label"><input type="checkbox" id="modeVoice" onchange="triggerStateSave()"><span>Voice Alerts</span></label>
-                </div>
-            </div>
-
-            <div class="setting-section">
-                <h4>Browser options</h4>
-                <div class="checkbox-group">
-                    <label class="checkbox-label"><input type="checkbox" id="blockPullRefresh" checked onchange="applyPullRefreshBlock()"><span>Prevent Drag-to-Refresh</span></label>
                 </div>
             </div>
 
@@ -420,6 +420,10 @@
             selectPreset(activePresetIndex);
             parseWorkoutHeaders();
             initHistoryCanvasGrid();
+
+            applyBlockRules1();
+            applyBlockRules2();
+            applyScrollRules(true); 
 
             // these prevents the text area to become too small when keyboard is on
             const textarea = document.getElementById('workoutNotes');
@@ -526,12 +530,45 @@
         function jumpToWorkoutSection() {
             const selector = document.getElementById('sectionSelector');
             const textarea = document.getElementById('workoutNotes');
-            if (selector.value === "") return;
+            
+            if (!selector.value || selector.value === "") return;
+            
             const targetCharPosition = parseInt(selector.value, 10);
-            textarea.focus(); textarea.setSelectionRange(targetCharPosition, targetCharPosition);
+            
+            // 1. Move cursor to the target position
+            textarea.focus(); 
+            textarea.setSelectionRange(targetCharPosition, targetCharPosition);
+            
+            // 2. Create a temporary element to mimic the textarea structure
+            // This lets us measure the exact pixel location of the text up to that character
             const textUpToTarget = textarea.value.substring(0, targetCharPosition);
-            const lineBreaksCount = textUpToTarget.split('\n').length - 1;
-            textarea.scrollTop = lineBreaksCount * 19.2;
+            
+            // 3. Create a mirror element to measure exact height layout shifts
+            const mirror = document.createElement('div');
+            const style = window.getComputedStyle(textarea);
+            
+            // Copy text formatting layout rules from your textarea
+            mirror.style.whiteSpace = 'pre-wrap';
+            mirror.style.wordWrap = 'break-word';
+            mirror.style.position = 'absolute';
+            mirror.style.visibility = 'hidden';
+            mirror.style.width = style.width;
+            mirror.style.font = style.font;
+            mirror.style.padding = style.padding;
+            mirror.style.boxSizing = style.boxSizing;
+            
+            // Set text up to target and append a dummy marker text block
+            mirror.textContent = textUpToTarget;
+            document.body.appendChild(mirror);
+            
+            // 4. Read the exact height calculation up to the line
+            const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0) - parseFloat(style.paddingBottom || 0);
+            
+            // Clean up the temporary mirror element
+            document.body.removeChild(mirror);
+            
+            // 5. Scroll the textarea smoothly to the top boundary
+            textarea.scrollTop = exactScrollTop;
         }
 
         function applyBlockRules1() {
@@ -551,9 +588,10 @@
         // function applyScrollRules() {
         //     document.getElementById('workoutNotes').style.overflowY = document.getElementById('scrollToggle').checked ? 'auto' : 'hidden';
         // }
-        function applyScrollRules() {
+        let activeNotesScrollBlocker = null;
+        function applyScrollRules(isStartupOn) {
             const textarea = document.getElementById('workoutNotes');
-            const isScrollAllowed = document.getElementById('scrollToggle').checked;
+            const isScrollAllowed = isStartupOn === true ? true : document.getElementById('scrollToggle').checked;
 
             if (isScrollAllowed) {
                 // 1. If switch is ON: Allow scrolling, show scrollbar, and remove touch blocker
