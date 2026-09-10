@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #157744;
+            background-color: #774b15;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -404,6 +404,19 @@
             selectPreset(activePresetIndex);
             parseWorkoutHeaders();
             initHistoryCanvasGrid();
+
+            // these prevents the text area to become too small when keyboard is on
+            const textarea = document.getElementById('workoutNotes');
+            const graph = document.querySelector('.graph-section');
+            const bottom = document.querySelector('.bottom-section');
+            textarea.addEventListener('focus', () => {
+                graph.style.display = 'none';
+                bottom.style.display = 'none';
+            });
+            textarea.addEventListener('blur', () => {
+                graph.style.display = '';
+                bottom.style.display = '';
+            });
         });
 
         function handleNotesInput() {
