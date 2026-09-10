@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #1708e4;
+            background-color: #1a2eca;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -693,11 +693,6 @@
         
         function handleTextareaTap(e) {
             const isTextSliderOn = document.getElementById('textToggle').checked;
-            document.body.style.backgroundColor = "#fbf8fa"; 
-            const textarea = document.getElementById('workoutNotes');
-            // 1. GET the current height (includes padding and borders in pixels)
-            const currentHeight = textarea.offsetHeight;
-            textarea.style.height = "50px"; 
 
             // If text editing is turned OFF, kill the focus state entirely
             if (!isTextSliderOn) {
@@ -707,7 +702,7 @@
         }
         function handleTextareaFocus(e) {
             const isTextSliderOn = document.getElementById('textToggle').checked;
-            
+
             // Catch ANY focus attempt (click, tab, or touch) when the slider is OFF
             if (!isTextSliderOn) {
                 e.preventDefault(); 
