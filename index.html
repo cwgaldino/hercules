@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #5f1577;
+            background-color: #157715;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -239,7 +239,7 @@
         <div class="left-col">
             <!-- Dynamic Section Navigation Dropdown -->
             <select id="sectionSelector" class="section-dropdown" onchange="jumpToWorkoutSection()">
-                <option value="">-- Select Workout Session --</option>
+                <option value="">Select Workout Session</option>
             </select>
             <textarea id="workoutNotes" placeholder="Use # to name sessions (e.g., # Chest)&#10;Write your workout routine here..." oninput="handleNotesInput()"></textarea>
         </div>
@@ -248,14 +248,21 @@
             <!-- Compact Single-Row Switches Frame -->
             <div class="switch-row-container">
                 <div class="toggle-item">
-                    <span>Block</span>
+                    <span style="font-size: 7px;">Buttons</span>
                     <label class="switch">
-                        <input type="checkbox" id="blockToggle" onchange="applyBlockRules()">
+                        <input type="checkbox" id="blockToggle" onchange="applyBlockRules1()">
                         <span class="slider-switch"></span>
                     </label>
                 </div>
                 <div class="toggle-item">
-                    <span>Scroll</span>
+                    <span style="font-size: 7px;">Text</span>
+                    <label class="switch">
+                        <input type="checkbox" id="scrollToggle" onchange="applyBlockRules2()">
+                        <span class="slider-switch"></span>
+                    </label>
+                </div>
+                <div class="toggle-item">
+                    <span style="font-size: 7px;">Scroll</span>
                     <label class="switch">
                         <input type="checkbox" id="scrollToggle" onchange="applyScrollRules()">
                         <span class="slider-switch"></span>
@@ -527,14 +534,18 @@
             textarea.scrollTop = lineBreaksCount * 19.2;
         }
 
-        function applyBlockRules() {
-            const isBlocked = document.getElementById('blockToggle').checked;
-            document.getElementById('workoutNotes').readOnly = isBlocked;
+        function applyBlockRules1() {
+            const isBlocked = !document.getElementById('blockToggle').checked;
             document.getElementById('settingsBtn').disabled = isBlocked;
             document.getElementById('textBoxBtn').disabled = isBlocked;
             document.getElementById('connectBtn').disabled = isBlocked;
             document.getElementById('actionBtn1').disabled = isBlocked;
             document.getElementById('sectionSelector').disabled = isBlocked;
+        }
+
+        function applyBlockRules2() {
+            const isBlocked = !document.getElementById('blockToggle').checked;
+            document.getElementById('workoutNotes').readOnly = isBlocked;
         }
 
         function applyScrollRules() {
