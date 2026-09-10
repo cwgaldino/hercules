@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #771515;
+            background-color: #3e7715;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -64,7 +64,7 @@
             font-size: 16px;
             resize: none;
             box-sizing: border-box;
-            overflow-y: hidden;
+            overflow-y: auto;
             scroll-behavior: smooth;
         }
     </style>
@@ -423,6 +423,24 @@
         let bpmHistoryDataArray = [];
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Add this inside your page initialization block or script tag
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', () => {
+                    const textarea = document.getElementById('workoutNotes');
+                    
+                    // Only run adjustments if the user is actively focused on the text box
+                    if (document.activeElement === textarea) {
+                        // Smoothly scroll the page layout slightly downward 
+                        // to bring hidden elements underneath back into full view
+                        window.scrollTo({
+                            top: textarea.offsetTop - 10,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            }
+
+
             loadSavedState();
             selectPreset(activePresetIndex);
             parseWorkoutHeaders();
