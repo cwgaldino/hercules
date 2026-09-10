@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #677715;
+            background-color: #201577;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -241,7 +241,12 @@
             <select id="sectionSelector" class="section-dropdown" tabindex="-1" onchange="jumpToWorkoutSection()">
                 <option value="">Select Workout Session</option>
             </select>
-            <textarea id="workoutNotes" placeholder="Use # to name sessions (e.g., # Chest)&#10;Write your workout routine here..." oninput="handleNotesInput()" style="font-size: 16px;"></textarea>
+            <textarea 
+            id="workoutNotes" 
+            placeholder="Use # to name sessions (e.g., # Chest)&#10;Write your workout routine here..." 
+            oninput="handleNotesInput()" 
+            style="font-size: 16px;">
+        </textarea>
         </div>
         
         <div class="right-col">
@@ -289,6 +294,7 @@
             </div>
         </div>
     </div>
+
     <!-- Real-time Full Width History Chart Section Canvas -->
     <div class="graph-section">
         <canvas id="bpmHistoryCanvas" class="graph-canvas"></canvas>
@@ -302,7 +308,6 @@
             <button id="pBtn3" onclick="selectPreset(3)">90s</button>
             <button id="pBtn4" onclick="selectPreset(4)">120s</button>
         </div>
-
         <button id="restButton" class="btn-orange btn-rest-full" onclick="startRestCountdown()">Rest</button>
     </div>
 
@@ -580,9 +585,20 @@
             document.getElementById('sectionSelector').disabled = isBlocked;
         }
 
+        // function applyBlockRules2() {
+        //     const isBlocked = !document.getElementById('textToggle').checked;
+        //     document.getElementById('workoutNotes').readOnly = isBlocked;
+        // }
         function applyBlockRules2() {
+            const textarea = document.getElementById('workoutNotes');
             const isBlocked = !document.getElementById('textToggle').checked;
-            document.getElementById('workoutNotes').readOnly = isBlocked;
+            // Set the readOnly state
+            textarea.readOnly = isBlocked;
+            if (isBlocked) {
+                // Instantly strips focus away from the text box.
+                // This stops iOS from stretching the div to fill the screen length.
+                textarea.blur(); 
+            }
         }
 
         // function applyScrollRules() {
