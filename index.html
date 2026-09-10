@@ -238,7 +238,7 @@
     <div class="top-section">
         <div class="left-col">
             <!-- Dynamic Section Navigation Dropdown -->
-            <select id="sectionSelector" class="section-dropdown" onchange="jumpToWorkoutSection()">
+            <select id="sectionSelector" class="section-dropdown" tabindex="-1" onchange="jumpToWorkoutSection()">
                 <option value="">Select Workout Session</option>
             </select>
             <textarea id="workoutNotes" placeholder="Use # to name sessions (e.g., # Chest)&#10;Write your workout routine here..." oninput="handleNotesInput()"></textarea>
