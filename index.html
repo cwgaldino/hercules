@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #771524;
+            background-color: #15772a;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -302,7 +302,7 @@
     <!-- Settings Overlay Modal -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
-            <h3>Alert Preferences</h3>
+            <h3>Settings</h3>
             <div class="setting-section">
                 <h4>Alert Modes</h4>
                 <div class="checkbox-group">
@@ -313,7 +313,7 @@
             </div>
 
             <div class="setting-section">
-                <h4>aaaaa Modes</h4>
+                <h4>Browser options</h4>
                 <div class="checkbox-group">
                     <label class="checkbox-label"><input type="checkbox" id="blockPullRefresh" checked onchange="applyPullRefreshBlock()"><span>Prevent Drag-to-Refresh</span></label>
                 </div>
@@ -435,40 +435,50 @@
             const isChecked = document.getElementById('blockPullRefresh').checked;
             const value = isChecked ? 'none' : '';
 
-            // 1. Apply the standard CSS fallbacks
             document.documentElement.style.overscrollBehaviorY = value;
             document.body.style.overscrollBehaviorY = value;
 
-            // 2. iOS WebView Fix (for Bluefy / iOS Chrome / PWA wrappers)
             if (isChecked) {
-                // If checked and no active listener exists, create it
                 if (!activeTouchHandler) {
                     let lastTouchY = 0;
 
                     activeTouchHandler = function (e) {
-                        if (e.touches.length !== 1) return; // Only track single-finger scrolls
+                        if (e.touches.length !== 1) return;
+
+                        // FIX: Check if the user is touching a text box, textarea, or settings menu
+                        const target = e.target;
                         
-                        const touchY = e.touches[0].clientY;
+                        // 1. Always allow normal scrolling/typing inside inputs and textareas
+                        if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
+                            return; 
+                        }
+
+                        // 2. Check if they are touching an element that is meant to scroll internally
+                        // (Like your settings menu container). Change '.settings-menu' to match your actual CSS class/ID.
+                        const scrollableContainer = target.closest('.settings-menu, #settings-panel, .scrollable');
+                        if (scrollableContainer) {
+                            // If the internal container is scrolled down even a little bit, don't block it
+                            if (scrollableContainer.scrollTop > 0) {
+                                return;
+                            }
+                        }
+
+                        const touchY = e.touches[0].clientY; // Fixed to use proper array targeting
                         const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-                        // If the user is at the absolute top of the page and swiping DOWN
                         if (windowScrollTop <= 0 && touchY > lastTouchY) {
-                            // Prevent the native browser browser wrapper from pulling to refresh
                             if (e.cancelable) e.preventDefault(); 
                         }
                         lastTouchY = touchY;
                     };
 
-                    // We must set passive: false to allow e.preventDefault() to work
                     document.addEventListener('touchmove', activeTouchHandler, { passive: false });
                     
-                    // Track where the touch initially started
                     document.addEventListener('touchstart', (e) => {
                         if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
                     }, { passive: true });
                 }
             } else {
-                // If unchecked, completely clear out the iOS touch blocker
                 if (activeTouchHandler) {
                     document.removeEventListener('touchmove', activeTouchHandler);
                     activeTouchHandler = null;
