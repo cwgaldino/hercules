@@ -302,6 +302,14 @@
     <!-- Settings Overlay Modal -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
+            <h3>Browser Preferences</h3>
+            <div class="checkbox-group">
+                <label class="checkbox-label"><input type="checkbox" id="blockPullRefresh" checked onchange="applyPullRefreshBlock()"><span>Prevent Drag-to-Refresh</span></label>
+            </div>
+        </div>
+
+
+        <div class="modal-content">
             <h3>Alert Preferences</h3>
             <div class="setting-section">
                 <h4>Alert Modes</h4>
@@ -422,8 +430,12 @@
         
         // Trying to block refresh
         function applyPullRefreshBlock() {
-            document.documentElement.style.overscrollBehaviorY =
-                document.getElementById('blockPullRefresh').checked ? 'none' : '';
+            const isChecked = document.getElementById('blockPullRefresh').checked;
+            const value = isChecked ? 'contain' : ''; // 'contain' is safer than 'none'
+            
+            // Apply to both to guarantee it works across iOS and Android
+            document.documentElement.style.overscrollBehaviorY = value;
+            document.body.style.overscrollBehaviorY = value;
         }
 
         function handleNotesInput() {
