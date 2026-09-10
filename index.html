@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #3e7715;
+            background-color: #e4089b;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -18,6 +18,7 @@
             height: 100dvh;
             transition: background-color 0.1s ease;
             overscroll-behavior-y: none;
+            -webkit-overflow-scrolling: touch; 
         }
 
         /* Top Section: Two Columns */
@@ -35,9 +36,10 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            min-height: 0; 
+            min-width: 0;  
         }
-    </style>
-    <style>
+
         /* Dropdown Navigation Menu */
         .section-dropdown {
             width: 100%;
@@ -56,25 +58,29 @@
         textarea {
             width: 100%;
             flex: 1;
+            min-height: 0; 
+
             background: #161b26;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
             padding: 12px;
             font-size: 16px;
+            
             resize: none;
             box-sizing: border-box;
             overflow-y: auto;
             scroll-behavior: smooth;
         }
-    </style>
-    <style>
+
         /* Right Column: Interaction Buttons */
         .right-col {
             width: 140px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            flex-shrink: 0; 
+            min-height: 0; 
         }
 
         /* Compact Single-Row Switch Box */
@@ -423,24 +429,6 @@
         let bpmHistoryDataArray = [];
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Add this inside your page initialization block or script tag
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', () => {
-                    const textarea = document.getElementById('workoutNotes');
-                    
-                    // Only run adjustments if the user is actively focused on the text box
-                    if (document.activeElement === textarea) {
-                        // Smoothly scroll the page layout slightly downward 
-                        // to bring hidden elements underneath back into full view
-                        window.scrollTo({
-                            top: textarea.offsetTop - 10,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            }
-
-
             loadSavedState();
             selectPreset(activePresetIndex);
             parseWorkoutHeaders();
@@ -705,6 +693,8 @@
         
         function handleTextareaTap(e) {
             const isTextSliderOn = document.getElementById('textToggle').checked;
+            document.body.style.backgroundColor = "#fbf8fa"; 
+
             // If text editing is turned OFF, kill the focus state entirely
             if (!isTextSliderOn) {
                 e.preventDefault();  // Stops the blue selection outline from appearing
