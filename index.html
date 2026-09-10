@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 16px;
-            background-color: #157715;
+            background-color: #772915;
             /* background-color: #0b0f19; */
             color: #ffffff;
             box-sizing: border-box;
@@ -248,21 +248,21 @@
             <!-- Compact Single-Row Switches Frame -->
             <div class="switch-row-container">
                 <div class="toggle-item">
-                    <span style="font-size: 7px;">Buttons</span>
+                    <span style="font-size: 6px;">Buttons</span>
                     <label class="switch">
                         <input type="checkbox" id="blockToggle" onchange="applyBlockRules1()">
                         <span class="slider-switch"></span>
                     </label>
                 </div>
                 <div class="toggle-item">
-                    <span style="font-size: 7px;">Text</span>
+                    <span style="font-size: 6px;">Text</span>
                     <label class="switch">
                         <input type="checkbox" id="scrollToggle" onchange="applyBlockRules2()">
                         <span class="slider-switch"></span>
                     </label>
                 </div>
                 <div class="toggle-item">
-                    <span style="font-size: 7px;">Scroll</span>
+                    <span style="font-size: 6px;">Scroll</span>
                     <label class="switch">
                         <input type="checkbox" id="scrollToggle" onchange="applyScrollRules()">
                         <span class="slider-switch"></span>
@@ -548,9 +548,37 @@
             document.getElementById('workoutNotes').readOnly = isBlocked;
         }
 
+        // function applyScrollRules() {
+        //     document.getElementById('workoutNotes').style.overflowY = document.getElementById('scrollToggle').checked ? 'auto' : 'hidden';
+        // }
         function applyScrollRules() {
-            document.getElementById('workoutNotes').style.overflowY = document.getElementById('scrollToggle').checked ? 'auto' : 'hidden';
+            const textarea = !document.getElementById('workoutNotes');
+            const isScrollAllowed = document.getElementById('scrollToggle').checked;
+
+            if (isScrollAllowed) {
+                // 1. If switch is ON: Allow scrolling, show scrollbar, and remove touch blocker
+                textarea.style.overflowY = 'auto';
+                
+                if (activeNotesScrollBlocker) {
+                    textarea.removeEventListener('touchmove', activeNotesScrollBlocker);
+                    activeNotesScrollBlocker = null;
+                }
+            } else {
+                // 2. If switch is OFF: Lock scrolling, hide scrollbar, and intercept touches
+                textarea.style.overflowY = 'hidden';
+
+                if (!activeNotesScrollBlocker) {
+                    activeNotesScrollBlocker = function(e) {
+                        // If it's a multi-line box, stop the browser from scrolling inside it
+                        if (e.cancelable) e.preventDefault();
+                    };
+                    
+                    // passive: false is mandatory to let e.preventDefault() work
+                    textarea.addEventListener('touchmove', activeNotesScrollBlocker, { passive: false });
+                }
+            }
         }
+
 
         function applySelectionBoxVisibility() {
             document.getElementById('sectionSelector').style.display = document.getElementById('toggleSelectionBox').checked ? 'block' : 'none';
