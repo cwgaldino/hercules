@@ -6,44 +6,75 @@
     <title>Workout Tracker</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            margin: 0;
-            padding: 16px;
-            background-color: #0b0f19;
-            /* background-color: #0b0f19; */
-            color: #ffffff;
-            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;  /* Use the operating system's native UI font */
+            margin: 0;                      /* Remove the browser's default page margin */
+            padding: 10px;                  /* Add spacing between the window edge and the content */
+            background-color: #0b0f19;    /* Background color */
+            color: #ffffff;               /* Text color */
+            box-sizing: border-box;         /* Include padding and borders when calculating element sizes */
+            display: flex;                  /* Turns the body into a Flexbox container. All direct children become flex items */
+            flex-direction: column;         /* Stack flex child elements vertically (dvh = dynamic viewport height) */
+            height: 100dvh;                 /* Make the body fill the visible screen height */
+            transition: background-color 0.1s ease;  /* Smoothly animate background-color changes */
+            overscroll-behavior-y: none;    /* none = Disable pull-to-refresh and other vertical overscroll effects */
+            -webkit-overflow-scrolling: touch;  /* Enable smooth momentum scrolling on iOS */
+            gap: 10px;  /* gap between top and bottom panel */
+        }
+        .top {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+        .top-left {
             display: flex;
             flex-direction: column;
-            height: 100dvh;
-            transition: background-color 0.1s ease;
-            overscroll-behavior-y: none;
-            -webkit-overflow-scrolling: touch; 
+            flex-grow: 1;  /* fill remaining width */
+            gap: 5px;
+            /* margin-bottom: 12px; */
+            /* width: 70%; */
         }
-
-        /* Top Section: Two Columns */
-        .top-section {
+        .top-right {
             display: flex;
-            gap: 16px;
-            flex: 1;
-            min-height: 0;
-            margin-bottom: 12px;
+            flex-direction: column;
+            width: 100px;
+            gap: 10px;
+            /* width: 30%; */
+            flex-shrink: 0;  /* Do not shrink this element below its natural or specified size */
         }
-
-        /* Left Column: Input Box & Navigation */
-        .left-col {
+        textarea {
+            width: 100%;
             flex: 1;
+            min-height: 0; 
+
+            background: #161b26;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            
+            resize: none;
+            box-sizing: border-box;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .bottom {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            min-height: 0; 
-            min-width: 0;  
+            background: #161b26; 
+            border: 1px solid #334155;
+            padding: 10px; 
+            border-radius: 12px; 
         }
-
-        /* Dropdown Navigation Menu */
-        .section-dropdown {
+    </style>
+    <!-- ----------------------------------------------------------------------
+    CUSTOM DROPDOWN
+    ----------------------------------------------------------------------- -->
+    <style>
+        .dropdown1 {
             width: 100%;
-            padding: 12px;
+            padding: 5px;
             background: #161b26;
             border: 1px solid #334155;
             border-radius: 12px;
@@ -54,57 +85,22 @@
             outline: none;
             box-sizing: border-box;
         }
-
-        textarea {
-            width: 100%;
-            flex: 1;
-            min-height: 0; 
-
-            background: #161b26;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            color: white;
-            padding: 12px;
-            font-size: 16px;
-            
-            resize: none;
-            box-sizing: border-box;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-
-        /* Right Column: Interaction Buttons */
-        .right-col {
-            width: 140px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex-shrink: 0; 
-            min-height: 0; 
-        }
-
-        /* Compact Single-Row Switch Box */
-        .switch-row-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #161b26;
-            padding: 8px 10px;
-            border-radius: 12px;
-            border: 1px solid #273142;
-            gap: 8px;
-        }
-
-        .toggle-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            gap: 4px;
-        }
     </style>
+    <!-- ----------------------------------------------------------------------
+    CUSTOM SWITCHES
+    ----------------------------------------------------------------------- -->
     <style>
-        .toggle-item span {
+        /* The switch box row (this will hold multiple switches) */
+        .horizontal-switch-box {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            /* background: #161b26; */
+            /* padding: 4px 10px; */
+            /* border-radius: 12px; */
+            /* border: 1px solid #273142; */
+            gap: 8px;
+
             font-size: 10px;
             font-weight: 800;
             color: #94a3b8;
@@ -112,835 +108,174 @@
             letter-spacing: 0.5px;
         }
 
-        /* Small Custom Toggle Switches */
+        /* The switch - the box around the slider */
         .switch {
             position: relative;
             display: inline-block;
             width: 34px;
             height: 18px;
         }
-
-        .switch input { opacity: 0; width: 0; height: 0; }
-
+        /* Hide default HTML checkbox */
+        .switch input {opacity: 0; width: 0; height: 0}
+        /* The slider */
         .slider-switch {
             position: absolute; cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: #2c354a; transition: .2s; border-radius: 18px;
         }
-
         .slider-switch:before {
             position: absolute; content: "";
             height: 12px; width: 12px; left: 3px; bottom: 3px;
             background-color: white; transition: .2s; border-radius: 50%;
         }
-
         input:checked + .slider-switch { background-color: #34c759; }
         input:checked + .slider-switch:before { transform: translateX(16px); }
     </style>
+    <!-- ----------------------------------------------------------------------
+    CUSTOM BUTTONS
+    ----------------------------------------------------------------------- -->
     <style>
         /* Global Button Styles */
         button {
-            padding: 14px; border: none; border-radius: 12px;
-            font-size: 15px; font-weight: bold; cursor: pointer;
-            color: white; transition: opacity 0.2s;
+            padding: 14px; 
+            border: none; 
+            border-radius: 12px;
+            font-size: 15px; 
+            font-weight: bold; 
+            cursor: pointer;
+            color: white; 
+            transition: opacity 0.2s;
         }
-
         button:active { opacity: 0.7; }
         button:disabled { background-color: #1a202c !important; color: #4a5568 !important; cursor: not-allowed; opacity: 0.6; }
 
-        .btn-blue { background-color: #007aff; }
-        .btn-gray { background-color: #2c354a; color: #cbd5e1; }
-        .btn-orange { background-color: #ff9500; }
-        .btn-green { background-color: #34c759; }
+        .button1 { background-color: #2c354a; color: #cbd5e1; }
+        .button2 { background-color: #34c759; }
+        .button3 { background-color: #ff9500; }
 
-        /* Heart Rate Visual Box */
-        .hr-container {
-            background-color: #161b26;
-            border: 1px solid #273142;
-            border-radius: 12px;
-            padding: 8px;
-            text-align: center;
+        .horizontal-button-box {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-evenly;
-            gap: 2px;
-            flex-grow: 1;
+            flex-direction: row;
+            gap: 10px;
         }
-    </style>
-    <style>
-        .hr-value-row { display: flex; align-items: center; justify-content: center; gap: 4px; }
-        .hr-value { font-size: 34px; font-weight: 800; color: #ff3b30; font-variant-numeric: tabular-nums; line-height: 1; }
-        
-        .heart-icon { font-size: 16px; color: #ff3b30; display: inline-block; transition: transform 0.1s ease; }
-        .heart-pulse { animation: heartBeatEffect 0.6s infinite alternate ease-in-out; }
-        @keyframes heartBeatEffect { 0% { transform: scale(1); } 100% { transform: scale(1.25); } }
-
-        /* Small Clock Dashboard Display */
-        .clock-sub-box { display: flex; flex-direction: column; width: 100%; border-top: 1px solid #232d3f; padding-top: 4px; gap: 2px; text-align: left; }
-        .clock-data-row { display: flex; justify-content: space-between; font-size: 11px; font-variant-numeric: tabular-nums; }
-        .clock-label { font-weight: bold; color: #64748b; text-transform: uppercase; }
-        .clock-time { color: #cbd5e1; font-weight: 600; }
-
-        /* Full Width Real-time Canvas Graph Module */
-        .graph-section { width: 100%; height: 90px; background-color: #161b26; border: 1px solid #273142; border-radius: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
-        .graph-canvas { width: 100%; height: 100%; display: block; }
-
-        /* Bottom Section: Rest Timers */
-        .bottom-section { background: #161b26; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .timer-presets { display: flex; gap: 8px; }
-        .timer-presets button { flex: 1; padding: 12px; font-size: 14px; background-color: #202736; border: 2px solid transparent; }
-        .timer-presets button.selected-preset { border-color: #007aff; background-color: #007aff; }
-
-        .btn-rest-full { width: 100%; padding: 18px; font-size: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-    </style>
-    <style>
-        /* Modals Overlay Styling Rules Framework */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; z-index: 1000;
+        .horizontal-button-box button { 
+            flex: 1;  /* expand buttons */
         }
 
-        .modal-content {
-            background: #161b26; padding: 24px; border-radius: 20px; width: 310px;
-            max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155;
-        }
-
-        .modal-content h3 { margin-top: 0; margin-bottom: 20px; color: #cbd5e1; border-bottom: 1px solid #334155; padding-bottom: 10px; }
-        .setting-section { margin-bottom: 20px; }
-        .setting-section h4 { margin: 0 0 10px 0; font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
-        .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; }
-        .checkbox-label input { width: 18px; height: 18px; accent-color: #007aff; }
-
-        .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
-        .input-row input[type="number"], .input-row input[type="text"] {
-            padding: 6px; background: #0b0f19; border: 1px solid #334155; border-radius: 6px; color: white; font-size: 14px;
-        }
-        .input-row input[type="number"] { width: 60px; text-align: center; }
-        .input-row input[type="text"] { width: 140px; }
-
-        .slider-block { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-        .slider-label-row { display: flex; justify-content: space-between; font-size: 13px; color: #cbd5e1; }
-        .slider-block input[type="range"] { width: 100%; accent-color: #007aff; cursor: pointer; }
-
-        .color-pickers { display: flex; gap: 12px; align-items: center; }
-        .color-picker-wrapper { display: flex; align-items: center; gap: 6px; font-size: 13px; }
-        input[type="color"] { border: none; width: 32px; height: 32px; border-radius: 50%; background: none; cursor: pointer; }
-
-        .file-input-label {
-            display: block; text-align: center; padding: 14px; background-color: #2c354a; 
-            border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 10px;
-        }
-
-        @keyframes customFlicker { 0%, 49% { background-color: var(--flicker-c1); } 50%, 100% { background-color: var(--flicker-c2); } }
-        .flickering-active { animation: customFlicker 0.2s infinite; }
     </style>
 </head>
 <body>
+    <!-- ----------------------------------------------------------------------
+    TOP PANEL 
+    ----------------------------------------------------------------------- -->
+    <div class="top">
+        <div class="top-left">
 
-    <!-- Top Section App Workspace -->
-    <div class="top-section">
-        <div class="left-col">
-            <!-- Dynamic Section Navigation Dropdown -->
-            <select id="sectionSelector" class="section-dropdown" tabindex="-1" onchange="jumpToWorkoutSection()">
+            <div class="horizontal-switch-box">
+                <span>Text</span>
+                <label class="switch">
+                    <input type="checkbox" id="textToggle" checked>
+                    <span class="slider-switch"></span>
+                </label>
+
+                <span>Scroll</span>
+                <label class="switch">
+                    <input type="checkbox" id="scrollToggle" checked>
+                    <span class="slider-switch"></span>
+                </label>
+            </div>
+
+            <select id="dropdown" class="dropdown1" tabindex="-1">
                 <option value="">Select Workout Session</option>
             </select>
-            <textarea 
-            id="workoutNotes" 
-            placeholder="Use # to name sessions (e.g., # Chest)&#10;Write your workout routine here..." 
-            oninput="handleNotesInput()" 
-            onclick="handleTextareaTap(event)"
-            onfocus="handleTextareaFocus(event)"
-            style="font-size: 16px;">
-        </textarea>
+            <textarea id="textbox"></textarea>
         </div>
-        
-        <div class="right-col">
-            <!-- Compact Single-Row Switches Frame -->
-            <div class="switch-row-container">
-                <div class="toggle-item">
-                    <span style="font-size: 6px;">Buttons</span>
-                    <label class="switch">
-                        <input type="checkbox" id="buttonToggle" checked onchange="applyBlockRules1()">
-                        <span class="slider-switch"></span>
-                    </label>
-                </div>
-                <div class="toggle-item">
-                    <span style="font-size: 6px;">Text</span>
-                    <label class="switch">
-                        <input type="checkbox" id="textToggle" checked onchange="applyBlockRules2()">
-                        <span class="slider-switch"></span>
-                    </label>
-                </div>
-                <div class="toggle-item">
-                    <span style="font-size: 6px;">Scroll</span>
-                    <label class="switch">
-                        <input type="checkbox" id="scrollToggle" checked onchange="applyScrollRules()">
-                        <span class="slider-switch"></span>
-                    </label>
-                </div>
+        <div class="top-right">
+
+            <div class="horizontal-switch-box">
+                <span>Buttons</span>
+                <label class="switch">
+                    <input type="checkbox" id="textToggle" checked>
+                    <span class="slider-switch"></span>
+                </label>
             </div>
 
-            <button id="settingsBtn" class="btn-gray" onclick="toggleModal('settingsModal', true)">⚙️ Settings</button>
-            <button id="textBoxBtn" class="btn-gray" onclick="toggleModal('textBoxModal', true)">📝 Text Box</button>
-            <button class="btn-blue" id="connectBtn" onclick="connectPolar()">Connect HR</button>
-            <button class="btn-gray" id="actionBtn1">Action 1</button>
-            
-            <!-- Dynamic Heart Rate Workspace -->
-            <div class="hr-container">
-                <div class="hr-value-row">
-                    <div id="hrDisplayValue" class="hr-value">--</div>
-                    <div id="heartIconElement" class="heart-icon">❤️</div>
-                </div>
-                
-                <div class="clock-sub-box">
-                    <div class="clock-data-row"><span class="clock-label">Start:</span><span id="lblStartTime" class="clock-time">--:--</span></div>
-                    <div class="clock-data-row"><span class="clock-label">Time:</span><span id="lblElapsedTime" class="clock-time">00:00</span></div>
-                </div>
-            </div>
+            <button id="button-settings" class="button1">⚙️</button>
+            <button id="button-hr"       class="button1">❤️</button>
+            <button id="button-timer"    class="button1">⏰</button>
+
+            <textarea id="textbox2"></textarea>
         </div>
     </div>
 
-    <!-- Real-time Full Width History Chart Section Canvas -->
-    <div class="graph-section">
-        <canvas id="bpmHistoryCanvas" class="graph-canvas"></canvas>
-    </div>
-
-    <!-- Bottom Section Dashboard Panel -->
-    <div class="bottom-section">
-        <div class="timer-presets" id="presetsContainer">
-            <button id="pBtn1" onclick="selectPreset(1)">40s</button>
-            <button id="pBtn2" onclick="selectPreset(2)">60s</button>
-            <button id="pBtn3" onclick="selectPreset(3)">90s</button>
-            <button id="pBtn4" onclick="selectPreset(4)">120s</button>
+    <!-- ----------------------------------------------------------------------
+    BOTTOM PANEL 
+    ----------------------------------------------------------------------- -->
+    <div class="bottom">
+        <div class="horizontal-button-box">
+            <button id="button-preset1" class="button1" onclick="selectPreset(1)">40 s</button>
+            <button id="button-preset2" class="button1" onclick="selectPreset(2)">60 s</button>
+            <button id="button-preset3" class="button1" onclick="selectPreset(3)">90 s</button>
+            <button id="button-preset4" class="button1" onclick="selectPreset(4)">120 s</button>
         </div>
-        <button id="restButton" class="btn-orange btn-rest-full" onclick="startRestCountdown()">Rest</button>
+        <button id="button-rest" class="button3">Rest</button>
     </div>
 
-    <!-- Settings Overlay Modal -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <h3>Settings</h3>
-            <div class="setting-section">
-                <h4>Browser options</h4>
-                <div class="checkbox-group">
-                    <label class="checkbox-label"><input type="checkbox" id="blockPullRefresh" onchange="applyPullRefreshBlock()"><span>Prevent Drag-to-Refresh</span></label>
-                </div>
-            </div>
-
-            <div class="setting-section">
-                <h4>Alert Modes</h4>
-                <div class="checkbox-group">
-                    <label class="checkbox-label"><input type="checkbox" id="modeAudio" checked onchange="triggerStateSave()"><span>Audio Alerts (Beep)</span></label>
-                    <label class="checkbox-label"><input type="checkbox" id="modeVisual" onchange="triggerStateSave()"><span>Visual Alerts (Flicker)</span></label>
-                    <label class="checkbox-label"><input type="checkbox" id="modeVoice" onchange="triggerStateSave()"><span>Voice Alerts</span></label>
-                </div>
-            </div>
-
-            <div class="setting-section">
-                <h4>Voice Alert Options</h4>
-                <div class="input-row"><label for="voicePhrase">Voice Phrase:</label><input type="text" id="voicePhrase" value="Rest over" oninput="triggerStateSave()"></div>
-            </div>
-            <div class="setting-section">
-                <h4>Volume Controls</h4>
-                <div class="slider-block">
-                    <div class="slider-label-row"><label>Beep Vol:</label><span id="lblBeepVol">50%</span></div>
-                    <input type="range" id="beepVolume" min="0" max="100" value="50" oninput="document.getElementById('lblBeepVol').innerText = this.value + '%'; triggerStateSave();">
-                </div>
-                <div class="slider-block" style="margin-top: 10px;">
-                    <div class="slider-label-row"><label>Voice Vol:</label><span id="lblVoiceVol">100%</span></div>
-                    <input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="document.getElementById('lblVoiceVol').innerText = this.value + '%'; triggerStateSave();">
-                </div>
-            </div>
-            <div class="setting-section">
-                <h4>Independent Durations</h4>
-                <div class="input-row"><label for="audioDuration">Audio (s):</label><input type="number" id="audioDuration" value="3" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label for="visualDuration">Visual (s):</label><input type="number" id="visualDuration" value="3" min="1" max="10" oninput="triggerStateSave()"></div>
-                <div class="input-row"><label for="voiceDuration">Voice Count:</label><input type="number" id="voiceDuration" value="1" min="1" max="5" oninput="triggerStateSave()"></div>
-            </div>
-            <div class="setting-section">
-                <h4>Preset Setup (10s - 300s)</h4>
-                <div class="slider-block">
-                    <div class="slider-label-row"><span>Preset 1:</span><span id="lblCfg1">40s</span></div>
-                    <input type="range" id="cfgPreset1" min="10" max="300" value="40" oninput="updateSliderLabel(1, this.value)">
-                </div>
-                <div class="slider-block">
-                    <div class="slider-label-row"><span>Preset 2:</span><span id="lblCfg2">60s</span></div>
-                    <input type="range" id="cfgPreset2" min="10" max="300" value="60" oninput="updateSliderLabel(2, this.value)">
-                </div>
-                <div class="slider-block">
-                    <div class="slider-label-row"><span>Preset 3:</span><span id="lblCfg3">90s</span></div>
-                    <input type="range" id="cfgPreset3" min="10" max="300" value="90" oninput="updateSliderLabel(3, this.value)">
-                </div>
-                <div class="slider-block">
-                    <div class="slider-label-row"><span>Preset 4:</span><span id="lblCfg4">120s</span></div>
-                    <input type="range" id="cfgPreset4" min="10" max="300" value="120" oninput="updateSliderLabel(4, this.value)">
-                </div>
-            </div>
-            <div class="setting-section">
-                <h4>Flicker Palette</h4>
-                <div class="color-pickers">
-                    <div class="color-picker-wrapper"><input type="color" id="color1" value="#ffffff" onchange="triggerStateSave()"><span>1</span></div>
-                    <div class="color-picker-wrapper"><input type="color" id="color2" value="#ff3b30" onchange="triggerStateSave()"><span>2</span></div>
-                </div>
-            </div>
-            <button class="btn-green" style="width:100%; margin-bottom: 10px;" onclick="triggerTestAlert()">⚡ Test Alert</button>
-            <button class="btn-blue" style="width:100%;" onclick="toggleModal('settingsModal', false)">Save & Close</button>
-        </div>
-    </div>
-
-    <!-- Text Box Actions Modal Component -->
-    <div class="modal" id="textBoxModal">
-        <div class="modal-content">
-            <h3>Text Box Options</h3>
-            <div class="setting-section">
-                <h4>Visibility & Storage</h4>
-                <div class="checkbox-group">
-                    <label class="checkbox-label"><input type="checkbox" id="toggleSelectionBox" checked onchange="applySelectionBoxVisibility(); triggerStateSave();"><span>Show Selection Dropdown</span></label>
-                    <label class="checkbox-label" style="color: #34c759; font-weight: bold;"><input type="checkbox" id="toggleLocalStorage" checked onchange="handleLocalStorageToggle()"><span>Auto-Save Data (Persistent Cache)</span></label>
-                </div>
-            </div>
-            <div class="setting-section">
-                <h4>File Management</h4>
-                <button class="btn-blue" style="width:100%; margin-bottom: 10px;" onclick="saveNotesToFile()">💾 Save Notes to File</button>
-                <label for="loadFileInput" class="file-input-label">📂 Load Text File</label>
-                <input type="file" id="loadFileInput" accept=".txt" style="display:none;" onchange="loadNotesFromFile(this)">
-            </div>
-            <button class="btn-blue" style="width:100%; margin-top: 10px;" onclick="toggleModal('textBoxModal', false)">Close</button>
-        </div>
-    </div>
+    
     <script>
-        let audioCtx = null;
-        let audioTimeout = null;
-        let visualTimeout = null;
-        let activeOscillator = null;
-        let countdownInterval = null;
-        let bleDeviceInstance = null;
-        
-        let currentPresets = { 1: 40, 2: 60, 3: 90, 4: 120 };
-        let activePresetIndex = 1; 
-        let timeRemainingSeconds = 40;
-        let isCountingDown = false;
+        // ====================================================================
+        // ELEMENTS
+        // ====================================================================
+        const elements = {
+            textbox: document.getElementById('textbox'),
+            };
 
-        let workoutStartTime = null;
-        let elapsedClockInterval = null;
-        let bpmHistoryDataArray = [];
+        // ====================================================================
+        // STATE
+        // ====================================================================
+        const defaultState = {
+            text: `Use # to name sessions (e.g., # Chest);
+            Write your workout routine here...`,
+            allowPullToRefresh: true,
+            darkMode: false,
+            largeKeyboard: true,
+            keepScreenAwake: false,
+        };
 
-        window.addEventListener('DOMContentLoaded', () => {
-            loadSavedState();
-            selectPreset(activePresetIndex);
-            parseWorkoutHeaders();
-            initHistoryCanvasGrid();
+        const currentState = {
+            ...defaultState,
+            ...JSON.parse(localStorage.getItem('currentState') || '{}')
+        };
 
-            applyBlockRules1();
-            applyBlockRules2();
-            applyScrollRules(true); 
+        function applyState() {
+            elements.textbox.value = currentState.text;
+        }
 
-            applyPullRefreshBlock(); 
+        function saveState() {
+            localStorage.setItem('currentState', JSON.stringify(currentState));
+        }
 
-            // these prevents the text area to become too small when keyboard is on
-            const textarea = document.getElementById('workoutNotes');
-            const graph = document.querySelector('.graph-section');
-            const bottom = document.querySelector('.bottom-section');
-            textarea.addEventListener('focus', () => {
-                graph.style.display = 'none';
-                bottom.style.display = 'none';
-            });
-            textarea.addEventListener('blur', () => {
-                graph.style.display = '';
-                bottom.style.display = '';
-            });
+
+        // ====================================================================
+        // EVENT LISTENERS 
+        // ====================================================================
+
+        // Not sure we need this one because we are always saving after each change
+        // window.addEventListener('beforeunload', () => {
+        //     saveState();
+        // });
+
+        // Save state when text changes
+        elements.textbox.addEventListener('input', () => {
+            currentState.text = elements.textbox.value;
+            saveState();
         });
-        
-        // Trying to block refresh
-        // Keep track of the active event listener function so we can cleanly remove it
-        let activeTouchHandler = null;
-        function applyPullRefreshBlock() {
-            const isChecked = document.getElementById('blockPullRefresh').checked;
-            const value = isChecked ? 'none' : '';
 
-            document.documentElement.style.overscrollBehaviorY = value;
-            document.body.style.overscrollBehaviorY = value;
+        // ====================================================================
+        // INITIALIZATION 
+        // ====================================================================
+        applyState()
 
-            if (isChecked) {
-                if (!activeTouchHandler) {
-                    let lastTouchY = 0;
-
-                    activeTouchHandler = function (e) {
-                        if (e.touches.length !== 1) return;
-
-                        // FIX: Check if the user is touching a text box, textarea, or settings menu
-                        const target = e.target;
-                        
-                        // 1. Always allow normal scrolling/typing inside inputs and textareas
-                        if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
-                            return; 
-                        }
-
-                        // 2. Check if they are touching an element that is meant to scroll internally
-                        // (Like your settings menu container). Change '.settings-menu' to match your actual CSS class/ID.
-                        // const scrollableContainer = target.closest('.modal, #settingsModal, .scrollable');
-                        const scrollableContent = target.closest('.modal-content');
-                        if (scrollableContainer) {
-                            // If the internal container is scrolled down even a little bit, don't block it
-                            if (scrollableContainer.scrollTop > 0) {
-                                return;
-                            }
-                        }
-
-                        const touchY = e.touches[0].clientY; // Fixed to use proper array targeting
-                        const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-                        // Only block if the main background page is at the absolute top and pulling down
-                        if (windowScrollTop <= 0 && touchY > lastTouchY) {
-                            if (e.cancelable) e.preventDefault(); 
-                        }
-                        lastTouchY = touchY;
-                    };
-
-                    document.addEventListener('touchmove', activeTouchHandler, { passive: false });
-                    
-                    document.addEventListener('touchstart', (e) => {
-                        if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
-                    }, { passive: true });
-                }
-            } else {
-                if (activeTouchHandler) {
-                    document.removeEventListener('touchmove', activeTouchHandler);
-                    activeTouchHandler = null;
-                }
-            }
-        }
-
-
-        function handleNotesInput() {
-            parseWorkoutHeaders();
-            triggerStateSave();
-        }
-
-        function parseWorkoutHeaders() {
-            const textarea = document.getElementById('workoutNotes');
-            const selector = document.getElementById('sectionSelector');
-            const lines = textarea.value.split('\n');
-            const currentSelectedValue = selector.value;
-            selector.innerHTML = '<option value="">-- Select Workout Session --</option>';
-            let characterCount = 0;
-            lines.forEach((line) => {
-                if (line.trim().startsWith('#')) {
-                    const cleanTitle = line.replace('#', '').trim();
-                    if (cleanTitle.length > 0) {
-                        const option = document.createElement('option');
-                        option.value = characterCount; option.textContent = line.trim();
-                        selector.appendChild(option);
-                    }
-                }
-                characterCount += line.length + 1;
-            });
-            selector.value = currentSelectedValue;
-        }
-    </script>
-    <script>
-        function jumpToWorkoutSection() {
-            const selector = document.getElementById('sectionSelector');
-            const textarea = document.getElementById('workoutNotes');
-            
-            if (!selector.value || selector.value === "") return;
-            
-            const targetCharPosition = parseInt(selector.value, 10);
-            
-            // 1. Move cursor to the target position
-            textarea.focus(); 
-            textarea.setSelectionRange(targetCharPosition, targetCharPosition);
-            
-            // 2. Create a temporary element to mimic the textarea structure
-            // This lets us measure the exact pixel location of the text up to that character
-            const textUpToTarget = textarea.value.substring(0, targetCharPosition);
-            
-            // 3. Create a mirror element to measure exact height layout shifts
-            const mirror = document.createElement('div');
-            const style = window.getComputedStyle(textarea);
-            
-            // Copy text formatting layout rules from your textarea
-            mirror.style.whiteSpace = 'pre-wrap';
-            mirror.style.wordWrap = 'break-word';
-            mirror.style.position = 'absolute';
-            mirror.style.visibility = 'hidden';
-            mirror.style.width = style.width;
-            mirror.style.font = style.font;
-            mirror.style.padding = style.padding;
-            mirror.style.boxSizing = style.boxSizing;
-            
-            // Set text up to target and append a dummy marker text block
-            mirror.textContent = textUpToTarget;
-            document.body.appendChild(mirror);
-            
-            // 4. Read the exact height calculation up to the line
-            const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0) - parseFloat(style.paddingBottom || 0);
-            
-            // Clean up the temporary mirror element
-            document.body.removeChild(mirror);
-            
-            // 5. Scroll the textarea smoothly to the top boundary
-            textarea.scrollTop = exactScrollTop;
-            
-            //
-            textarea.blur(); 
-        }
-        function jumpToWorkoutSection2() {
-            const selector = document.getElementById('sectionSelector');
-            const textarea = document.getElementById('workoutNotes');
-            
-            if (!selector.value || selector.value === "") return;
-            
-            const targetCharPosition = parseInt(selector.value, 10);
-            
-            // 1. SILENT FOCUS BYPASS: Tell the browser NOT to show a virtual keyboard
-            const originalInputMode = textarea.inputMode; // Save original state
-            textarea.inputMode = 'none'; 
-            
-            // 2. Perform focus and move cursor quietly
-            textarea.focus(); 
-            textarea.setSelectionRange(targetCharPosition, targetCharPosition);
-            
-            // 3. Immediately restore the input mode so typing still works if they click it later
-            setTimeout(() => {
-                textarea.inputMode = originalInputMode || '';
-            }, 50);
-            
-            // 4. Create a temporary element to mimic the textarea layout structure
-            const textUpToTarget = textarea.value.substring(0, targetCharPosition);
-            const mirror = document.createElement('div');
-            const style = window.getComputedStyle(textarea);
-            
-            mirror.style.whiteSpace = 'pre-wrap';
-            mirror.style.wordWrap = 'break-word';
-            mirror.style.position = 'absolute';
-            mirror.style.visibility = 'hidden';
-            mirror.style.width = style.width;
-            mirror.style.font = style.font;
-            mirror.style.padding = style.padding;
-            mirror.style.boxSizing = style.boxSizing;
-            
-            mirror.textContent = textUpToTarget;
-            document.body.appendChild(mirror);
-            
-            // 5. Read the exact height calculation up to the target line
-            const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0) - parseFloat(style.paddingBottom || 0);
-            document.body.removeChild(mirror);
-            
-            // 6. Scroll the text view smoothly to the top boundary
-            textarea.scrollTop = exactScrollTop;
-        }
-
-        function applyBlockRules1() {
-            const isBlocked = !document.getElementById('buttonToggle').checked;
-            document.getElementById('settingsBtn').disabled = isBlocked;
-            document.getElementById('textBoxBtn').disabled = isBlocked;
-            document.getElementById('connectBtn').disabled = isBlocked;
-            document.getElementById('actionBtn1').disabled = isBlocked;
-            document.getElementById('sectionSelector').disabled = isBlocked;
-        }
-
-        // function applyBlockRules2() {
-        //     const isBlocked = !document.getElementById('textToggle').checked;
-        //     document.getElementById('workoutNotes').readOnly = isBlocked;
-        // }
-        function applyBlockRules2() {
-            const textarea = document.getElementById('workoutNotes');
-            const isBlocked = !document.getElementById('textToggle').checked;
-            // Set the readOnly state
-            textarea.readOnly = isBlocked;
-            if (isBlocked) {
-                // Instantly strips focus away from the text box.
-                // This stops iOS from stretching the div to fill the screen length.
-                textarea.blur(); 
-            }
-        }
-
-        // function applyScrollRules() {
-        //     document.getElementById('workoutNotes').style.overflowY = document.getElementById('scrollToggle').checked ? 'auto' : 'hidden';
-        // }
-        let activeNotesScrollBlocker = null;
-        function applyScrollRules(isStartupOn) {
-            const textarea = document.getElementById('workoutNotes');
-            const isScrollAllowed = isStartupOn === true ? true : document.getElementById('scrollToggle').checked;
-
-            if (isScrollAllowed) {
-                // 1. If switch is ON: Allow scrolling, show scrollbar, and remove touch blocker
-                textarea.style.overflowY = 'auto';
-                
-                if (activeNotesScrollBlocker) {
-                    textarea.removeEventListener('touchmove', activeNotesScrollBlocker);
-                    activeNotesScrollBlocker = null;
-                }
-            } else {
-                // 2. If switch is OFF: Lock scrolling, hide scrollbar, and intercept touches
-                textarea.style.overflowY = 'hidden';
-
-                if (!activeNotesScrollBlocker) {
-                    activeNotesScrollBlocker = function(e) {
-                        // If it's a multi-line box, stop the browser from scrolling inside it
-                        if (e.cancelable) e.preventDefault();
-                    };
-                    
-                    // passive: false is mandatory to let e.preventDefault() work
-                    textarea.addEventListener('touchmove', activeNotesScrollBlocker, { passive: false });
-                }
-            }
-        }
-        
-        function handleTextareaTap(e) {
-            const isTextSliderOn = document.getElementById('textToggle').checked;
-
-            // If text editing is turned OFF, kill the focus state entirely
-            if (!isTextSliderOn) {
-                e.preventDefault();  // Stops the blue selection outline from appearing
-                e.target.blur();     // Forcibly removes any focus from the element
-            }
-        }
-        function handleTextareaFocus(e) {
-            const isTextSliderOn = document.getElementById('textToggle').checked;
-
-            // Catch ANY focus attempt (click, tab, or touch) when the slider is OFF
-            if (!isTextSliderOn) {
-                e.preventDefault(); 
-                e.target.blur(); // Instantly reject the focus, preventing the blue border
-            }
-        }
-
-
-        function applySelectionBoxVisibility() {
-            document.getElementById('sectionSelector').style.display = document.getElementById('toggleSelectionBox').checked ? 'block' : 'none';
-        }
-
-        function toggleModal(modalId, show) { document.getElementById(modalId).style.display = show ? 'flex' : 'none'; }
-
-        function initHistoryCanvasGrid() {
-            const canvas = document.getElementById('bpmHistoryCanvas');
-            canvas.width = canvas.parentElement.clientWidth * window.devicePixelRatio;
-            canvas.height = 90 * window.devicePixelRatio;
-            drawBpmGraphPipeline();
-        }
-
-        function pushBpmToGraphArray(bpmValue) {
-            bpmHistoryDataArray.push(bpmValue);
-            if (bpmHistoryDataArray.length > 300) { bpmHistoryDataArray.shift(); }
-            drawBpmGraphPipeline();
-        }
-    </script>
-    <script>
-        function drawBpmGraphPipeline() {
-            const canvas = document.getElementById('bpmHistoryCanvas');
-            const ctx = canvas.getContext('2d');
-            const w = canvas.width; const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-            if (bpmHistoryDataArray.length < 2) {
-                ctx.fillStyle = '#475569'; ctx.font = `${12 * window.devicePixelRatio}px sans-serif`;
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText("Awaiting continuous stream data history...", w / 2, h / 2); return;
-            }
-            ctx.beginPath(); ctx.lineWidth = 3 * window.devicePixelRatio; ctx.strokeStyle = '#ff3b30';
-            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-            const pointSpacingSpacing = w / (Math.max(bpmHistoryDataArray.length - 1, 50));
-            const minBpmFloor = 40; const maxBpmCeiling = 200;
-            for (let i = 0; i < bpmHistoryDataArray.length; i++) {
-                const x = i * pointSpacingSpacing;
-                const bpmNormalizedPct = (bpmHistoryDataArray[i] - minBpmFloor) / (maxBpmCeiling - minBpmFloor);
-                const constrainedBpmPct = Math.max(0, Math.min(1, bpmNormalizedPct));
-                const y = h - (constrainedBpmPct * h);
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-        }
-
-        function saveNotesToFile() {
-            const textContent = document.getElementById('workoutNotes').value;
-            const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
-            link.download = "workout_routine.txt"; link.click(); URL.revokeObjectURL(link.href);
-        }
-
-        function loadNotesFromFile(inputElement) {
-            const files = inputElement.files; if (!files || files.length === 0) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('workoutNotes').value = e.target.result;
-                parseWorkoutHeaders(); triggerStateSave(); toggleModal('textBoxModal', false); inputElement.value = ""; 
-            };
-            reader.readAsText(files);
-        }
-
-        function triggerStateSave() {
-            if (!document.getElementById('toggleLocalStorage').checked) return;
-            const state = {
-                notes: document.getElementById('workoutNotes').value, modeAudio: document.getElementById('modeAudio').checked,
-                modeVisual: document.getElementById('modeVisual').checked, modeVoice: document.getElementById('modeVoice').checked,
-                voicePhrase: document.getElementById('voicePhrase').value, beepVol: document.getElementById('beepVolume').value,
-                voiceVol: document.getElementById('voiceVolume').value, durAudio: document.getElementById('audioDuration').value,
-                durVisual: document.getElementById('visualDuration').value, durVoice: document.getElementById('voiceDuration').value,
-                presets: currentPresets, activePresetIdx: activePresetIndex, showSelection: document.getElementById('toggleSelectionBox').checked,
-                color1: document.getElementById('color1').value, color2: document.getElementById('color2').value,
-                blockPullRefresh: document.getElementById('blockPullRefresh').checked,
-            };
-            localStorage.setItem('workoutAppStateData', JSON.stringify(state));
-        }
-    </script>
-    <script>
-        function loadSavedState() {
-            const stored = localStorage.getItem('workoutAppStateData');
-            if (!stored) { document.getElementById('toggleLocalStorage').checked = false; return; }
-            try {
-                const s = JSON.parse(stored); document.getElementById('toggleLocalStorage').checked = true;
-                document.getElementById('blockPullRefresh').checked = s.blockPullRefresh ?? false; applyPullRefreshBlock();
-                document.getElementById('workoutNotes').value = s.notes || "";
-                document.getElementById('modeAudio').checked = s.modeAudio ?? true;
-                document.getElementById('modeVisual').checked = s.modeVisual ?? false;
-                document.getElementById('modeVoice').checked = s.modeVoice ?? false;
-                document.getElementById('voicePhrase').value = s.voicePhrase || "Rest over";
-                document.getElementById('beepVolume').value = s.beepVol ?? 50;
-                document.getElementById('lblBeepVol').innerText = (s.beepVol ?? 50) + '%';
-                document.getElementById('voiceVolume').value = s.voiceVol ?? 100;
-                document.getElementById('lblVoiceVol').innerText = (s.voiceVol ?? 100) + '%';
-                document.getElementById('audioDuration').value = s.durAudio ?? 3;
-                document.getElementById('visualDuration').value = s.durVisual ?? 3;
-                document.getElementById('voiceDuration').value = s.durVoice ?? 1;
-                if (s.presets) {
-                    currentPresets = s.presets;
-                    for (let i = 1; i <= 4; i++) {
-                        document.getElementById(`cfgPreset${i}`).value = currentPresets[i];
-                        document.getElementById(`lblCfg${i}`).innerText = currentPresets[i] + 's';
-                        document.getElementById(`pBtn${i}`).innerText = currentPresets[i] + 's';
-                    }
-                }
-                activePresetIndex = s.activePresetIdx ?? 1;
-                document.getElementById('toggleSelectionBox').checked = s.showSelection ?? true;
-                applySelectionBoxVisibility();
-                document.getElementById('color1').value = s.color1 || "#ffffff"; document.getElementById('color2').value = s.color2 || "#ff3b30";
-            } catch(e) { console.error(e); }
-        }
-
-        function handleLocalStorageToggle() {
-            if (document.getElementById('toggleLocalStorage').checked) triggerStateSave(); else localStorage.removeItem('workoutAppStateData');
-        }
-
-        function updateSliderLabel(num, val) {
-            document.getElementById(`lblCfg${num}`).innerText = `${val}s`; document.getElementById(`pBtn${num}`).innerText = `${val}s`;
-            currentPresets[num] = parseInt(val, 10); if (!isCountingDown && activePresetIndex === num) timeRemainingSeconds = currentPresets[num];
-            triggerStateSave();
-        }
-
-        function selectPreset(index) {
-            if (isCountingDown) return; activePresetIndex = index;
-            for (let i = 1; i <= 4; i++) document.getElementById(`pBtn${i}`).classList.remove('selected-preset');
-            document.getElementById(`pBtn${index}`).classList.add('selected-preset');
-            timeRemainingSeconds = currentPresets[index]; triggerStateSave();
-        }
-
-        function startRestCountdown() {
-            const restBtn = document.getElementById('restButton');
-            if (!workoutStartTime) {
-                const now = new Date(); workoutStartTime = now;
-                document.getElementById('lblStartTime').innerText = now.toTimeString().substring(0, 5);
-                elapsedClockInterval = setInterval(() => {
-                    const diffSec = Math.floor((new Date() - workoutStartTime) / 1000);
-                    const m = Math.floor(diffSec / 60).toString().padStart(2, '0');
-                    const s = (diffSec % 60).toString().padStart(2, '0');
-                    document.getElementById('lblElapsedTime').innerText = `${m}:${s}`;
-                }, 1000);
-            }
-            if (isCountingDown) {
-                clearInterval(countdownInterval); isCountingDown = false; restBtn.innerText = "Rest";
-                selectPreset(activePresetIndex); stopAllAlerts(); return;
-            }
-            stopAllAlerts(); isCountingDown = true; restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
-            countdownInterval = setInterval(() => {
-                timeRemainingSeconds--;
-                if (timeRemainingSeconds <= 0) {
-                    clearInterval(countdownInterval); isCountingDown = false; restBtn.innerText = "Rest";
-                    triggerActiveAlerts(); timeRemainingSeconds = currentPresets[activePresetIndex];
-                } else restBtn.innerText = `Resting... ${timeRemainingSeconds}s`;
-            }, 1000);
-        }
-
-        async function connectPolar() {
-            const connectBtn = document.getElementById('connectBtn');
-            const hrDisplay = document.getElementById('hrDisplayValue');
-            const heartIcon = document.getElementById('heartIconElement');
-            try {
-                connectBtn.innerText = "Searching...";
-                const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['heart_rate'] }] });
-                bleDeviceInstance = device; connectBtn.innerText = "Connecting...";
-                const server = await device.gatt.connect(); connectBtn.innerText = "Services...";
-                const service = await server.getPrimaryService('heart_rate');
-                const characteristic = await service.getCharacteristic('heart_rate_measurement');
-                await characteristic.startNotifications();
-                characteristic.addEventListener('characteristicvaluechanged', (event) => {
-                    const value = event.target.value; const flags = value.getUint8(0); const is16Bit = flags & 0x01;
-                    let heartRate = is16Bit ? value.getUint16(1, true) : value.getUint8(1);
-                    hrDisplay.innerText = heartRate; pushBpmToGraphArray(heartRate);
-                    heartIcon.classList.add('heart-pulse'); setTimeout(() => heartIcon.classList.remove('heart-pulse'), 200);
-                });
-                connectBtn.innerText = "Connected"; connectBtn.style.backgroundColor = "#34c759";
-                device.addEventListener('gattserverdisconnected', () => {
-                    hrDisplay.innerText = "--"; connectBtn.innerText = "Connect HR"; connectBtn.style.backgroundColor = "#007aff";
-                });
-            } catch (error) {
-                console.error(error); connectBtn.innerText = "Connect HR"; connectBtn.style.backgroundColor = "#007aff";
-                alert("Bluetooth Error: " + error.message);
-            }
-        }
-
-        function triggerActiveAlerts() {
-            if (document.getElementById('modeAudio').checked) runAudioAlert((parseInt(document.getElementById('audioDuration').value, 10) || 3) * 1000);
-            if (document.getElementById('modeVisual').checked) runVisualAlert((parseInt(document.getElementById('visualDuration').value, 10) || 3) * 1000);
-            if (document.getElementById('modeVoice').checked) runVoiceAlert(parseInt(document.getElementById('voiceDuration').value, 10) || 1);
-        }
-
-        function stopAllAlerts() {
-            if (audioTimeout) clearTimeout(audioTimeout);
-            if (activeOscillator) { try { activeOscillator.stop(); } catch(e){} activeOscillator = null; }
-            if (visualTimeout) clearTimeout(visualTimeout);
-            document.body.classList.remove('flickering-active'); document.body.style.backgroundColor = "#0b0f19"; 
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        }
-
-        function triggerTestAlert() { stopAllAlerts(); triggerActiveAlerts(); }
-
-        function runAudioAlert(durationMs) {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                activeOscillator = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
-                const beepVolLevel = parseInt(document.getElementById('beepVolume').value, 10) / 100;
-                activeOscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
-                activeOscillator.type = 'sine'; activeOscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(beepVolLevel * 0.3, audioCtx.currentTime); activeOscillator.start();
-                audioTimeout = setTimeout(() => { if (activeOscillator) { activeOscillator.stop(); activeOscillator = null; } }, durationMs);
-            } catch (e) { console.error(e); }
-        }
-
-        function runVisualAlert(durationMs) {
-            document.documentElement.style.setProperty('--flicker-c1', document.getElementById('color1').value);
-            document.documentElement.style.setProperty('--flicker-c2', document.getElementById('color2').value);
-            document.body.classList.add('flickering-active');
-            visualTimeout = setTimeout(() => {
-                document.body.classList.remove('flickering-active');
-                if (!document.body.classList.contains('flickering-active')) document.body.style.backgroundColor = "#0b0f19";
-            }, durationMs);
-        }
-
-        function runVoiceAlert(repeatCount) {
-            if ('speechSynthesis' in window) {
-                const customText = document.getElementById('voicePhrase').value || "Rest over";
-                const voiceVolLevel = parseInt(document.getElementById('voiceVolume').value, 10) / 100;
-                for (let i = 0; i < repeatCount; i++) {
-                    const utterance = new SpeechSynthesisUtterance(customText);
-                    utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = voiceVolLevel; utterance.lang = 'en-US'; 
-                    window.speechSynthesis.speak(utterance);
-                }
-            }
-        }
     </script>
 </body>
 </html>
