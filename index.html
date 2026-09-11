@@ -91,7 +91,7 @@
     ----------------------------------------------------------------------- -->
     <style>
         /* The switch box row (this will hold multiple switches) */
-        .horizontal-switch-box {
+        .horizontalBox-switches {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -152,6 +152,7 @@
         .button1 { background-color: #2c354a; color: #cbd5e1; }
         .button2 { background-color: #34c759; }
         .button3 { background-color: #ff9500; }
+        .button4 { background-color: #007aff; }
 
         .horizontal-button-box {
             display: flex;
@@ -163,6 +164,117 @@
         }
 
     </style>
+    
+    <!-- ----------------------------------------------------------------------
+    MODAL OVERLAYS
+    ----------------------------------------------------------------------- -->
+    <style>
+    /* This makes the background blured out */
+    .modal {
+        display: flex; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85); 
+        justify-content: center; 
+        align-items: center; 
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #161b26; 
+        padding: 14px; 
+        border-radius: 20px; 
+        width: 310px;
+        max-height: 85vh; 
+        overflow-y: auto; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        border: 1px solid #334155;
+    }
+
+    .modal-content h3 { 
+        margin-top: 0; 
+        margin-bottom: 20px; 
+        color: #cbd5e1; 
+        border-bottom: 1px solid #334155; 
+        padding-bottom: 5px;
+    }
+
+    .session-settings { 
+        margin-bottom: 20px; 
+    }
+
+    .session-settings h4 { 
+        margin: 0 0 10px 0; 
+        font-size: 14px; 
+        color: #94a3b8; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+    }
+
+    .verticalBox-switches { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+    }
+    .row-switcher { 
+        display: flex; 
+        flex-direction: row; 
+        gap: 4px; 
+        margin-bottom: 0px; 
+        align-items: center; 
+        color: #cbd5e1;
+        /* font-size: 13px;  */
+    }
+    .row-text { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 0px; 
+        /* font-size: 14px;  */
+        color: #cbd5e1;
+    }
+
+    .row-slider { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 0px; 
+        margin-bottom: 0px; 
+    }
+    .row-sliderLabel { 
+        display: flex; 
+        justify-content: space-between; 
+        /* font-size: 13px;  */
+        color: #cbd5e1; }
+    .row-slider input[type="range"] { 
+        width: 100%; 
+        accent-color: #007aff; 
+        cursor: pointer; 
+    }
+
+    .row-picker { 
+        display: flex; 
+        gap: 12px; 
+        align-items: center; 
+    }
+    .row-pickerWrapper { 
+        display: flex; 
+        align-items: center; 
+        /* gap: 6px;  */
+        /* font-size: 13px;  */
+    }input[type="color"] { 
+        border: none; 
+        width: 32px; 
+        height: 32px; 
+        border-radius: 50%; 
+        background: none; 
+        cursor: pointer; 
+    }
+
+    </style>
+
 </head>
 <body>
     <!-- ----------------------------------------------------------------------
@@ -171,7 +283,7 @@
     <div class="top">
         <div class="top-left">
 
-            <div class="horizontal-switch-box">
+            <div class="horizontalBox-switches">
                 <span>Text</span>
                 <label class="switch">
                     <input type="checkbox" id="textToggle" checked>
@@ -192,7 +304,7 @@
         </div>
         <div class="top-right">
 
-            <div class="horizontal-switch-box">
+            <div class="horizontalBox-switches">
                 <span>Buttons</span>
                 <label class="switch">
                     <input type="checkbox" id="textToggle" checked>
@@ -200,9 +312,9 @@
                 </label>
             </div>
 
-            <button id="button-settings" class="button1">⚙️</button>
+            <button id="button-settings" class="button1" onclick="toggleModal('modal-settings', true)">⚙️</button>
+            <button id="button-timer"    class="button1" onclick="toggleModal('modal-timer', true)">⏰</button>
             <button id="button-hr"       class="button1">❤️</button>
-            <button id="button-timer"    class="button1">⏰</button>
 
             <textarea id="textbox2"></textarea>
         </div>
@@ -221,7 +333,136 @@
         <button id="button-rest" class="button3">Rest</button>
     </div>
 
+    <!-- ----------------------------------------------------------------------
+    SETTINGS PANEL 
+    ----------------------------------------------------------------------- -->
+    <div class="modal" id="modal-settings">
+        <div class="modal-content">
+            <h3>Settings</h3>
+
+            <div class="session-settings">
+                <h4>Browser options</h4> 
+
+                <div class="verticalBox-switches"> 
+                    <div class="row-switcher">
+                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <span>Prevent Drag-to-Refresh</span>
+                    </div>
+                </div> 
+
+            </div>
+
+            <div class="session-settings">
+                <h4>Alert Modes</h4>
+
+                <div class="verticalBox-switches"> 
+                    <div class="row-switcher">
+                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <span>Audio Alerts (Beep)</span>
+                    </div>
+
+                    <div class="row-switcher">
+                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <span>Visual Alerts (Flicker)</span>
+                    </div>
+
+                    <div class="row-switcher">
+                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <span>Voice Alerts</span>
+                    </div>
+
+                </div> 
+            </div>
+
+            <div class="session-settings">
+                <h4>Voice controls</h4>
+                <div class="row-text"><label for="voicePhrase">Voice Phrase:</label><input type="text" id="voicePhrase" value="Rest over"></div>
+            </div>
+
+            <div class="session-settings">
+                <h4>Alert volume</h4>
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Beep Vol:</label><span id="lblBeepVol">50%</span></div>
+                    <input type="range" id="beepVolume" min="0" max="100" value="50" oninput="document.getElementById('lblBeepVol').innerText = this.value + '%'; triggerStateSave();">
+                </div>
+                <div class="row-slider" style="margin-top: 10px;">
+                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="lblVoiceVol">100%</span></div>
+                    <input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="document.getElementById('lblVoiceVol').innerText = this.value + '%'; triggerStateSave();">
+                </div>
+            </div>
+
+            <div class="session-settings">
+                <h4>Alert Durations</h4>
+                <div class="row-slider" style="margin-top: 10px;">
+                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="lblVoiceVol">100%</span></div>
+                    <input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="document.getElementById('lblVoiceVol').innerText = this.value + '%'; triggerStateSave();">
+                </div>
+                
+                <div class="row-slider" style="margin-top: 10px;">
+                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="lblVoiceVol">100%</span></div>
+                    <input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="document.getElementById('lblVoiceVol').innerText = this.value + '%'; triggerStateSave();">
+                </div>
+            </div>
+
+            <div class="session-settings">
+                <h4>Flicker Palette</h4>
+                <div class="row-picker">
+                    <div class="row-pickerWrapper"><input type="color" id="color1" value="#ffffff" onchange="triggerStateSave()"><span>1</span></div>
+                    <div class="row-pickerWrapper"><input type="color" id="color2" value="#ff3b30" onchange="triggerStateSave()"><span>2</span></div>
+                </div>
+            </div>
+
+            <div class="session-settings">
+                <h4>Flicker speed</h4>
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><span>Preset 4:</span><span id="lblCfg4">120s</span></div>
+                    <input type="range" id="cfgPreset4" min="10" max="300" value="120" oninput="updateSliderLabel(4, this.value)">
+                </div>
+            </div>
+
+            
+  
+            
+            <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="triggerTestAlert()">⚡ Test Alert</button>
+            <button class="button4" style="width:100%;" onclick="toggleModal('modal-settings', false)">Close</button>
+
+
+        </div>
+    </div>
     
+
+    <!-- ----------------------------------------------------------------------
+    TIMER PANEL 
+    ----------------------------------------------------------------------- -->
+    <div class="modal" id="modal-timer">
+        <div class="modal-content">
+            <h3>Timer Settings</h3>
+
+            <div class="session-settings">
+                <h4>Buttons preset values (5s - 300s)</h4>
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><span>Preset 1:</span><span id="lblCfg1">40s</span></div>
+                    <input type="range" id="cfgPreset1" min="5" max="300" value="40" oninput="updateSliderLabel(1, this.value)">
+                </div>
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><span>Preset 2:</span><span id="lblCfg2">60s</span></div>
+                    <input type="range" id="cfgPreset2" min="5" max="300" value="60" oninput="updateSliderLabel(2, this.value)">
+                </div>
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><span>Preset 3:</span><span id="lblCfg3">90s</span></div>
+                    <input type="range" id="cfgPreset3" min="5" max="300" value="90" oninput="updateSliderLabel(3, this.value)">
+                </div>
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><span>Preset 4:</span><span id="lblCfg4">120s</span></div>
+                    <input type="range" id="cfgPreset4" min="5" max="300" value="120" oninput="updateSliderLabel(4, this.value)">
+                </div>
+            </div>
+
+            <button class="button4" style="width:100%;" onclick="toggleModal('modal-timer', false)">Close</button>
+
+        </div>
+    </div>
+
     <script>
         // ====================================================================
         // ELEMENTS
@@ -270,6 +511,15 @@
             currentState.text = elements.textbox.value;
             saveState();
         });
+
+        
+        // ====================================================================
+        // OTHER
+        // ====================================================================
+        function toggleModal(modalId, show) { 
+            document.getElementById(modalId).style.display = show ? 'flex' : 'none';
+        }
+
 
         // ====================================================================
         // INITIALIZATION 
