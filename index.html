@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #14ad54;
+            background: #2314ad;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -172,7 +172,7 @@
     <style>
     /* This makes the background blured out */
     .modal {
-        display: flex; 
+        display: none; 
         position: fixed; 
         top: 0; 
         left: 0; 
@@ -589,7 +589,7 @@
             elements.dropdown.value = currentSelectedValue;
         }
         function jumpToWorkoutSection() {
-            if (!elements.dropdown.value || elements.dropdown.value === "") return;
+            // if (!elements.dropdown.value || elements.dropdown.value === "") return;
             const targetCharPosition = parseInt(elements.dropdown.value, 10);
 
             // 1. Move cursor to the target position
@@ -617,8 +617,9 @@
             document.body.appendChild(mirror);
             
             // 4. Read the exact height calculation up to the line
-            const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0);
-            
+            // const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0);
+            const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0) - parseFloat(style.paddingBottom || 0);
+
             // Clean up the temporary mirror element
             document.body.removeChild(mirror);
 
