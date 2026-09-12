@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #14ad3a;
+            background: #1417ad;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -590,8 +590,9 @@
             elements.sliderLabelPreset4.innerText = currentState.presets[4] + 's';
             
             // functions
-            selectPreset(currentState.presetIndex)
-            updateDragToRefresh()
+            selectPreset(currentState.presetIndex);
+            updateDragToRefresh();
+            stopAllAlerts();
         }
 
         function saveState() {
@@ -719,7 +720,7 @@
         }
         function jumpToWorkoutSection() {
             // stops function if the user hasn't selected a valid option from the dropdown menu
-            if (!elements.dropdown.value || elements.dropdown.value === "") return;
+            // if (!elements.dropdown.value || elements.dropdown.value === "") return;
             
             // get target
             const targetCharPosition = parseInt(elements.dropdown.value, 10);
@@ -758,7 +759,6 @@
             // 5. Check if the text area can actually scroll that far
             // Max scroll top is the total content height minus the visible height of the box
             const maxScrollTop = elements.textbox.scrollHeight - elements.textbox.clientHeight;
-
             if (exactScrollTop > maxScrollTop) {
                 // Calculate how many vertical pixels we are short
                 const deficitPixels = exactScrollTop - maxScrollTop;
