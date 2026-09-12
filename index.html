@@ -544,6 +544,62 @@
             const isBlocked4 = !elements.toggleDragToRefresh.checked;
             document.documentElement.style.overscrollBehaviorY = isBlocked4;
             document.body.style.overscrollBehaviorY = isBlocked4;
+
+            if (!isBlocked4) {
+                const touchY = e.touches[0].clientY; 
+                const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                // Only block if the main background page is at the absolute top and pulling down
+                if (windowScrollTop <= 0 && touchY > lastTouchY) {
+                    if (e.cancelable) e.preventDefault(); 
+                }
+                lastTouchY = touchY;
+            }
+            //     if (!activeTouchHandler) {
+            //         let lastTouchY = 0;
+
+            //         activeTouchHandler = function (e) {
+            //             if (e.touches.length !== 1) return;
+
+            //             // Check if the user is touching a text box, textarea, or settings menu
+            //             const target = e.target;
+                        
+            //             // 1. Always allow normal scrolling/typing inside inputs and textareas
+            //             if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') { return; }
+
+            //             // 2. Check if they are touching an element that is meant to scroll internally
+            //             // (Like your settings menu container)
+            //             // const scrollableContainer = target.closest('.modal, #settingsModal, .scrollable');
+            //             const scrollableContent = target.closest('.modal-content');
+            //             if (scrollableContainer) {
+            //                 // If the internal container is scrolled down, don't block it
+            //                 if (scrollableContainer.scrollTop > 0) {
+            //                     return;
+            //                 }
+            //             }
+
+            //             const touchY = e.touches[0].clientY; 
+            //             const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            //             // Only block if the main background page is at the absolute top and pulling down
+            //             if (windowScrollTop <= 0 && touchY > lastTouchY) {
+            //                 if (e.cancelable) e.preventDefault(); 
+            //             }
+            //             lastTouchY = touchY;
+            //         };
+
+            //         document.addEventListener('touchmove', activeTouchHandler, { passive: false });
+                    
+            //         document.addEventListener('touchstart', (e) => {
+            //             if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
+            //         }, { passive: true });
+            //     }
+            // } else {
+            //     if (activeTouchHandler) {
+            //         document.removeEventListener('touchmove', activeTouchHandler);
+            //         activeTouchHandler = null;
+            //     }
+            // }
         }
 
        
