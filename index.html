@@ -344,7 +344,7 @@
 
                 <div class="verticalBox-switches"> 
                     <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <label class="switch"> <input type="checkbox" id="toggleDragToRefresh" onchange="applyBlockRules()"><span class="slider-switch"></span></label>
                         <span>Prevent Drag-to-Refresh</span>
                     </div>
                 </div> 
@@ -595,18 +595,9 @@
             // get target
             const targetCharPosition = parseInt(elements.dropdown.value, 10);
 
-            // FOCUS BYPASS: Tell the browser NOT to show a virtual keyboard
-            // const originalInputMode = elements.textbox.inputMode; // Save original state
-            // elements.textbox.inputMode = 'none'; 
-
             // 1. Move cursor to the target position
             elements.textbox.focus(); 
             elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
-
-            // Restore FOCUS BYPASS
-            // setTimeout(() => {
-            //     elements.textbox.inputMode = originalInputMode || '';
-            // }, 50);
 
             // 2. Create a temporary element to mimic the textarea structure
             const textUpToTarget = elements.textbox.value.substring(0, targetCharPosition);
@@ -637,23 +628,23 @@
 
             // 5. Check if the text area can actually scroll that far
             // Max scroll top is the total content height minus the visible height of the box
-            // const maxScrollTop = elements.textbox.scrollHeight - elements.textbox.clientHeight;
+            const maxScrollTop = elements.textbox.scrollHeight - elements.textbox.clientHeight;
 
-            // if (exactScrollTop > maxScrollTop) {
-            //     // Calculate how many vertical pixels we are short
-            //     const deficitPixels = exactScrollTop - maxScrollTop;
+            if (exactScrollTop > maxScrollTop) {
+                // Calculate how many vertical pixels we are short
+                const deficitPixels = exactScrollTop - maxScrollTop;
                 
-            //     // Determine the height of a single line to calculate how many newlines to add
-            //     const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2;
-            //     const newLinesNeeded = Math.ceil(deficitPixels / lineHeight);
+                // Determine the height of a single line to calculate how many newlines to add
+                const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2;
+                const newLinesNeeded = Math.ceil(deficitPixels / lineHeight);
                 
-            //     // Append the exact number of empty lines needed to the end of the text
-            //     elements.textbox.value += "\n".repeat(newLinesNeeded);
+                // Append the exact number of empty lines needed to the end of the text
+                elements.textbox.value += "\n".repeat(newLinesNeeded);
 
-            //     // PUT THE CURSOR BACK TO YOUR TARGET POSITION HERE
-            //     // not sure this is relevant for cellphone, only for pc
-            //     elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
-            // }
+                // PUT THE CURSOR BACK TO YOUR TARGET POSITION HERE
+                // not sure this is relevant for cellphone, only for pc
+                elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
+            }
 
             // 6. Finally, execute the scroll
             elements.textbox.scrollTop = exactScrollTop;
