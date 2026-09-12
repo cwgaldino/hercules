@@ -473,9 +473,10 @@
             buttonTimer:    document.getElementById('buttonTimer'),
             buttonHR:       document.getElementById('buttonHR'),
 
-            toggleText:     document.getElementById('toggleText'),
-            toggleScroll:   document.getElementById('toggleScroll'),
-            toggleButtons:  document.getElementById('toggleButtons'),
+            toggleText:           document.getElementById('toggleText'),
+            toggleScroll:         document.getElementById('toggleScroll'),
+            toggleButtons:        document.getElementById('toggleButtons'),
+            toggleDragToRefresh:  document.getElementById('toggleDragToRefresh'),
             };
 
         // ====================================================================
@@ -534,32 +535,15 @@
             } else {
                 elements.textbox.style.overflowY = 'auto';
             }
-            // if (isBlocked2) {
-            //     // 1. If switch is ON: Allow scrolling, show scrollbar, and remove touch blocker
-            //     elements.textbox.style.overflowY = 'auto';
-                
-            //     if (activeNotesScrollBlocker) {
-            //         elements.textbox.removeEventListener('touchmove', activeNotesScrollBlocker);
-            //         activeNotesScrollBlocker = null;
-            //     }
-            // } else {
-            //     // 2. If switch is OFF: Lock scrolling, hide scrollbar, and intercept touches
-            //     elements.textbox.style.overflowY = 'hidden';
-
-            //     if (!activeNotesScrollBlocker) {
-            //         activeNotesScrollBlocker = function(e) {
-            //             // If it's a multi-line box, stop the browser from scrolling inside it
-            //             if (e.cancelable) e.preventDefault();
-            //         };
-                    
-            //         // passive: false is mandatory to let e.preventDefault() work
-            //         elements.textbox.addEventListener('touchmove', activeNotesScrollBlocker, { passive: false });
-            //     }
 
             const isBlocked3 = !elements.toggleButtons.checked;
             elements.buttonSettings.disabled = isBlocked3;
             elements.buttonTimer.disabled    = isBlocked3;
             elements.buttonHR.disabled       = isBlocked3;
+
+            const isBlocked4 = !elements.toggleDragToRefresh.checked;
+            document.documentElement.style.overscrollBehaviorY = isBlocked4;
+            document.body.style.overscrollBehaviorY = isBlocked4;
         }
 
        
