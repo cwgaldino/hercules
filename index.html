@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #14ad60;
+            background: #9b14ad;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -163,9 +163,13 @@
         .horizontal-button-box button { 
             flex: 1;  /* expand buttons */
         }
+        .horizontal-button-box button.selected-preset { 
+            border-color: #007aff; 
+            background-color: #007aff; 
+        }
+
 
     </style>
-    
     <!-- ----------------------------------------------------------------------
     MODAL OVERLAYS
     ----------------------------------------------------------------------- -->
@@ -329,7 +333,7 @@
             <button id="buttonPreset3" class="button1" onclick="selectPreset(3)">90 s</button>
             <button id="buttonPreset4" class="button1" onclick="selectPreset(4)">120 s</button>
         </div>
-        <button id="button-rest" class="button3">Rest</button>
+        <button id="buttonRest" class="button3" onclick="startRestCountdown()">Rest</button>
     </div>
 
     <!-- ----------------------------------------------------------------------
@@ -344,7 +348,7 @@
 
                 <div class="verticalBox-switches"> 
                     <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="toggleDragToRefresh" onchange="applyBlockRules()"><span class="slider-switch"></span></label>
+                        <label class="switch"> <input type="checkbox" id="toggleDragToRefresh" onchange="currentState.dragToRefresh = this.checked"><span class="slider-switch"></span></label>
                         <span>Drag-to-Refresh</span>
                     </div>
                 </div> 
@@ -356,17 +360,17 @@
 
                 <div class="verticalBox-switches"> 
                     <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <label class="switch"> <input type="checkbox" id="toggleAudio" onchange="currentState.audio = this.checked"><span class="slider-switch"></span></label>
                         <span>Audio Alerts (Beep)</span>
                     </div>
 
                     <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <label class="switch"> <input type="checkbox" id="toggleVisual" onchange="currentState.visual = this.checked"><span class="slider-switch"></span></label>
                         <span>Visual Alerts (Flicker)</span>
                     </div>
 
                     <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="textToggle"><span class="slider-switch"></span></label>
+                        <label class="switch"> <input type="checkbox" id="toggleVoice" onchange="currentState.voice = this.checked"><span class="slider-switch"></span></label>
                         <span>Voice Alerts</span>
                     </div>
 
@@ -375,55 +379,55 @@
 
             <div class="session-settings">
                 <h4>Voice controls</h4>
-                <div class="row-text"><label for="voicePhrase">Voice Phrase:</label><input type="text" id="voicePhrase" value="Rest over"></div>
+                <div class="row-text"><label for="voicePhrase">Voice Phrase:</label><input type="text" id="textVoicePhrase" value="Rest over" onchange="currentState.voicePhrase = this.value"></div>
             </div>
 
             <div class="session-settings">
                 <h4>Alert volume</h4>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><label>Beep Vol:</label><span id="lblBeepVol">50%</span></div>
-                    <input type="range" id="beepVolume" min="0" max="100" value="50" oninput="document.getElementById('lblBeepVol').innerText = this.value + '%'; triggerStateSave();">
+                    <div class="row-sliderLabel"><label>Audio Vol:</label><span id="sliderLabelAudioVolume">100%</span></div>
+                    <input type="range" id="sliderAudioVolume" min="0" max="100" value="10" oninput="elements.sliderLabelAudioVolume.innerText = this.value + '%'; currentState.audioVolume = this.value;">
                 </div>
                 <div class="row-slider" style="margin-top: 10px;">
-                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="lblVoiceVol">100%</span></div>
-                    <input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="document.getElementById('lblVoiceVol').innerText = this.value + '%'; triggerStateSave();">
+                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="sliderLabelVoiceVolume">100%</span></div>
+                    <input type="range" id="sliderVoiceVolume" min="0" max="100" value="100" oninput="elements.sliderLabelVoiceVolume.innerText = this.value + '%'; currentState.voiceVolume = this.value;">
                 </div>
             </div>
 
             <div class="session-settings">
                 <h4>Alert Durations</h4>
-                <div class="row-slider" style="margin-top: 10px;">
-                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="lblVoiceVol">100%</span></div>
-                    <input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="document.getElementById('lblVoiceVol').innerText = this.value + '%'; triggerStateSave();">
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Audio Alert</label><span id="sliderLabelAudioDuration">2s</span></div>
+                    <input type="range" id="sliderAudioDuration" min="1" max="5" value="2" oninput="elements.sliderLabelAudioDuration.innerText = this.value + 's'; currentState.audioDuration = this.value;">
                 </div>
                 
-                <div class="row-slider" style="margin-top: 10px;">
-                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="lblVoiceVol">100%</span></div>
-                    <input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="document.getElementById('lblVoiceVol').innerText = this.value + '%'; triggerStateSave();">
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Visual Alert</label><span id="sliderLabelVisualDuration">2s</span></div>
+                    <input type="range" id="sliderVisualDuration" min="1" max="5" value="2" oninput="elements.sliderLabelVisualDuration.innerText = this.value + 's'; currentState.visualDuration = this.value;">
                 </div>
             </div>
 
             <div class="session-settings">
                 <h4>Flicker Palette</h4>
                 <div class="row-picker">
-                    <div class="row-pickerWrapper"><input type="color" id="color1" value="#ffffff" onchange="triggerStateSave()"><span>1</span></div>
-                    <div class="row-pickerWrapper"><input type="color" id="color2" value="#ff3b30" onchange="triggerStateSave()"><span>2</span></div>
+                    <div class="row-pickerWrapper"><input type="color" id="pickerFlickerColor1" value="#ffffff" onchange="currentState.flickerColor1 = this.value"><span>1</span></div>
+                    <div class="row-pickerWrapper"><input type="color" id="pickerFlickerColor2" value="#ff3b30" onchange="currentState.flickerColor2 = this.value"><span>2</span></div>
                 </div>
             </div>
 
             <div class="session-settings">
                 <h4>Flicker speed</h4>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><span>Preset 4:</span><span id="lblCfg4">120s</span></div>
-                    <input type="range" id="cfgPreset4" min="10" max="300" value="120" oninput="updateSliderLabel(4, this.value)">
+                    <div class="row-sliderLabel"><span>Flicker speed:</span><span id="sliderLabelFlickerSpeed">120ms</span></div>
+                    <input type="range" id="sliderFlickerSpeed" min="10" max="300" value="120" oninput="elements.sliderLabelFlickerSpeed.innerText = this.value + 'ms'; currentState.flickerSpeed = this.value;">
                 </div>
             </div>
 
             
   
             
-            <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="triggerTestAlert()">⚡ Test Alert</button>
-            <button class="button4" style="width:100%;" onclick="toggleModal('modalSettings', false)">Close</button>
+            <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="stopAllAlerts(); triggerActiveAlerts()">⚡ Test Alert</button>
+            <button class="button4" style="width:100%;" onclick="closeSettings()">Save & Close</button>
 
 
         </div>
@@ -440,23 +444,23 @@
                 <h4>Buttons preset values (5s - 300s)</h4>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 1:</span><span id="sliderLabelPreset1">40s</span></div>
-                    <input type="range" id="sliderPreset1" min="5" max="300" value="40" oninput="updateSliderLabel(1, this.value)">
+                    <input type="range" id="sliderPreset1" min="5" max="300" value="40" oninput="elements.sliderLabelPreset1.innerText = this.value + 's'; currentState.presets[1] = this.value;">
                 </div>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 2:</span><span id="sliderLabelPreset2">60s</span></div>
-                    <input type="range" id="sliderPreset2" min="5" max="300" value="60" oninput="updateSliderLabel(2, this.value)">
+                    <input type="range" id="sliderPreset2" min="5" max="300" value="60" oninput="elements.sliderLabelPreset2.innerText = this.value + 's'; currentState.presets[2] = this.value;">
                 </div>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 3:</span><span id="sliderLabelPreset3">90s</span></div>
-                    <input type="range" id="sliderPreset3" min="5" max="300" value="90" oninput="updateSliderLabel(3, this.value)">
+                    <input type="range" id="sliderPreset3" min="5" max="300" value="90" oninput="elements.sliderLabelPreset3.innerText = this.value + 's'; currentState.presets[3] = this.value;">
                 </div>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 4:</span><span id="sliderLabelPreset4">120s</span></div>
-                    <input type="range" id="sliderPreset4" min="5" max="300" value="120" oninput="updateSliderLabel(4, this.value)">
+                    <input type="range" id="sliderPreset4" min="5" max="300" value="120" oninput="elements.sliderLabelPreset4.innerText = this.value + 's'; currentState.presets[4] = this.value;">
                 </div>
             </div>
 
-            <button class="button4" style="width:100%;" onclick="toggleModal('modalTimer', false)">Close</button>
+            <button class="button4" style="width:100%;" onclick="closeTimer()">Close</button>
 
         </div>
     </div>
@@ -478,26 +482,69 @@
             toggleButtons:        document.getElementById('toggleButtons'),
             toggleDragToRefresh:  document.getElementById('toggleDragToRefresh'),
 
-            // sliderPreset1:      document.getElementById('sliderPreset1'),
-            // sliderPreset2:      document.getElementById('sliderPreset2'),
-            // sliderPreset3:      document.getElementById('sliderPreset3'),
-            // sliderPreset4:      document.getElementById('sliderPreset4'),
-            // sliderLabelPreset1: document.getElementById('sliderLabelPreset1'),
-            // sliderLabelPreset2: document.getElementById('sliderLabelPreset2'),
-            // sliderLabelPreset3: document.getElementById('sliderLabelPreset3'),
-            // sliderLabelPreset4: document.getElementById('sliderLabelPreset4'),
+            // rest
+            // buttonPreset1:      document.getElementById('buttonPreset1'),
+            // buttonPreset2:      document.getElementById('buttonPreset2'),
+            // buttonPreset3:      document.getElementById('buttonPreset3'),
+            // buttonPreset4:      document.getElementById('buttonPreset4'),
+            buttonRest: document.getElementById('buttonRest'),
+
+            // settings
+            toggleDragToRefresh: document.getElementById(`toggleDragToRefresh`),
+            toggleAudio:         document.getElementById(`toggleAudio`),
+            toggleVisual:        document.getElementById(`toggleVisual`),
+            toggleVoice:         document.getElementById(`toggleVoice`),
+            textVoicePhrase:     document.getElementById(`textVoicePhrase`),
+            sliderAudioVolume:       document.getElementById(`sliderAudioVolume`),
+            sliderLabelAudioVolume:  document.getElementById(`sliderLabelAudioVolume`),
+            sliderVoiceVolume:       document.getElementById(`sliderVoiceVolume`),
+            sliderLabelVoiceVolume:  document.getElementById(`sliderLabelVoiceVolume`),
+            sliderAudioDuration:       document.getElementById(`sliderAudioDuration`),
+            sliderLabelAudioDuration:  document.getElementById(`sliderLabelAudioDuration`),
+            sliderVisualDuration:      document.getElementById(`sliderVisualDuration`),
+            sliderLabelVisualDuration: document.getElementById(`sliderLabelVisualDuration`),
+            pickerFlickerColor1:      document.getElementById(`pickerFlickerColor1`),
+            pickerFlickerColor2:      document.getElementById(`pickerFlickerColor2`),
+            sliderFlickerSpeed:      document.getElementById(`sliderFlickerSpeed`),
+            sliderLabelFlickerSpeed: document.getElementById(`sliderLabelFlickerSpeed`),
+
+            // timer
+            sliderPreset1:      document.getElementById('sliderPreset1'),
+            sliderPreset2:      document.getElementById('sliderPreset2'),
+            sliderPreset3:      document.getElementById('sliderPreset3'),
+            sliderPreset4:      document.getElementById('sliderPreset4'),
+            sliderLabelPreset1: document.getElementById('sliderLabelPreset1'),
+            sliderLabelPreset2: document.getElementById('sliderLabelPreset2'),
+            sliderLabelPreset3: document.getElementById('sliderLabelPreset3'),
+            sliderLabelPreset4: document.getElementById('sliderLabelPreset4'),
 
             };
 
         // ====================================================================
         // STATE
         // ====================================================================
+        // FOR TESTING             document.getElementById('textbox2').value = 'ssss'
         const defaultState = {
             text: `Use # to name sessions (e.g., # Chest);
             Write your workout routine here...`,
-            toggleDragToRefresh: false,
 
+            // settings
+            dragToRefresh: false,
+            audio:  true,
+            visual: false,
+            voice:  false,
+            voicePhrase: `Rest over`,
+            audioVolume: 100,
+            voiceVolume: 100,
+            audioDuration: 2,
+            visualDuration: 2,
+            flickerColor1: "#ffffff",
+            flickerColor2: "#ff3b30",
+            flickerSpeed: 120,
+
+            // timer
             presets: { 1: 40, 2: 60, 3: 90, 4: 120 },
+            presetIndex: 1,
         };
 
         const currentState = {
@@ -509,14 +556,42 @@
             elements.textbox.value = currentState.text;
             elements.toggleDragToRefresh.checked = currentState.toggleDragToRefresh;
 
-            elements.sliderPreset1.value = currentState.preset1;
-            elements.sliderPreset2.value = currentState.preset2;
-            elements.sliderPreset3.value = currentState.preset3;
-            elements.sliderPreset4.value = currentState.preset4;
-
-            elements.sliderLabelPreset1.value = currentState.preset1;
+            // rest
+            for (let i = 1; i <= 4; i++) document.getElementById(`buttonPreset${i}`).innerText = currentState.presets[i] + 's';
 
 
+            // settings
+            elements.toggleDragToRefresh.checked         = currentState.dragToRefresh;
+            elements.toggleAudio.checked                 = currentState.audio;
+            elements.toggleVisual.checked                = currentState.visual;
+            elements.toggleVoice.checked                 = currentState.voice;
+            elements.textVoicePhrase.value               = currentState.voicePhrase;
+            elements.sliderAudioVolume.value             = currentState.audioVolume;
+            elements.sliderLabelAudioVolume.innerText    = currentState.audioVolume + '%';
+            elements.sliderVoiceVolume.value             = currentState.voiceVolume;
+            elements.sliderLabelVoiceVolume.innerText    = currentState.voiceVolume + '%';
+            elements.sliderAudioDuration.value           = currentState.audioDuration;
+            elements.sliderLabelAudioDuration.innerText  = currentState.audioDuration + 's';
+            elements.sliderVisualDuration.value          = currentState.visualDuration;
+            elements.sliderLabelVisualDuration.innerText = currentState.visualDuration + 's';
+            elements.pickerFlickerColor1.value           = currentState.flickerColor1;
+            elements.pickerFlickerColor2.value           = currentState.flickerColor2;
+            elements.sliderFlickerSpeed.value            = currentState.flickerSpeed;
+            elements.sliderLabelFlickerSpeed.innerText   = currentState.flickerSpeed + 'ms';
+
+            // timer
+            elements.sliderPreset1.value          = currentState.presets[1];
+            elements.sliderPreset2.value          = currentState.presets[2];
+            elements.sliderPreset3.value          = currentState.presets[3];
+            elements.sliderPreset4.value          = currentState.presets[4];
+            elements.sliderLabelPreset1.innerText = currentState.presets[1] + 's';
+            elements.sliderLabelPreset2.innerText = currentState.presets[2] + 's';
+            elements.sliderLabelPreset3.innerText = currentState.presets[3] + 's';
+            elements.sliderLabelPreset4.innerText = currentState.presets[4] + 's';
+            
+            // functions
+            selectPreset(currentState.presetIndex)
+            updateDragToRefresh()
         }
 
         function saveState() {
@@ -525,52 +600,22 @@
 
 
         // ====================================================================
-        // EVENT LISTENERS 
+        // SETTINGS LOGIC
         // ====================================================================
+        function closeSettings() {
+            saveState()
+            updateDragToRefresh()
+            // close modal
+            document.getElementById("modalSettings").style.display = false ? 'flex' : 'none';
+        }
 
-        // Not sure we need this one because we are always saving after each change
-        // window.addEventListener('beforeunload', () => {
-        //     saveState();
-        // });
-
-        // Save state when text changes
-        elements.textbox.addEventListener('input', () => {
-            currentState.text = elements.textbox.value;
-            parseWorkoutHeaders();
-            saveState();
-        });
-
-        
-        let activeTouchHandler = null;
-        function applyBlockRules() {
-            const isBlocked1 = !elements.toggleText.checked;
-            elements.textbox.readOnly = isBlocked1;
-            if (isBlocked1) {
-                elements.textbox.blur(); 
-            }
-
-            const isBlocked2 = !elements.toggleScroll.checked;
-            if (isBlocked2) {
-                elements.textbox.style.overflowY = 'hidden';
-            } else {
-                elements.textbox.style.overflowY = 'auto';
-            }
-
-            const isBlocked3 = !elements.toggleButtons.checked;
-            elements.buttonSettings.disabled = isBlocked3;
-            elements.buttonTimer.disabled    = isBlocked3;
-            elements.buttonHR.disabled       = isBlocked3;
-
+        function updateDragToRefresh() {
             // drag to refresh
-            const isBlocked4 = !elements.toggleDragToRefresh.checked;
+            const isBlocked4 = !currentState.dragToRefresh;
             const value = isBlocked4 ? 'none' : 'auto';
             document.documentElement.style.overscrollBehaviorY = value;
             document.body.style.overscrollBehaviorY = value;
-
-            // update state
-            currentState.toggleDragToRefresh = !isBlocked4;
-            saveState();
-
+            
             if (isBlocked4) {
                 if (!activeTouchHandler) {
                     let lastTouchY = 0;
@@ -608,8 +653,45 @@
                     activeTouchHandler = null;
                 }
             }
-        }   
+        }
+        
+        
+        // ====================================================================
+        // EVENT LISTENERS 
+        // ====================================================================
 
+        // Not sure we need this one because we are always saving after each change
+        // window.addEventListener('beforeunload', () => {
+        //     saveState();
+        // });
+
+        // Save state when text changes
+        elements.textbox.addEventListener('input', () => {
+            currentState.text = elements.textbox.value;
+            parseWorkoutHeaders();
+            saveState();
+        });
+
+        let activeTouchHandler = null;
+        function applyBlockRules() {
+            const isBlocked1 = !elements.toggleText.checked;
+            elements.textbox.readOnly = isBlocked1;
+            if (isBlocked1) {
+                elements.textbox.blur(); 
+            }
+
+            const isBlocked2 = !elements.toggleScroll.checked;
+            if (isBlocked2) {
+                elements.textbox.style.overflowY = 'hidden';
+            } else {
+                elements.textbox.style.overflowY = 'auto';
+            }
+
+            const isBlocked3 = !elements.toggleButtons.checked;
+            elements.buttonSettings.disabled = isBlocked3;
+            elements.buttonTimer.disabled    = isBlocked3;
+            elements.buttonHR.disabled       = isBlocked3;
+        }   
 
         // ====================================================================
         // OTHER
@@ -703,16 +785,138 @@
             elements.textbox.blur(); 
         }
 
-        function updateTimerSettings(num, val) {
-            // set slider text
-            document.getElementById(`sliderLabelPreset${num}`).innerText = `${val}s`; 
 
-            // set button text
-            document.getElementById(`buttonPreset${num}`).innerText = `${val}s`;
+        // ====================================================================
+        // TIMER LOGIC
+        // ====================================================================
+        function closeTimer() {
+            saveState()
 
-            currentState.presets[num] = parseInt(val, 10); if (!isCountingDown && activePresetIndex === num) timeRemainingSeconds = currentPresets[num];
-            triggerStateSave();
+            if (isCountingDown) {
+                clearInterval(countdownInterval);   // not sure what this does
+                elements.buttonRest.innerText = "Rest"; 
+                stopAllAlerts();   
+            }
+
+            for (let i = 1; i <= 4; i++) document.getElementById(`buttonPreset${i}`).innerText = `${currentState.presets[i]}s`; 
+            timeRemainingSeconds = currentState.presets[currentState.presetIndex]
+
+            // close modal
+            document.getElementById("modalTimer").style.display = false ? 'flex' : 'none';
         }
+
+        // function updateTimerSliderLabel(num, val) {
+        //     // set slider text
+        //     document.getElementById(`sliderLabelPreset${num}`).innerText = `${val}s`; 
+
+        //     // set button text
+        //     document.getElementById(`buttonPreset${num}`).innerText = `${val}s`;
+
+        //     // If the timer isn't running and this is the currently selected preset, sync the displayed remaining time to the updated preset value.   
+        //     currentState.presets[num] = parseInt(val, 10); if (!isCountingDown && currentState.presetIndex === num) timeRemainingSeconds = currentState.presets[num];
+            
+        //     // save state
+        //     saveState();
+        // }
+        function selectPreset(index) {
+            if (isCountingDown) return; 
+            for (let i = 1; i <= 4; i++) document.getElementById(`buttonPreset${i}`).classList.remove('selected-preset');
+            
+            document.getElementById(`buttonPreset${index}`).classList.add('selected-preset');
+            timeRemainingSeconds = currentState.presets[index]; 
+
+            // save state
+            currentState.presetIndex = index
+            saveState();
+        }
+        let timeRemainingSeconds = 40;
+        let isCountingDown = false;
+        let countdownInterval = null;
+        function startRestCountdown() {
+            if (isCountingDown) {
+                clearInterval(countdownInterval); 
+                isCountingDown = false; 
+                elements.buttonRest.innerText = "Rest";
+                selectPreset(currentState.presetIndex); 
+                stopAllAlerts(); 
+                return;
+            }
+            document.getElementById('textbox2').value = 'ssss'
+            stopAllAlerts(); 
+            isCountingDown = true; 
+            elements.buttonRest.innerText = `Resting... ${timeRemainingSeconds}s`;
+            countdownInterval = setInterval(() => {
+                timeRemainingSeconds--;
+                if (timeRemainingSeconds <= 0) {
+                    clearInterval(countdownInterval); 
+                    isCountingDown = false; 
+                    elements.buttonRest.innerText = "Rest";
+                    triggerActiveAlerts(); 
+                    timeRemainingSeconds = currentState.presets[currentState.presetIndex];
+                } else elements.buttonRest.innerText = `Resting... ${timeRemainingSeconds}s`;
+            }, 1000);
+        }
+
+        // ====================================================================
+        // ALARMS 
+        // ====================================================================
+        // audio (beep)
+        let audioCtx = null;
+        let audioTimeout = null;
+        let activeOscillator = null;
+
+        // visual (flicker)
+        let visualTimeout = null;
+
+        function triggerActiveAlerts() {
+            if (currentState.audio) runAudioAlert();
+            if (currentState.visual) runVisualAlert();
+            if (currentState.voice) runVoiceAlert();
+        }
+        function stopAllAlerts() {
+            if (audioTimeout) clearTimeout(audioTimeout);
+            if (activeOscillator) { try { activeOscillator.stop(); } catch(e){} activeOscillator = null; }
+            if (visualTimeout) clearTimeout(visualTimeout);
+            document.body.classList.remove('flickering-active'); document.body.style.backgroundColor = "#0b0f19"; 
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+        function runAudioAlert() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                activeOscillator = audioCtx.createOscillator(); 
+                
+                const gainNode = audioCtx.createGain();
+                const beepVolLevel = parseInt(currentState.audioVolume, 10) / 100;
+
+                activeOscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+                activeOscillator.type = 'sine'; 
+                activeOscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(beepVolLevel * 0.3, audioCtx.currentTime); 
+                activeOscillator.start();
+                audioTimeout = setTimeout(() => { if (activeOscillator) { activeOscillator.stop(); 
+                    activeOscillator = null; } }, (parseInt(currentState.audioDuration, 10) || 3) * 1000);
+            } catch (e) { console.error(e); }
+        }
+        function runVisualAlert() {
+            document.documentElement.style.setProperty('--flicker-c1', currentState.flickerColor1);
+            document.documentElement.style.setProperty('--flicker-c2', currentState.flickerColor2);
+            document.body.classList.add('flickering-active');
+            visualTimeout = setTimeout(() => {
+                document.body.classList.remove('flickering-active');
+                if (!document.body.classList.contains('flickering-active')) document.body.style.backgroundColor = "#0b0f19";
+            }, (parseInt(currentState.visualDuration, 10) || 3) * 1000);
+        }
+        function runVoiceAlert(repeatCount) {
+            if ('speechSynthesis' in window) {
+                const customText = currentState.voicePhrase || "Rest over";
+                const voiceVolLevel = parseInt(currentState.voiceVolume, 10) / 100;
+
+                const utterance = new SpeechSynthesisUtterance(customText);
+                utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = voiceVolLevel; utterance.lang = 'en-US'; 
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
         // ====================================================================
         // INITIALIZATION 
         // ====================================================================
