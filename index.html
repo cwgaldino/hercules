@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #ad5114;
+            background: #14ad42;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -485,7 +485,7 @@
         const defaultState = {
             text: `Use # to name sessions (e.g., # Chest);
             Write your workout routine here...`,
-            allowPullToRefresh: true,
+            toggleDragToRefresh: false,
             darkMode: false,
             largeKeyboard: true,
             keepScreenAwake: false,
@@ -498,6 +498,8 @@
 
         function applyState() {
             elements.textbox.value = currentState.text;
+
+            elements.toggleDragToRefresh.value = currentState.toggleDragToRefresh;
         }
 
         function saveState() {
@@ -542,19 +544,24 @@
             elements.buttonHR.disabled       = isBlocked3;
 
             const isBlocked4 = !elements.toggleDragToRefresh.checked;
+            document.documentElement.classList.toggle('lock-refresh', isBlocked4);
             document.documentElement.style.overscrollBehaviorY = isBlocked4;
             document.body.style.overscrollBehaviorY = isBlocked4;
 
-            if (!isBlocked4) {
-                const touchY = e.touches[0].clientY; 
-                const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            // update state
+            currentState.toggleDragToRefresh = isBlocked4
 
-                // Only block if the main background page is at the absolute top and pulling down
-                if (windowScrollTop <= 0 && touchY > lastTouchY) {
-                    if (e.cancelable) e.preventDefault(); 
-                }
-                lastTouchY = touchY;
-            }
+            saveState()
+            // if (!isBlocked4) {
+            //     const touchY = e.touches[0].clientY; 
+            //     const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            //     // Only block if the main background page is at the absolute top and pulling down
+            //     if (windowScrollTop <= 0 && touchY > lastTouchY) {
+            //         if (e.cancelable) e.preventDefault(); 
+            //     }
+            //     lastTouchY = touchY;
+            // }
             //     if (!activeTouchHandler) {
             //         let lastTouchY = 0;
 
