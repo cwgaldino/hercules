@@ -596,17 +596,17 @@
             const targetCharPosition = parseInt(elements.dropdown.value, 10);
 
             // FOCUS BYPASS: Tell the browser NOT to show a virtual keyboard
-            const originalInputMode = elements.textbox.inputMode; // Save original state
-            elements.textbox.inputMode = 'none'; 
+            // const originalInputMode = elements.textbox.inputMode; // Save original state
+            // elements.textbox.inputMode = 'none'; 
 
             // 1. Move cursor to the target position
             elements.textbox.focus(); 
             elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
 
             // Restore FOCUS BYPASS
-            setTimeout(() => {
-                elements.textbox.inputMode = originalInputMode || '';
-            }, 50);
+            // setTimeout(() => {
+            //     elements.textbox.inputMode = originalInputMode || '';
+            // }, 50);
 
             // 2. Create a temporary element to mimic the textarea structure
             const textUpToTarget = elements.textbox.value.substring(0, targetCharPosition);
@@ -659,7 +659,7 @@
             elements.textbox.scrollTop = exactScrollTop;
 
             // remove focus from textbox
-            textarea.blur(); 
+            elements.textbox.blur(); 
         }
 
         // ====================================================================
