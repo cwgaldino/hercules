@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #14ad47;
+            background: #ad5114;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -596,8 +596,8 @@
             const targetCharPosition = parseInt(elements.dropdown.value, 10);
 
             // FOCUS BYPASS: Tell the browser NOT to show a virtual keyboard
-            const originalInputMode = textarea.inputMode; // Save original state
-            textarea.inputMode = 'none'; 
+            const originalInputMode = elements.textbox.inputMode; // Save original state
+            elements.textbox.inputMode = 'none'; 
 
             // 1. Move cursor to the target position
             elements.textbox.focus(); 
@@ -605,7 +605,7 @@
 
             // Restore FOCUS BYPASS
             setTimeout(() => {
-                textarea.inputMode = originalInputMode || '';
+                elements.textbox.inputMode = originalInputMode || '';
             }, 50);
 
             // 2. Create a temporary element to mimic the textarea structure
