@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #2314ad;
+            background: #14ad47;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -589,12 +589,24 @@
             elements.dropdown.value = currentSelectedValue;
         }
         function jumpToWorkoutSection() {
-            // if (!elements.dropdown.value || elements.dropdown.value === "") return;
+            // stops function if the user hasn't selected a valid option from the dropdown menu
+            if (!elements.dropdown.value || elements.dropdown.value === "") return;
+            
+            // get target
             const targetCharPosition = parseInt(elements.dropdown.value, 10);
+
+            // FOCUS BYPASS: Tell the browser NOT to show a virtual keyboard
+            const originalInputMode = textarea.inputMode; // Save original state
+            textarea.inputMode = 'none'; 
 
             // 1. Move cursor to the target position
             elements.textbox.focus(); 
             elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
+
+            // Restore FOCUS BYPASS
+            setTimeout(() => {
+                textarea.inputMode = originalInputMode || '';
+            }, 50);
 
             // 2. Create a temporary element to mimic the textarea structure
             const textUpToTarget = elements.textbox.value.substring(0, targetCharPosition);
