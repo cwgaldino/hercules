@@ -272,9 +272,7 @@
         background: none; 
         cursor: pointer; 
     }
-
     </style>
-
 </head>
 <body>
     <!-- ----------------------------------------------------------------------
@@ -286,19 +284,19 @@
             <div class="horizontalBox-switches">
                 <span>Text</span>
                 <label class="switch">
-                    <input type="checkbox" id="textToggle" checked>
+                    <input type="checkbox" id="toggleText" checked onchange="applyBlockRules()">
                     <span class="slider-switch"></span>
                 </label>
 
                 <span>Scroll</span>
                 <label class="switch">
-                    <input type="checkbox" id="scrollToggle" checked>
+                    <input type="checkbox" id="toggleScroll" checked onchange="applyBlockRules()">
                     <span class="slider-switch"></span>
                 </label>
             </div>
 
-            <select id="dropdown" class="dropdown1" tabindex="-1">
-                <option value="">Select Workout Session</option>
+            <select id="dropdown" class="dropdown1" tabindex="-1" onchange="jumpToWorkoutSection()">
+                <option value="">Select Workout</option>
             </select>
             <textarea id="textbox"></textarea>
         </div>
@@ -307,14 +305,14 @@
             <div class="horizontalBox-switches">
                 <span>Buttons</span>
                 <label class="switch">
-                    <input type="checkbox" id="textToggle" checked>
+                    <input type="checkbox" id="toggleButtons" checked onchange="applyBlockRules()">
                     <span class="slider-switch"></span>
                 </label>
             </div>
 
-            <button id="button-settings" class="button1" onclick="toggleModal('modal-settings', true)">⚙️</button>
-            <button id="button-timer"    class="button1" onclick="toggleModal('modal-timer', true)">⏰</button>
-            <button id="button-hr"       class="button1">❤️</button>
+            <button id="buttonSettings" class="button1" onclick="toggleModal('modalSettings', true)">⚙️</button>
+            <button id="buttonTimer"    class="button1" onclick="toggleModal('modalTimer', true)">⏰</button>
+            <button id="buttonHR"       class="button1">❤️</button>
 
             <textarea id="textbox2"></textarea>
         </div>
@@ -336,7 +334,7 @@
     <!-- ----------------------------------------------------------------------
     SETTINGS PANEL 
     ----------------------------------------------------------------------- -->
-    <div class="modal" id="modal-settings">
+    <div class="modal" id="modalSettings">
         <div class="modal-content">
             <h3>Settings</h3>
 
@@ -424,17 +422,16 @@
   
             
             <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="triggerTestAlert()">⚡ Test Alert</button>
-            <button class="button4" style="width:100%;" onclick="toggleModal('modal-settings', false)">Close</button>
+            <button class="button4" style="width:100%;" onclick="toggleModal('modalSettings', false)">Close</button>
 
 
         </div>
     </div>
     
-
     <!-- ----------------------------------------------------------------------
     TIMER PANEL 
     ----------------------------------------------------------------------- -->
-    <div class="modal" id="modal-timer">
+    <div class="modal" id="modalTimer">
         <div class="modal-content">
             <h3>Timer Settings</h3>
 
@@ -458,7 +455,7 @@
                 </div>
             </div>
 
-            <button class="button4" style="width:100%;" onclick="toggleModal('modal-timer', false)">Close</button>
+            <button class="button4" style="width:100%;" onclick="toggleModal('modalTimer', false)">Close</button>
 
         </div>
     </div>
@@ -468,7 +465,16 @@
         // ELEMENTS
         // ====================================================================
         const elements = {
-            textbox: document.getElementById('textbox'),
+            textbox:        document.getElementById('textbox'),
+            dropdown:       document.getElementById('dropdown'),
+
+            buttonSettings: document.getElementById('buttonSettings'),
+            buttonTimer:    document.getElementById('buttonTimer'),
+            buttonHR:       document.getElementById('buttonHR'),
+
+            toggleText:     document.getElementById('toggleText'),
+            toggleScroll:   document.getElementById('toggleScroll'),
+            toggleButtons:  document.getElementById('toggleButtons'),
             };
 
         // ====================================================================
@@ -509,22 +515,145 @@
         // Save state when text changes
         elements.textbox.addEventListener('input', () => {
             currentState.text = elements.textbox.value;
+            parseWorkoutHeaders();
             saveState();
         });
 
         
+        function applyBlockRules() {
+            const isBlocked1 = !elements.toggleText.checked;
+            elements.textbox.readOnly = isBlocked1;
+            if (isBlocked1) {
+                elements.textbox.blur(); 
+            }
+
+            const isBlocked2 = !elements.toggleScroll.checked;
+            if (isBlocked2) {
+                elements.textbox.style.overflowY = 'hidden';
+            } else {
+                elements.textbox.style.overflowY = 'auto';
+            }
+            // if (isBlocked2) {
+            //     // 1. If switch is ON: Allow scrolling, show scrollbar, and remove touch blocker
+            //     elements.textbox.style.overflowY = 'auto';
+                
+            //     if (activeNotesScrollBlocker) {
+            //         elements.textbox.removeEventListener('touchmove', activeNotesScrollBlocker);
+            //         activeNotesScrollBlocker = null;
+            //     }
+            // } else {
+            //     // 2. If switch is OFF: Lock scrolling, hide scrollbar, and intercept touches
+            //     elements.textbox.style.overflowY = 'hidden';
+
+            //     if (!activeNotesScrollBlocker) {
+            //         activeNotesScrollBlocker = function(e) {
+            //             // If it's a multi-line box, stop the browser from scrolling inside it
+            //             if (e.cancelable) e.preventDefault();
+            //         };
+                    
+            //         // passive: false is mandatory to let e.preventDefault() work
+            //         elements.textbox.addEventListener('touchmove', activeNotesScrollBlocker, { passive: false });
+            //     }
+            
+
+            const isBlocked3 = !elements.toggleButtons.checked;
+            elements.buttonSettings.disabled = isBlocked3;
+            elements.buttonTimer.disabled    = isBlocked3;
+            elements.buttonHR.disabled       = isBlocked3;
+        }
+
+       
+
         // ====================================================================
         // OTHER
         // ====================================================================
         function toggleModal(modalId, show) { 
             document.getElementById(modalId).style.display = show ? 'flex' : 'none';
         }
+        function parseWorkoutHeaders() {
+            const lines = elements.textbox.value.split('\n');
+            const currentSelectedValue = elements.dropdown.value;
+            elements.dropdown.innerHTML = '<option value="">Select Workout</option>';
+            let characterCount = 0;
+            lines.forEach((line) => {
+                if (line.trim().startsWith('#')) {
+                    const cleanTitle = line.replace('#', '').trim();
+                    if (cleanTitle.length > 0) {
+                        const option = document.createElement('option');
+                        option.value = characterCount; option.textContent = line.trim();
+                        elements.dropdown.appendChild(option);
+                    }
+                }
+                characterCount += line.length + 1;
+            });
+            elements.dropdown.value = currentSelectedValue;
+        }
+        function jumpToWorkoutSection() {
+            if (!elements.dropdown.value || elements.dropdown.value === "") return;
+            const targetCharPosition = parseInt(elements.dropdown.value, 10);
 
+            // 1. Move cursor to the target position
+            elements.textbox.focus(); 
+            elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
+
+            // 2. Create a temporary element to mimic the textarea structure
+            const textUpToTarget = elements.textbox.value.substring(0, targetCharPosition);
+            
+            // 3. Create a mirror element to measure exact height layout shifts
+            const mirror = document.createElement('div');
+            const style = window.getComputedStyle(elements.textbox);
+            
+            mirror.style.whiteSpace = 'pre-wrap';
+            mirror.style.wordWrap   = 'break-word';
+            mirror.style.position   = 'absolute';
+            mirror.style.visibility = 'hidden';
+            mirror.style.width      = style.width;
+            mirror.style.font       = style.font;
+            mirror.style.padding    = style.padding;
+            mirror.style.boxSizing  = style.boxSizing;
+            
+            // Set text up to target and append a dummy marker text block
+            mirror.textContent = textUpToTarget;
+            document.body.appendChild(mirror);
+            
+            // 4. Read the exact height calculation up to the line
+            const exactScrollTop = mirror.offsetHeight - parseFloat(style.paddingTop || 0);
+            
+            // Clean up the temporary mirror element
+            document.body.removeChild(mirror);
+
+            // 5. Check if the text area can actually scroll that far
+            // Max scroll top is the total content height minus the visible height of the box
+            const maxScrollTop = elements.textbox.scrollHeight - elements.textbox.clientHeight;
+
+            if (exactScrollTop > maxScrollTop) {
+                // Calculate how many vertical pixels we are short
+                const deficitPixels = exactScrollTop - maxScrollTop;
+                
+                // Determine the height of a single line to calculate how many newlines to add
+                const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2;
+                const newLinesNeeded = Math.ceil(deficitPixels / lineHeight);
+                
+                // Append the exact number of empty lines needed to the end of the text
+                elements.textbox.value += "\n".repeat(newLinesNeeded);
+
+                // PUT THE CURSOR BACK TO YOUR TARGET POSITION HERE
+                // not sure this is relevant for cellphone, only for pc
+                elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
+            }
+
+            // 6. Finally, execute the scroll
+            elements.textbox.scrollTop = exactScrollTop;
+
+            // remove focus from textbox
+            textarea.blur(); 
+        }
 
         // ====================================================================
         // INITIALIZATION 
         // ====================================================================
         applyState()
+        parseWorkoutHeaders()
 
     </script>
 </body>
