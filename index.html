@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #44ad14;
+            background: #1e14ad;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -838,12 +838,12 @@
                 if (timeRemainingSeconds <= 0) {
                     clearInterval(countdownInterval); 
                     isCountingDown = false; 
+                    document.getElementById('textbox2').value = 'ssrrrrrrrrss'
                     elements.buttonRest.innerText = "Rest";
                     triggerActiveAlerts(); 
                     timeRemainingSeconds = currentState.presets[currentState.presetIndex];
                 } else elements.buttonRest.innerText = `Resting... ${timeRemainingSeconds}s`;
             }, 1000);
-            document.getElementById('textbox2').value = 'aaaaaa'
         }
 
         // ====================================================================
