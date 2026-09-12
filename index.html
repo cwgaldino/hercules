@@ -830,7 +830,6 @@
                 return;
             }
             stopAllAlerts(); 
-            document.getElementById('textbox2').value = 'ssss'
             isCountingDown = true; 
             elements.buttonRest.innerText = `Resting... ${timeRemainingSeconds}s`;
             countdownInterval = setInterval(() => {
@@ -840,7 +839,6 @@
                     isCountingDown = false; 
                     elements.buttonRest.innerText = "Rest";
                     triggerActiveAlerts(); 
-                    document.getElementById('textbox2').value = 'ssrrrrrrrrss'
                     timeRemainingSeconds = currentState.presets[currentState.presetIndex];
                 } else elements.buttonRest.innerText = `Resting... ${timeRemainingSeconds}s`;
             }, 1000);
