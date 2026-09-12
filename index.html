@@ -324,10 +324,10 @@
     ----------------------------------------------------------------------- -->
     <div class="bottom">
         <div class="horizontal-button-box">
-            <button id="button-preset1" class="button1" onclick="selectPreset(1)">40 s</button>
-            <button id="button-preset2" class="button1" onclick="selectPreset(2)">60 s</button>
-            <button id="button-preset3" class="button1" onclick="selectPreset(3)">90 s</button>
-            <button id="button-preset4" class="button1" onclick="selectPreset(4)">120 s</button>
+            <button id="buttonPreset1" class="button1" onclick="selectPreset(1)">40 s</button>
+            <button id="buttonPreset2" class="button1" onclick="selectPreset(2)">60 s</button>
+            <button id="buttonPreset3" class="button1" onclick="selectPreset(3)">90 s</button>
+            <button id="buttonPreset4" class="button1" onclick="selectPreset(4)">120 s</button>
         </div>
         <button id="button-rest" class="button3">Rest</button>
     </div>
@@ -478,14 +478,14 @@
             toggleButtons:        document.getElementById('toggleButtons'),
             toggleDragToRefresh:  document.getElementById('toggleDragToRefresh'),
 
-            sliderPreset1:      document.getElementById('sliderPreset1'),
-            sliderPreset2:      document.getElementById('sliderPreset2'),
-            sliderPreset3:      document.getElementById('sliderPreset3'),
-            sliderPreset4:      document.getElementById('sliderPreset4'),
-            sliderLabelPreset1: document.getElementById('sliderLabelPreset1'),
-            sliderLabelPreset2: document.getElementById('sliderLabelPreset2'),
-            sliderLabelPreset3: document.getElementById('sliderLabelPreset3'),
-            sliderLabelPreset4: document.getElementById('sliderLabelPreset4'),
+            // sliderPreset1:      document.getElementById('sliderPreset1'),
+            // sliderPreset2:      document.getElementById('sliderPreset2'),
+            // sliderPreset3:      document.getElementById('sliderPreset3'),
+            // sliderPreset4:      document.getElementById('sliderPreset4'),
+            // sliderLabelPreset1: document.getElementById('sliderLabelPreset1'),
+            // sliderLabelPreset2: document.getElementById('sliderLabelPreset2'),
+            // sliderLabelPreset3: document.getElementById('sliderLabelPreset3'),
+            // sliderLabelPreset4: document.getElementById('sliderLabelPreset4'),
 
             };
 
@@ -496,9 +496,8 @@
             text: `Use # to name sessions (e.g., # Chest);
             Write your workout routine here...`,
             toggleDragToRefresh: false,
-            darkMode: false,
-            largeKeyboard: true,
-            keepScreenAwake: false,
+
+            presets: { 1: 40, 2: 60, 3: 90, 4: 120 },
         };
 
         const currentState = {
@@ -509,6 +508,15 @@
         function applyState() {
             elements.textbox.value = currentState.text;
             elements.toggleDragToRefresh.checked = currentState.toggleDragToRefresh;
+
+            elements.sliderPreset1.value = currentState.preset1;
+            elements.sliderPreset2.value = currentState.preset2;
+            elements.sliderPreset3.value = currentState.preset3;
+            elements.sliderPreset4.value = currentState.preset4;
+
+            elements.sliderLabelPreset1.value = currentState.preset1;
+
+
         }
 
         function saveState() {
@@ -553,13 +561,13 @@
             elements.buttonTimer.disabled    = isBlocked3;
             elements.buttonHR.disabled       = isBlocked3;
 
-
+            // drag to refresh
             const isBlocked4 = !elements.toggleDragToRefresh.checked;
             const value = isBlocked4 ? 'none' : 'auto';
-
             document.documentElement.style.overscrollBehaviorY = value;
             document.body.style.overscrollBehaviorY = value;
 
+            // update state
             currentState.toggleDragToRefresh = !isBlocked4;
             saveState();
 
@@ -602,69 +610,6 @@
             }
         }   
 
-
-
-
-
-
-        //     const isBlocked4 = !elements.toggleDragToRefresh.checked;
-        //     // document.documentElement.classList.toggle('lock-refresh', isBlocked4);
-        //     document.documentElement.style.overscrollBehaviorY = isBlocked4 ? 'none' : 'auto';
-        //     document.body.style.overscrollBehaviorY = isBlocked4 ? 'none' : 'auto';
-            
-        //     // update state
-        //     currentState.toggleDragToRefresh = !isBlocked4
-        //     saveState()
-
-        //     if (isBlocked4) {
-        //         if (!activeTouchHandler) {
-        //             let lastTouchY = 0;
-
-        //             activeTouchHandler = function (e) {
-        //                 if (e.touches.length !== 1) return;
-
-        //                 // Check if the user is touching a text box, textarea, or settings menu
-        //                 const target = e.target;
-                        
-        //                 // 1. Always allow normal scrolling/typing inside inputs and textareas
-        //                 if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') { return; }
-
-        //                 // 2. Check if they are touching an element that is meant to scroll internally
-        //                 // (Like your settings menu container)
-        //                 // const scrollableContainer = target.closest('.modal, #settingsModal, .scrollable');
-        //                 // const scrollableContent = target.closest('.modal-content');
-        //                 // if (scrollableContainer) {
-        //                 //     // If the internal container is scrolled down, don't block it
-        //                 //     if (scrollableContainer.scrollTop > 0) {
-        //                 //         return;
-        //                 //     }
-        //                 // }
-
-        //                 const touchY = e.touches[0].clientY; 
-        //                 const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-        //                 // Only block if the main background page is at the absolute top and pulling down
-        //                 if (windowScrollTop <= 0 && touchY > lastTouchY) {
-        //                     if (e.cancelable) e.preventDefault(); 
-        //                 }
-        //                 lastTouchY = touchY;
-        //             };
-
-        //             document.addEventListener('touchmove', activeTouchHandler, { passive: false });
-                    
-        //             document.addEventListener('touchstart', (e) => {
-        //                 if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
-        //             }, { passive: true });
-        //         }
-        //     } else {
-        //         if (activeTouchHandler) {
-        //             document.removeEventListener('touchmove', activeTouchHandler);
-        //             activeTouchHandler = null;
-        //         }
-        //     }
-        // }
-
-       
 
         // ====================================================================
         // OTHER
@@ -758,6 +703,16 @@
             elements.textbox.blur(); 
         }
 
+        function updateTimerSettings(num, val) {
+            // set slider text
+            document.getElementById(`sliderLabelPreset${num}`).innerText = `${val}s`; 
+
+            // set button text
+            document.getElementById(`buttonPreset${num}`).innerText = `${val}s`;
+
+            currentState.presets[num] = parseInt(val, 10); if (!isCountingDown && activePresetIndex === num) timeRemainingSeconds = currentPresets[num];
+            triggerStateSave();
+        }
         // ====================================================================
         // INITIALIZATION 
         // ====================================================================
