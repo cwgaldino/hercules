@@ -398,12 +398,12 @@
                 <h4>Alert Durations</h4>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><label>Audio Alert</label><span id="sliderLabelAudioDuration">2s</span></div>
-                    <input type="range" id="sliderAudioDuration" min="0.1" max="5" value="2" oninput="elements.sliderLabelAudioDuration.innerText = this.value + 's'; currentState.audioDuration = this.value;">
+                    <input type="range" id="sliderAudioDuration" min="1" max="5" value="2" oninput="elements.sliderLabelAudioDuration.innerText = this.value + 's'; currentState.audioDuration = this.value;">
                 </div>
                 
                 <div class="row-slider">
                     <div class="row-sliderLabel"><label>Visual Alert</label><span id="sliderLabelVisualDuration">2s</span></div>
-                    <input type="range" id="sliderVisualDuration" min="0.1" max="5" value="2" oninput="elements.sliderLabelVisualDuration.innerText = this.value + 's'; currentState.visualDuration = this.value;">
+                    <input type="range" id="sliderVisualDuration" min="1" max="5" value="2" oninput="elements.sliderLabelVisualDuration.innerText = this.value + 's'; currentState.visualDuration = this.value;">
                 </div>
             </div>
 
@@ -826,7 +826,7 @@
         }
 
         function startRestCountdown() {
-            triggerActiveAlerts()
+            runAudioAlert();
             
 
             if (isCountingDown) {
