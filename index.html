@@ -605,6 +605,7 @@
         function closeSettings() {
             saveState()
             updateDragToRefresh()
+
             // close modal
             document.getElementById("modalSettings").style.display = false ? 'flex' : 'none';
         }
@@ -654,7 +655,6 @@
                 }
             }
         }
-        
         
         // ====================================================================
         // EVENT LISTENERS 
@@ -789,6 +789,9 @@
         // ====================================================================
         // TIMER LOGIC
         // ====================================================================
+        let timeRemainingSeconds = 40;
+        let isCountingDown = false;
+        let countdownInterval = null;
         function closeTimer() {
             saveState()
 
@@ -805,19 +808,6 @@
             document.getElementById("modalTimer").style.display = false ? 'flex' : 'none';
         }
 
-        // function updateTimerSliderLabel(num, val) {
-        //     // set slider text
-        //     document.getElementById(`sliderLabelPreset${num}`).innerText = `${val}s`; 
-
-        //     // set button text
-        //     document.getElementById(`buttonPreset${num}`).innerText = `${val}s`;
-
-        //     // If the timer isn't running and this is the currently selected preset, sync the displayed remaining time to the updated preset value.   
-        //     currentState.presets[num] = parseInt(val, 10); if (!isCountingDown && currentState.presetIndex === num) timeRemainingSeconds = currentState.presets[num];
-            
-        //     // save state
-        //     saveState();
-        // }
         function selectPreset(index) {
             if (isCountingDown) return; 
             for (let i = 1; i <= 4; i++) document.getElementById(`buttonPreset${i}`).classList.remove('selected-preset');
@@ -829,9 +819,7 @@
             currentState.presetIndex = index
             saveState();
         }
-        let timeRemainingSeconds = 40;
-        let isCountingDown = false;
-        let countdownInterval = null;
+
         function startRestCountdown() {
             if (isCountingDown) {
                 clearInterval(countdownInterval); 
