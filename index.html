@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #aaad14;
+            background: #14ad60;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -345,7 +345,7 @@
                 <div class="verticalBox-switches"> 
                     <div class="row-switcher">
                         <label class="switch"> <input type="checkbox" id="toggleDragToRefresh" onchange="applyBlockRules()"><span class="slider-switch"></span></label>
-                        <span>Browser Drag-to-Refresh</span>
+                        <span>Drag-to-Refresh</span>
                     </div>
                 </div> 
 
@@ -478,7 +478,14 @@
             toggleButtons:        document.getElementById('toggleButtons'),
             toggleDragToRefresh:  document.getElementById('toggleDragToRefresh'),
 
-            toggleText:           document.getElementById('toggleText'),
+            sliderPreset1:      document.getElementById('sliderPreset1'),
+            sliderPreset2:      document.getElementById('sliderPreset2'),
+            sliderPreset3:      document.getElementById('sliderPreset3'),
+            sliderPreset4:      document.getElementById('sliderPreset4'),
+            sliderLabelPreset1: document.getElementById('sliderLabelPreset1'),
+            sliderLabelPreset2: document.getElementById('sliderLabelPreset2'),
+            sliderLabelPreset3: document.getElementById('sliderLabelPreset3'),
+            sliderLabelPreset4: document.getElementById('sliderLabelPreset4'),
 
             };
 
@@ -546,71 +553,116 @@
             elements.buttonTimer.disabled    = isBlocked3;
             elements.buttonHR.disabled       = isBlocked3;
 
+
             const isBlocked4 = !elements.toggleDragToRefresh.checked;
-            // document.documentElement.classList.toggle('lock-refresh', isBlocked4);
-            document.documentElement.style.overscrollBehaviorY = isBlocked4;
-            document.body.style.overscrollBehaviorY = isBlocked4;
-            
-            // update state
-            currentState.toggleDragToRefresh = !isBlocked4
-            saveState()
+            const value = isBlocked4 ? 'none' : 'auto';
 
-            if (!isBlocked4) {
-                const touchY = e.touches[0].clientY; 
-                const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            document.documentElement.style.overscrollBehaviorY = value;
+            document.body.style.overscrollBehaviorY = value;
 
-                // Only block if the main background page is at the absolute top and pulling down
-                if (windowScrollTop <= 0 && touchY > lastTouchY) {
-                    if (e.cancelable) e.preventDefault(); 
-                }
-                lastTouchY = touchY;
+            currentState.toggleDragToRefresh = !isBlocked4;
+            saveState();
 
+            if (isBlocked4) {
                 if (!activeTouchHandler) {
                     let lastTouchY = 0;
 
                     activeTouchHandler = function (e) {
                         if (e.touches.length !== 1) return;
-
-                        // Check if the user is touching a text box, textarea, or settings menu
                         const target = e.target;
-                        
-                        // 1. Always allow normal scrolling/typing inside inputs and textareas
-                        if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') { return; }
+                        if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') return;
 
-                        // 2. Check if they are touching an element that is meant to scroll internally
-                        // (Like your settings menu container)
-                        // const scrollableContainer = target.closest('.modal, #settingsModal, .scrollable');
-                        const scrollableContent = target.closest('.modal-content');
-                        if (scrollableContainer) {
-                            // If the internal container is scrolled down, don't block it
-                            if (scrollableContainer.scrollTop > 0) {
-                                return;
-                            }
-                        }
+                        const scrollable = target.closest('.modal-content');
+                        if (scrollable && scrollable.scrollTop > 0) return;
 
-                        const touchY = e.touches[0].clientY; 
-                        const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        const touchY = e.touches[0].clientY;
+                        const atTop = (window.pageYOffset || document.documentElement.scrollTop) <= 0;
 
-                        // Only block if the main background page is at the absolute top and pulling down
-                        if (windowScrollTop <= 0 && touchY > lastTouchY) {
-                            if (e.cancelable) e.preventDefault(); 
+                        if (atTop && touchY > lastTouchY && e.cancelable) {
+                            e.preventDefault();
                         }
                         lastTouchY = touchY;
                     };
 
-                    document.addEventListener('touchmove', activeTouchHandler, { passive: false });
-                    
-                    document.addEventListener('touchstart', (e) => {
+                    const onTouchStart = (e) => {
                         if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
-                    }, { passive: true });
+                    };
+
+                    document.addEventListener('touchmove', activeTouchHandler, { passive: false });
+                    document.addEventListener('touchstart', onTouchStart, { passive: true });
+                    // Store reference so we can remove both
+                    activeTouchHandler._touchStart = onTouchStart;
                 }
             } else {
                 if (activeTouchHandler) {
                     document.removeEventListener('touchmove', activeTouchHandler);
+                    document.removeEventListener('touchstart', activeTouchHandler._touchStart);
                     activeTouchHandler = null;
                 }
             }
-        }
+        }   
+
+
+
+
+
+
+        //     const isBlocked4 = !elements.toggleDragToRefresh.checked;
+        //     // document.documentElement.classList.toggle('lock-refresh', isBlocked4);
+        //     document.documentElement.style.overscrollBehaviorY = isBlocked4 ? 'none' : 'auto';
+        //     document.body.style.overscrollBehaviorY = isBlocked4 ? 'none' : 'auto';
+            
+        //     // update state
+        //     currentState.toggleDragToRefresh = !isBlocked4
+        //     saveState()
+
+        //     if (isBlocked4) {
+        //         if (!activeTouchHandler) {
+        //             let lastTouchY = 0;
+
+        //             activeTouchHandler = function (e) {
+        //                 if (e.touches.length !== 1) return;
+
+        //                 // Check if the user is touching a text box, textarea, or settings menu
+        //                 const target = e.target;
+                        
+        //                 // 1. Always allow normal scrolling/typing inside inputs and textareas
+        //                 if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') { return; }
+
+        //                 // 2. Check if they are touching an element that is meant to scroll internally
+        //                 // (Like your settings menu container)
+        //                 // const scrollableContainer = target.closest('.modal, #settingsModal, .scrollable');
+        //                 // const scrollableContent = target.closest('.modal-content');
+        //                 // if (scrollableContainer) {
+        //                 //     // If the internal container is scrolled down, don't block it
+        //                 //     if (scrollableContainer.scrollTop > 0) {
+        //                 //         return;
+        //                 //     }
+        //                 // }
+
+        //                 const touchY = e.touches[0].clientY; 
+        //                 const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        //                 // Only block if the main background page is at the absolute top and pulling down
+        //                 if (windowScrollTop <= 0 && touchY > lastTouchY) {
+        //                     if (e.cancelable) e.preventDefault(); 
+        //                 }
+        //                 lastTouchY = touchY;
+        //             };
+
+        //             document.addEventListener('touchmove', activeTouchHandler, { passive: false });
+                    
+        //             document.addEventListener('touchstart', (e) => {
+        //                 if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
+        //             }, { passive: true });
+        //         }
+        //     } else {
+        //         if (activeTouchHandler) {
+        //             document.removeEventListener('touchmove', activeTouchHandler);
+        //             activeTouchHandler = null;
+        //         }
+        //     }
+        // }
 
        
 
