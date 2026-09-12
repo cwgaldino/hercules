@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #14ad42;
+            background: #ad4c14;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -498,8 +498,7 @@
 
         function applyState() {
             elements.textbox.value = currentState.text;
-
-            elements.toggleDragToRefresh.value = currentState.toggleDragToRefresh;
+            elements.toggleDragToRefresh.checked = currentState.toggleDragToRefresh;
         }
 
         function saveState() {
@@ -548,8 +547,8 @@
             document.documentElement.style.overscrollBehaviorY = isBlocked4;
             document.body.style.overscrollBehaviorY = isBlocked4;
 
-            // update state
-            currentState.toggleDragToRefresh = isBlocked4
+            // // update state
+            currentState.toggleDragToRefresh = !isBlocked4
 
             saveState()
             // if (!isBlocked4) {
