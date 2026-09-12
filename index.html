@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #14ad6d;
+            background: #aaad14;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -345,7 +345,7 @@
                 <div class="verticalBox-switches"> 
                     <div class="row-switcher">
                         <label class="switch"> <input type="checkbox" id="toggleDragToRefresh" onchange="applyBlockRules()"><span class="slider-switch"></span></label>
-                        <span>Prevent Drag-to-Refresh</span>
+                        <span>Browser Drag-to-Refresh</span>
                     </div>
                 </div> 
 
@@ -439,20 +439,20 @@
             <div class="session-settings">
                 <h4>Buttons preset values (5s - 300s)</h4>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><span>Preset 1:</span><span id="lblCfg1">40s</span></div>
-                    <input type="range" id="cfgPreset1" min="5" max="300" value="40" oninput="updateSliderLabel(1, this.value)">
+                    <div class="row-sliderLabel"><span>Preset 1:</span><span id="sliderLabelPreset1">40s</span></div>
+                    <input type="range" id="sliderPreset1" min="5" max="300" value="40" oninput="updateSliderLabel(1, this.value)">
                 </div>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><span>Preset 2:</span><span id="lblCfg2">60s</span></div>
-                    <input type="range" id="cfgPreset2" min="5" max="300" value="60" oninput="updateSliderLabel(2, this.value)">
+                    <div class="row-sliderLabel"><span>Preset 2:</span><span id="sliderLabelPreset2">60s</span></div>
+                    <input type="range" id="sliderPreset2" min="5" max="300" value="60" oninput="updateSliderLabel(2, this.value)">
                 </div>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><span>Preset 3:</span><span id="lblCfg3">90s</span></div>
-                    <input type="range" id="cfgPreset3" min="5" max="300" value="90" oninput="updateSliderLabel(3, this.value)">
+                    <div class="row-sliderLabel"><span>Preset 3:</span><span id="sliderLabelPreset3">90s</span></div>
+                    <input type="range" id="sliderPreset3" min="5" max="300" value="90" oninput="updateSliderLabel(3, this.value)">
                 </div>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><span>Preset 4:</span><span id="lblCfg4">120s</span></div>
-                    <input type="range" id="cfgPreset4" min="5" max="300" value="120" oninput="updateSliderLabel(4, this.value)">
+                    <div class="row-sliderLabel"><span>Preset 4:</span><span id="sliderLabelPreset4">120s</span></div>
+                    <input type="range" id="sliderPreset4" min="5" max="300" value="120" oninput="updateSliderLabel(4, this.value)">
                 </div>
             </div>
 
@@ -477,6 +477,9 @@
             toggleScroll:         document.getElementById('toggleScroll'),
             toggleButtons:        document.getElementById('toggleButtons'),
             toggleDragToRefresh:  document.getElementById('toggleDragToRefresh'),
+
+            toggleText:           document.getElementById('toggleText'),
+
             };
 
         // ====================================================================
@@ -543,16 +546,16 @@
             elements.buttonTimer.disabled    = isBlocked3;
             elements.buttonHR.disabled       = isBlocked3;
 
-            const isBlocked4 = elements.toggleDragToRefresh.checked;
+            const isBlocked4 = !elements.toggleDragToRefresh.checked;
             // document.documentElement.classList.toggle('lock-refresh', isBlocked4);
-            // document.documentElement.style.overscrollBehaviorY = isBlocked4;
-            // document.body.style.overscrollBehaviorY = isBlocked4;
+            document.documentElement.style.overscrollBehaviorY = isBlocked4;
+            document.body.style.overscrollBehaviorY = isBlocked4;
             
             // update state
-            currentState.toggleDragToRefresh = isBlocked4
+            currentState.toggleDragToRefresh = !isBlocked4
             saveState()
 
-            if (isBlocked4) {
+            if (!isBlocked4) {
                 const touchY = e.touches[0].clientY; 
                 const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
