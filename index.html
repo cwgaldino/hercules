@@ -619,15 +619,18 @@
                 const deficitPixels = exactScrollTop - maxScrollTop;
                 
                 // Determine the height of a single line to calculate how many newlines to add
-                const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2;
-                const newLinesNeeded = Math.ceil(deficitPixels / lineHeight);
+                const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1;
+                const newLinesNeeded = Math.ceil(deficitPixels / lineHeight) + 4;
                 
-                // Append the exact number of empty lines needed to the end of the text
+                // Append the number of empty lines needed to the end of the text
                 elements.textbox.value += "\n".repeat(newLinesNeeded);
 
                 // PUT THE CURSOR BACK TO YOUR TARGET POSITION HERE
-                // not sure this is relevant for cellphone, only for pc
+                // not sure this is relevant for cellphone, maybe only for pc
                 elements.textbox.setSelectionRange(targetCharPosition, targetCharPosition);
+                
+                // save text with new lines at the bottom
+                saveState()
             }
 
             // 6. Finally, execute the scroll
