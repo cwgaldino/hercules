@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #ad4c14;
+            background: #a014ad;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -546,12 +546,13 @@
             document.documentElement.classList.toggle('lock-refresh', isBlocked4);
             document.documentElement.style.overscrollBehaviorY = isBlocked4;
             document.body.style.overscrollBehaviorY = isBlocked4;
-
+            
             // // update state
             currentState.toggleDragToRefresh = !isBlocked4
 
             saveState()
-            // if (!isBlocked4) {
+            if (isBlocked4) {
+                document.body.style.paddingTop = '1px';
             //     const touchY = e.touches[0].clientY; 
             //     const windowScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
@@ -605,7 +606,7 @@
             //         document.removeEventListener('touchmove', activeTouchHandler);
             //         activeTouchHandler = null;
             //     }
-            // }
+            }
         }
 
        
