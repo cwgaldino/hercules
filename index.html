@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #1417ad;
+            background: #ad1414;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -593,6 +593,8 @@
             selectPreset(currentState.presetIndex);
             updateDragToRefresh();
             stopAllAlerts();
+            triggerActiveAlerts();
+            document.getElementById('textbox2').value = 'ssssasdfasdfasdfsdaf'
         }
 
         function saveState() {
@@ -672,6 +674,12 @@
             parseWorkoutHeaders();
             saveState();
         });
+        // reset dropdown if scroll text
+        let scrollDebounce;
+        elements.textbox.addEventListener('scroll', () => {
+            clearTimeout(scrollDebounce);
+            scrollDebounce = setTimeout(() => reset_dropdown(), 300);
+        });   
 
         let activeTouchHandler = null;
         function applyBlockRules() {
