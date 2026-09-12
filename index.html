@@ -76,7 +76,7 @@
             width: 100%;
             padding: 5px;
             /* background: #161b26; */
-            background: #1423ad;
+            background: #14ad6d;
             border: 1px solid #334155;
             border-radius: 12px;
             color: white;
@@ -523,6 +523,7 @@
         });
 
         
+        let activeTouchHandler = null;
         function applyBlockRules() {
             const isBlocked1 = !elements.toggleText.checked;
             elements.textbox.readOnly = isBlocked1;
