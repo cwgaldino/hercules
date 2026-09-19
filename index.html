@@ -562,7 +562,7 @@
             elements.textbox.value = currentState.text;
 
             // rest
-            for (let i = 1; i <= 4; i++) document.getElementById(`buttonPreset${i}`).innerText = currentState.presets[i] + 's';
+            for (let i = 1; i <= 4; i++) elements.buttonPreset[i].innerText = currentState.presets[i] + 's';
 
             // block
             elements.toggleText.checked    = currentState.isTextActive;
@@ -601,7 +601,13 @@
             
             // functions
             selectPreset(currentState.presetIndex);
-            applyBlockRules();
+
+            // update block
+            updateText(!currentState.isTextActive)
+            updateScroll(!currentState.isScrollActive)
+            updateButtons(!currentState.isButtonsActive)
+            updateDragToRefresh(!currentState.isRefreshActive)
+
         }
 
         function saveState() {
@@ -617,31 +623,21 @@
             // text
             const isChecked1 = elements.toggleText.checked
             if (currentState.isTextActive != isChecked1) {
-                const isBlocked1 = !elements.toggleText.checked;
-                elements.textbox.readOnly = !isChecked1;
-                if (!isChecked1) {
-                    elements.textbox.blur(); 
-                }
+                updateText(!isChecked1)
                 currentState.isTextActive = isChecked1
             }
 
             // scroll
             const isChecked2 = elements.toggleScroll.checked
             if (currentState.isScrollActive != isChecked2) {
-                if (!isChecked2) {
-                    elements.textbox.style.overflowY = 'hidden';
-                } else {
-                    elements.textbox.style.overflowY = 'auto';
-                }
+                updateScroll(!isChecked2)
                 currentState.isScrollActive = isChecked2
             }
 
             // butons
             const isChecked3 = elements.toggleButtons.checked
-            if (currentState.isButtonsActive != isChecked2) {
-                elements.buttonSettings.disabled = !isChecked3;
-                elements.buttonTimer.disabled    = !isChecked3;
-                elements.buttonHR.disabled       = !isChecked3;
+            if (currentState.isButtonsActive != isChecked3) {
+                updateButtons(!isChecked3)
                 currentState.isButtonsActive = isChecked3
             }
 
@@ -655,6 +651,27 @@
             // save current state
             localStorage.setItem('currentState', JSON.stringify(currentState));
         }   
+
+        function updateText(isBlocked) {
+            elements.textbox.readOnly = isBlocked;
+            if (isBlocked) {
+                elements.textbox.blur(); 
+            }
+        }
+
+        function updateScroll(isBlocked) {
+            if (isBlocked) {
+                elements.textbox.style.overflowY = 'hidden';
+            } else {
+                elements.textbox.style.overflowY = 'auto';
+            }
+        }
+
+        function updateButtons(isBlocked) {
+            elements.buttonSettings.disabled = isBlocked;
+            elements.buttonTimer.disabled    = isBlocked;
+            elements.buttonHR.disabled       = isBlocked;
+        }
 
         function updateDragToRefresh(isBlocked) {
             // drag to refresh
