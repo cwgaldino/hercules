@@ -3,307 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Band 9 Heart Rate Tracker</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#e91e63">
+    <title>PWA Heart Rate Monitor</title>
+    
+    <!-- 1. Inline Web Manifest using a Data URI -->
+    <link rel="manifest" href='data:application/json,{"name":"PWA Heart Rate Monitor","short_name":"HeartRate","start_url":".","display":"standalone","background_color":"#1e1e2e","theme_color":"#1e1e2e","orientation":"portrait","icons":[{"src":"https://flaticon.com","type":"image/png","sizes":"512x512"}]}'>
+    
+    <meta name="theme-color" content="#1e1e2e">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #121212;
-            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #1e1e2e;
+            color: #cdd6f4;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            margin: 0;
+            padding: 20px;
             box-sizing: border-box;
         }
         .card {
-            background-color: #1e1e1e;
-            padding: 30px;
+            background-color: #252538;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             text-align: center;
-            max-width: 400px;
             width: 100%;
+            max-width: 350px;
         }
         h1 {
             font-size: 1.5rem;
             margin-bottom: 20px;
-            color: #b3b3b3;
+            color: #f5c2e7;
         }
         .hr-display {
             font-size: 5rem;
             font-weight: bold;
-            color: #e91e63;
             margin: 20px 0;
-            transition: transform 0.1s ease;
+            color: #f38ba8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .hr-display.pulse {
-            transform: scale(1.1);
+        .heart-icon {
+            display: inline-block;
+            animation: pulse 1s infinite alternate paused;
         }
-        .unit {
-            font-size: 1.5rem;
-            color: #888;
-            margin-left: 5px;
-        }
-        button {
-            background-color: #e91e63;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.2s;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #d81b60;
-        }
-        button:disabled {
-            background-color: #444;
-            color: #888;
-            cursor: not-allowed;
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
         }
         .status {
-            margin-top: 15px;
             font-size: 0.9rem;
-            color: #888;
-        }
-        .instructions {
-            background-color: #2a2a2a;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            text-align: left;
-            color: #bbb;
+            color: #a6adc8;
             margin-bottom: 20px;
-            line-height: 1.4;
         }
-        .instructions ol {
-            margin: 5px 0 0 20px;
-            padding: 0;
+        button {
+            background-color: #89b4fa;
+            color: #11111b;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+        button:active {
+            background-color: #74c7ec;
+        }
+        button:disabled {
+            background-color: #45475a;
+            color: #7f849c;
         }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="instructions">
-        <strong>Prerequisite:</strong>
-        <ol>
-            <li>Open Mi Fitness App -> Device -> Health Monitoring -> Heart Rate.</li>
-            <li>Turn ON <strong>Heart Rate Broadcast</strong> / Sharing.</li>
-        </ol>
+    <div class="card">
+        <h1>Polar H10 Monitor</h1>
+        <div class="status" id="status">Disconnected</div>
+        <div class="hr-display">
+            <span class="heart-icon" id="heart">❤️</span>
+            <span id="bpm">--</span>
+        </div>
+        <button id="connectBtn">Connect Sensor</button>
     </div>
-    
-    <h1>Mi Band 9 Heart Rate</h1>
-    <div class="hr-display" id="hrValue">--<span class="unit">BPM</span></div>
-    <div class="status" id="statusText">Disconnected</div>
-    <button id="connectBtn">Connect Band</button>
-</div>
 
-<script>
-    const MIBAND_SERVICE_UUID = '0000fee0-0000-1000-8000-00805f9b34fb';
-    const AUTH_CHARACTERISTIC_UUID = '00000009-0000-1000-8000-00805f9b34fb';
-    const HEART_RATE_SERVICE_UUID = '0000180d-0000-1000-8000-00805f9b34fb';
-    const HR_MEASUREMENT_UUID = '00002a37-0000-1000-8000-00805f9b34fb';
-    const HR_CONTROL_UUID = '00002a39-0000-1000-8000-00805f9b34fb';
-
-    let authCharacteristic, hrControlCharacteristic;
-    const statusDiv = document.getElementById('status');
-    const hrDisplay = document.getElementById('hrValue');
-
-    function updateStatus(text) {
-      statusDiv.innerText = text;
-      console.log(text);
-    }
-
-    function parseHexKey(hexString) {
-      if (hexString.length !== 32) throw new Error("Key must be exactly 32 hex characters.");
-      const key = new Uint8Array(16);
-      for (let i = 0; i < 16; i++) {
-        key[i] = parseInt(hexString.substr(i * 2, 2), 16);
-      }
-      return key;
-    }
-
-    // Hooking the Web Bluetooth request to the button click event
-    document.getElementById('connectBtn').addEventListener('click', async () => {
-      const userHexKey = document.getElementById('authKeyInput').value.trim();
-      
-      if (userHexKey.length !== 32) {
-        alert("Please enter a valid 32-character hex key.");
-        return;
-      }
-
-      let secretKeyBytes;
-      try {
-        secretKeyBytes = parseHexKey(userHexKey);
-      } catch (e) {
-        alert(e.message);
-        return;
-      }
-
-      try {
-        updateStatus("Requesting Mi Band 9 device...");
-        const device = await navigator.bluetooth.requestDevice({
-          filters: [{ services: [MIBAND_SERVICE_UUID] }],
-          optionalServices: [HEART_RATE_SERVICE_UUID]
-        });
-
-        updateStatus("Connecting to GATT Server...");
-        const server = await device.gatt.connect();
-
-        updateStatus("Accessing authentication service...");
-        const xiaomiService = await server.getPrimaryService(MIBAND_SERVICE_UUID);
-        authCharacteristic = await xiaomiService.getCharacteristic(AUTH_CHARACTERISTIC_UUID);
-
-        updateStatus("Fetching heart rate controllers...");
-        const hrService = await server.getPrimaryService(HEART_RATE_SERVICE_UUID);
-        hrControlCharacteristic = await hrService.getCharacteristic(HR_CONTROL_UUID);
-        const hrMeasurement = await hrService.getCharacteristic(HR_MEASUREMENT_UUID);
-
-        updateStatus("Subscribing to auth notifications...");
-        await authCharacteristic.startNotifications();
-        authCharacteristic.addEventListener('characteristicvaluechanged', (e) => handleAuthNotification(e, secretKeyBytes, hrMeasurement));
-
-        updateStatus("Sending authorization challenge request...");
-        const requestChallengeCmd = new Uint8Array([0x02, 0x00]); 
-        await authCharacteristic.writeValue(requestChallengeCmd);
-
-      } catch (error) {
-        updateStatus(`BLE Error: ${error.message}`);
-      }
-    });
-
-    async function handleAuthNotification(event, secretKey, hrMeasurementChar) {
-      const value = new Uint8Array(event.target.value.buffer);
-
-      if (value[0] === 0x10 && value[1] === 0x02 && value[2] === 0x01) {
-        updateStatus("Challenge received! Solving encryption...");
-        
-        const challengeBytes = value.slice(3, 19); 
-        const cryptoKey = await crypto.subtle.importKey(
-          "raw", secretKey, { name: "AES-CBC" }, false, ["encrypt"]
-        );
-        
-        const zeroIv = new Uint8Array(16); 
-        const encryptedBuffer = await crypto.subtle.encrypt(
-          { name: "AES-CBC", iv: zeroIv }, cryptoKey, challengeBytes
-        );
-        
-        const encryptedSolution = new Uint8Array(encryptedBuffer).slice(0, 16);
-        const responseCmd = new Uint8Array(18);
-        responseCmd[0] = 0x03;
-        responseCmd[1] = 0x00;
-        responseCmd.set(encryptedSolution, 2);
-
-        updateStatus("Sending solution back to band...");
-        await authCharacteristic.writeValue(responseCmd);
-      } 
-      
-      else if (value[0] === 0x10 && value[1] === 0x03 && value[2] === 0x01) {
-        updateStatus("Authenticated! Starting heart rate sensor...");
-        
-        // Command to wake up continuous tracking
-        await hrControlCharacteristic.writeValue(new Uint8Array([0x01, 0x01]));
-
-        updateStatus("Connected & Streaming Data");
-        await hrMeasurementChar.startNotifications();
-        hrMeasurementChar.addEventListener('characteristicvaluechanged', (e) => {
-          const hrValue = new Uint8Array(e.target.value.buffer);
-          // Standard GATT layout puts the actual heart rate index in byte position 1
-          hrDisplay.innerText = hrValue[1];
-        });
-      } 
-      
-      else if (value[2] === 0x04) {
-        updateStatus("Authentication rejected! Incorrect Auth Key.");
-      }
-    }
-
-
-
-
-
-
-    const connectBtn = document.getElementById('connectBtn');
-    const hrValue = document.getElementById('hrValue');
-    const statusText = document.getElementById('statusText');
-
-    let bluetoothDevice = null;
-
-    connectBtn.addEventListener('click', async () => {
-        if (!navigator.bluetooth) {
-            alert('Web Bluetooth is not supported on this browser or context (requires HTTPS).');
-            return;
+    <script>
+        // 2. Generate and Register Service Worker Inline using Blob URL
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'hr-pwa-v2';
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(['.'])));
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const blobURL = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(blobURL, { scope: './' })
+                .then(() => console.log('Inline Service Worker Registered'))
+                .catch(err => console.error('SW Registration Failed:', err));
         }
 
-        try {
-            statusText.textContent = "Searching for Mi Band...";
-            // Filters by standard Heart Rate service
-            bluetoothDevice = await navigator.bluetooth.requestDevice({
-                filters: [{ services: ['heart_rate'] }]
-            });
+        // 3. Web Bluetooth Core Logic
+        const connectBtn = document.getElementById('connectBtn');
+        const bpmDisplay = document.getElementById('bpm');
+        const statusDisplay = document.getElementById('status');
+        const heartIcon = document.getElementById('heart');
 
-            statusText.textContent = "Connecting to device...";
-            const server = await bluetoothDevice.gatt.connect();
+        let hrCharacteristic;
 
-            statusText.textContent = "Fetching Heart Rate Service...";
-            const service = await server.getPrimaryService('heart_rate');
-
-            statusText.textContent = "Fetching Characteristic...";
-            const characteristic = await service.getCharacteristic('heart_rate_measurement');
-
-            statusText.textContent = "Subscribing to heart rate updates...";
-            await characteristic.startNotifications();
-
-            statusText.textContent = "Connected & Active";
-            connectBtn.disabled = true;
-
-            characteristic.addEventListener('characteristicvaluechanged', (event) => {
-                const value = event.target.value;
-                const flags = value.getUint8(0);
-                const rate16Bits = flags & 0x01;
-                let heartRate;
-
-                if (rate16Bits) {
-                    heartRate = value.getUint16(1, true);
-                } else {
-                    heartRate = value.getUint8(1);
-                }
-
-                hrValue.innerHTML = `${heartRate}<span class="unit">BPM</span>`;
+        connectBtn.addEventListener('click', async () => {
+            try {
+                statusDisplay.textContent = "Searching for H10...";
                 
-                // Visual heartbeat effect
-                hrValue.classList.add('pulse');
-                setTimeout(() => hrValue.classList.remove('pulse'), 150);
-            });
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: ['heart_rate'] }]
+                });
 
-            bluetoothDevice.addEventListener('gattserverdisconnected', () => {
-                statusText.textContent = "Disconnected";
-                hrValue.innerHTML = `--<span class="unit">BPM</span>`;
-                connectBtn.disabled = false;
-            });
+                statusDisplay.textContent = "Connecting to device...";
+                device.addEventListener('gattserverdisconnected', onDisconnected);
 
-        } catch (error) {
-            console.error(error);
-            statusText.textContent = "Error: " + error.message;
+                const server = await device.gatt.connect();
+                
+                statusDisplay.textContent = "Getting Heart Rate Service...";
+                const service = await server.getPrimaryService('heart_rate');
+
+                statusDisplay.textContent = "Getting Measurement Characteristic...";
+                hrCharacteristic = await service.getCharacteristic('heart_rate_measurement');
+
+                await hrCharacteristic.startNotifications();
+                hrCharacteristic.addEventListener('characteristicvaluechanged', handleHrChanged);
+
+                statusDisplay.textContent = "Connected";
+                connectBtn.disabled = true;
+                heartIcon.style.animationPlayState = 'running';
+
+            } catch (error) {
+                console.error(error);
+                statusDisplay.textContent = "Connection failed: " + error.message;
+                heartIcon.style.animationPlayState = 'paused';
+            }
+        });
+
+        function handleHrChanged(event) {
+            const value = event.target.value;
+            const flags = value.getUint8(0);
+            const is16Bits = flags & 0x01;
+            
+            let heartRate;
+            if (is16Bits) {
+                heartRate = value.getUint16(1, true);
+            } else {
+                heartRate = value.getUint8(1);
+            }
+
+            bpmDisplay.textContent = heartRate;
+            
+            // Adjust heart pulse animation speed to real-time BPM
+            const duration = 60 / heartRate;
+            heartIcon.style.animationDuration = `${duration}s`;
         }
-    });
 
-    // Register simple Service Worker for PWA compliance
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(() => console.log('Service Worker Registered'))
-            .catch(err => console.error('Service Worker Registry Failed', err));
-    }
-</script>
+        function onDisconnected() {
+            statusDisplay.textContent = "Disconnected";
+            bpmDisplay.textContent = "--";
+            connectBtn.disabled = false;
+            heartIcon.style.animationPlayState = 'paused';
+        }
+    </script>
 </body>
 </html>
