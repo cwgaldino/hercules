@@ -328,8 +328,9 @@
             <button id="buttonTimer"    class="button1" onclick="toggleModal('modalTimer', true)">⏰</button>
             <button id="buttonHR"       class="button1">❤️</button>
 
-            <div class="hr-box">
-                <span id="bpm-display">--</span> <span class="unit">BPM</span>
+            <div class="verticalBox-HR">
+                <span id="textHRStatus">Disconnected</span>
+                <span id="textHRDisplay">--</span> <span class="unit">BPM</span>
             </div>
         </div>
     </div>
@@ -353,18 +354,6 @@
     <div class="modal" id="modalSettings">
         <div class="modal-content">
             <h3>Settings</h3>
-
-            <div class="session-settings">
-                <h4>Browser options</h4> 
-
-                <div class="verticalBox-switches"> 
-                    <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="toggleDragToRefresh" onchange="currentState.dragToRefresh = this.checked"><span class="slider-switch"></span></label>
-                        <span>Drag-to-Refresh</span>
-                    </div>
-                </div> 
-
-            </div>
 
             <div class="session-settings">
                 <h4>Alert Modes</h4>
@@ -436,7 +425,6 @@
 
             
   
-            
             <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="stopAllAlerts(); triggerActiveAlerts()">⚡ Test Alert</button>
             <button class="button4" style="width:100%;" onclick="closeSettings()">Save & Close</button>
 
@@ -486,8 +474,13 @@
 
             buttonSettings: document.getElementById('buttonSettings'),
             buttonTimer:    document.getElementById('buttonTimer'),
+            
+            // HR
             buttonHR:       document.getElementById('buttonHR'),
+            textHRStatus:   document.getElementById('textHRStatus'),
+            textHRDisplay:  document.getElementById('textHRDisplay'),
 
+            // block
             toggleText:     document.getElementById('toggleText'),
             toggleScroll:   document.getElementById('toggleScroll'),
             toggleButtons:  document.getElementById('toggleButtons'),
@@ -529,7 +522,7 @@
             };
 
         // ====================================================================
-        // STATE
+        // STATE LOGIC
         // ====================================================================
         // FOR TESTING             document.getElementById('textbox2').value = 'ssss'
         const defaultState = {
@@ -740,6 +733,84 @@
         //     clearTimeout(scrollDebounce);
         //     scrollDebounce = setTimeout(() => document.getElementById('dropdown1').selectedIndex = 0, 300);
         // });   
+
+        // ====================================================================
+        // BLUETOOTH LOGIC
+        // ====================================================================
+        // 2. Generate and Register Service Worker Inline using Blob URL
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'hr-pwa-v2';
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(['.'])));
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const blobURL = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(blobURL, { scope: './' })
+                .then(() => console.log('Inline Service Worker Registered'))
+                .catch(err => console.error('SW Registration Failed:', err));
+        }
+
+        // 3. Web Bluetooth Core Logic
+        let hrCharacteristic;
+        elements.buttonHR.addEventListener('click', async () => {
+            try {
+                elements.textHRStatus.textContent = "Searching for H10...";
+                
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: ['heart_rate'] }]
+                });
+
+                elements.textHRStatus.textContent = "Connecting to device...";
+                device.addEventListener('gattserverdisconnected', onDisconnected);
+
+                const server = await device.gatt.connect();
+                
+                elements.textHRStatus.textContent = "Getting Heart Rate Service...";
+                const service = await server.getPrimaryService('heart_rate');
+
+                elements.textHRStatus.textContent = "Getting Measurement Characteristic...";
+                hrCharacteristic = await service.getCharacteristic('heart_rate_measurement');
+
+                await hrCharacteristic.startNotifications();
+                hrCharacteristic.addEventListener('characteristicvaluechanged', handleHrChanged);
+
+                elements.textHRStatus.textContent = "Connected";
+                elements.buttonHR.disabled = true;
+
+            } catch (error) {
+                console.error(error);
+                elements.textHRStatus.textContent = "Connection failed: " + error.message;
+            }
+        });
+
+        function handleHrChanged(event) {
+            const value = event.target.value;
+            const flags = value.getUint8(0);
+            const is16Bits = flags & 0x01;
+            
+            let heartRate;
+            if (is16Bits) {
+                heartRate = value.getUint16(1, true);
+            } else {
+                heartRate = value.getUint8(1);
+            }
+
+            elements.textHRDisplay.textContent = heartRate;
+        }
+
+        function onDisconnected() {
+            elements.textHRStatus.textContent = "Disconnected";
+            elements.textHRDisplay.textContent = "--";
+            elements.buttonHR.disabled = false;
+        }
+
+
 
         // ====================================================================
         // OTHER
