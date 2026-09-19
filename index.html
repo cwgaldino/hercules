@@ -102,7 +102,7 @@
             /* border: 1px solid #273142; */
             gap: 8px;
 
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 800;
             color: #94a3b8;
             text-transform: uppercase;
@@ -313,6 +313,7 @@
             </select>
             <textarea id="textbox"></textarea>
         </div>
+
         <div class="top-right">
 
             <div class="horizontalBox-switches">
@@ -327,7 +328,9 @@
             <button id="buttonTimer"    class="button1" onclick="toggleModal('modalTimer', true)">⏰</button>
             <button id="buttonHR"       class="button1">❤️</button>
 
-            <textarea id="textbox2"></textarea>
+            <div class="hr-box">
+                <span id="bpm-display">--</span> <span class="unit">BPM</span>
+            </div>
         </div>
     </div>
 
