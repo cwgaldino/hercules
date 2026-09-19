@@ -102,7 +102,7 @@
             /* border: 1px solid #273142; */
             gap: 8px;
 
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 800;
             color: #94a3b8;
             text-transform: uppercase;
@@ -301,7 +301,7 @@
 
                 <span>Refresh</span>
                 <label class="switch">
-                    <input type="checkbox" id="toggleScroll2" checked onchange="applyBlockRules()">
+                    <input type="checkbox" id="toggleRefresh" checked onchange="applyBlockRules()">
                     <span class="slider-switch"></span>
                 </label>
 
@@ -485,10 +485,10 @@
             buttonTimer:    document.getElementById('buttonTimer'),
             buttonHR:       document.getElementById('buttonHR'),
 
-            toggleText:           document.getElementById('toggleText'),
-            toggleScroll:         document.getElementById('toggleScroll'),
-            toggleButtons:        document.getElementById('toggleButtons'),
-            toggleDragToRefresh:  document.getElementById('toggleDragToRefresh'),
+            toggleText:     document.getElementById('toggleText'),
+            toggleScroll:   document.getElementById('toggleScroll'),
+            toggleButtons:  document.getElementById('toggleButtons'),
+            toggleRefresh:  document.getElementById('toggleRefresh'),
 
             // rest
             buttonRest: document.getElementById('buttonRest'),
@@ -534,10 +534,10 @@
             Write your workout routine here...`,
 
             // blocks
-            activeText: true,
-            activeScroll: true,
-            activeButtons: true,
-            activeDragToRefresh: false,
+            isTextActive: true,
+            isScrollActive: true,
+            isButtonsActive: true,
+            isRefreshActive: false,
 
             // settings
             audio:  true,
@@ -564,14 +564,18 @@
 
         function applyState() {
             elements.textbox.value = currentState.text;
-            elements.toggleDragToRefresh.checked = currentState.toggleDragToRefresh;
 
             // rest
             for (let i = 1; i <= 4; i++) document.getElementById(`buttonPreset${i}`).innerText = currentState.presets[i] + 's';
 
+            // block
+            elements.toggleText.checked    = currentState.isTextActive;
+            elements.toggleScroll.checked  = currentState.isScrollActive;
+            elements.toggleButtons.checked = currentState.isButtonsActive;
+            elements.toggleRefresh.checked = currentState.isRefreshActive;
+
 
             // settings
-            elements.toggleDragToRefresh.checked         = currentState.dragToRefresh;
             elements.toggleAudio.checked                 = currentState.audio;
             elements.toggleVisual.checked                = currentState.visual;
             elements.toggleVoice.checked                 = currentState.voice;
@@ -601,33 +605,68 @@
             
             // functions
             selectPreset(currentState.presetIndex);
-            updateDragToRefresh();
+            applyBlockRules();
         }
 
         function saveState() {
             localStorage.setItem('currentState', JSON.stringify(currentState));
         }
 
-
         // ====================================================================
-        // SETTINGS LOGIC
+        // BLOCK LOGIC
         // ====================================================================
-        function closeSettings() {
-            saveState()
-            updateDragToRefresh()
+        let activeTouchHandler = null;
 
-            // close modal
-            document.getElementById("modalSettings").style.display = false ? 'flex' : 'none';
-        }
+        function applyBlockRules() {
+            // text
+            const isChecked1 = elements.toggleText.checked
+            if (currentState.isTextActive != isChecked1) {
+                const isBlocked1 = !elements.toggleText.checked;
+                elements.textbox.readOnly = !isChecked1;
+                if (!isChecked1) {
+                    elements.textbox.blur(); 
+                }
+                currentState.isTextActive = isChecked1
+            }
 
-        function updateDragToRefresh() {
+            // scroll
+            const isChecked2 = elements.toggleScroll.checked
+            if (currentState.isScrollActive != isChecked2) {
+                if (!isChecked2) {
+                    elements.textbox.style.overflowY = 'hidden';
+                } else {
+                    elements.textbox.style.overflowY = 'auto';
+                }
+                currentState.isScrollActive = isChecked2
+            }
+
+            // butons
+            const isChecked3 = elements.toggleButtons.checked
+            if (currentState.isButtonsActive != isChecked2) {
+                elements.buttonSettings.disabled = !isChecked3;
+                elements.buttonTimer.disabled    = !isChecked3;
+                elements.buttonHR.disabled       = !isChecked3;
+                currentState.isButtonsActive = isChecked3
+            }
+
+            // refresh
+            const isChecked4 = elements.toggleRefresh.checked
+            if (currentState.isRefreshActive != isChecked4) {
+                updateDragToRefresh(!isChecked4)
+                currentState.isRefreshActive = isChecked4
+            }
+            
+            // save current state
+            localStorage.setItem('currentState', JSON.stringify(currentState));
+        }   
+
+        function updateDragToRefresh(isBlocked) {
             // drag to refresh
-            const isBlocked4 = !currentState.dragToRefresh;
-            const value = isBlocked4 ? 'none' : 'auto';
+            const value = isBlocked ? 'none' : 'auto';
             document.documentElement.style.overscrollBehaviorY = value;
             document.body.style.overscrollBehaviorY = value;
             
-            if (isBlocked4) {
+            if (isBlocked) {
                 if (!activeTouchHandler) {
                     let lastTouchY = 0;
 
@@ -665,6 +704,17 @@
                 }
             }
         }
+
+        // ====================================================================
+        // SETTINGS LOGIC
+        // ====================================================================
+        function closeSettings() {
+            saveState()
+            updateDragToRefresh()
+
+            // close modal
+            document.getElementById("modalSettings").style.display = false ? 'flex' : 'none';
+        }
         
         // ====================================================================
         // EVENT LISTENERS 
@@ -687,27 +737,6 @@
         //     clearTimeout(scrollDebounce);
         //     scrollDebounce = setTimeout(() => document.getElementById('dropdown1').selectedIndex = 0, 300);
         // });   
-
-        let activeTouchHandler = null;
-        function applyBlockRules() {
-            const isBlocked1 = !elements.toggleText.checked;
-            elements.textbox.readOnly = isBlocked1;
-            if (isBlocked1) {
-                elements.textbox.blur(); 
-            }
-
-            const isBlocked2 = !elements.toggleScroll.checked;
-            if (isBlocked2) {
-                elements.textbox.style.overflowY = 'hidden';
-            } else {
-                elements.textbox.style.overflowY = 'auto';
-            }
-
-            const isBlocked3 = !elements.toggleButtons.checked;
-            elements.buttonSettings.disabled = isBlocked3;
-            elements.buttonTimer.disabled    = isBlocked3;
-            elements.buttonHR.disabled       = isBlocked3;
-        }   
 
         // ====================================================================
         // OTHER
