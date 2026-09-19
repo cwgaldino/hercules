@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Heart Rate Monitor</title>
+    
+    <!-- 1. Inline Web Manifest using a Data URI -->
+    <link rel="manifest" href='data:application/json,{"name":"PWA Heart Rate Monitor","short_name":"HeartRate","start_url":".","display":"standalone","background_color":"#1e1e2e","theme_color":"#1e1e2e","orientation":"portrait","icons":[{"src":"https://flaticon.com","type":"image/png","sizes":"512x512"}]}'>
+    
+    <meta name="theme-color" content="#1e1e2e">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #1e1e2e;
+            color: #cdd6f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background-color: #252538;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #f5c2e7;
+        }
+        .hr-display {
+            font-size: 5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #f38ba8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .heart-icon {
+            display: inline-block;
+            animation: pulse 1s infinite alternate paused;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+        .status {
+            font-size: 0.9rem;
+            color: #a6adc8;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #89b4fa;
+            color: #11111b;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+        button:active {
+            background-color: #74c7ec;
+        }
+        button:disabled {
+            background-color: #45475a;
+            color: #7f849c;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Polar H10 Monitor</h1>
+        <div class="status" id="status">Disconnected</div>
+        <div class="hr-display">
+            <span class="heart-icon" id="heart">❤️</span>
+            <span id="bpm">--</span>
+        </div>
+        <button id="connectBtn">Connect Sensor</button>
+    </div>
+
+    <script>
+        // 2. Generate and Register Service Worker Inline using Blob URL
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'hr-pwa-v2';
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(['.'])));
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const blobURL = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(blobURL, { scope: './' })
+                .then(() => console.log('Inline Service Worker Registered'))
+                .catch(err => console.error('SW Registration Failed:', err));
+        }
+
+        // 3. Web Bluetooth Core Logic
+        const connectBtn = document.getElementById('connectBtn');
+        const bpmDisplay = document.getElementById('bpm');
+        const statusDisplay = document.getElementById('status');
+        const heartIcon = document.getElementById('heart');
+
+        let hrCharacteristic;
+
+        connectBtn.addEventListener('click', async () => {
+            try {
+                statusDisplay.textContent = "Searching for H10...";
+                
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: ['heart_rate'] }]
+                });
+
+                statusDisplay.textContent = "Connecting to device...";
+                device.addEventListener('gattserverdisconnected', onDisconnected);
+
+                const server = await device.gatt.connect();
+                
+                statusDisplay.textContent = "Getting Heart Rate Service...";
+                const service = await server.getPrimaryService('heart_rate');
+
+                statusDisplay.textContent = "Getting Measurement Characteristic...";
+                hrCharacteristic = await service.getCharacteristic('heart_rate_measurement');
+
+                await hrCharacteristic.startNotifications();
+                hrCharacteristic.addEventListener('characteristicvaluechanged', handleHrChanged);
+
+                statusDisplay.textContent = "Connected";
+                connectBtn.disabled = true;
+                heartIcon.style.animationPlayState = 'running';
+
+            } catch (error) {
+                console.error(error);
+                statusDisplay.textContent = "Connection failed: " + error.message;
+                heartIcon.style.animationPlayState = 'paused';
+            }
+        });
+
+        function handleHrChanged(event) {
+            const value = event.target.value;
+            const flags = value.getUint8(0);
+            const is16Bits = flags & 0x01;
+            
+            let heartRate;
+            if (is16Bits) {
+                heartRate = value.getUint16(1, true);
+            } else {
+                heartRate = value.getUint8(1);
+            }
+
+            bpmDisplay.textContent = heartRate;
+            
+            // Adjust heart pulse animation speed to real-time BPM
+            const duration = 60 / heartRate;
+            heartIcon.style.animationDuration = `${duration}s`;
+        }
+
+        function onDisconnected() {
+            statusDisplay.textContent = "Disconnected";
+            bpmDisplay.textContent = "--";
+            connectBtn.disabled = false;
+            heartIcon.style.animationPlayState = 'paused';
+        }
+    </script>
+</body>
+</html>
