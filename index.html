@@ -167,8 +167,21 @@
             border-color: #007aff; 
             background-color: #007aff; 
         }
-
-
+    </style>
+    <!-- ----------------------------------------------------------------------
+    HR BOX
+    ----------------------------------------------------------------------- -->
+    <style>
+        .top-right-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: #161b26; 
+            border: 1px solid #334155;
+            padding: 5px; 
+            border-radius: 12px; 
+            font-size: 14px;
+        }
     </style>
     <!-- ----------------------------------------------------------------------
     MODAL OVERLAYS
@@ -278,8 +291,29 @@
         cursor: pointer; 
     }
     </style>
+    
+    <style>
+    /* Highly specific selector overrides your layout theme naturally without !important */
+    body.flickering-active, 
+    body.flickering-active .card, 
+    body.flickering-active input, 
+    body.flickering-active textarea, 
+    body.flickering-active .modal-content {
+        animation: screenFlicker var(--flicker-speed, 0.5s) infinite linear;
+    }
+
+    @keyframes screenFlicker {
+        0%, 100% {
+            background-color: var(--flicker-c2, #0b0f19);
+        }
+        50% {
+            background-color: var(--flicker-c1, #ff0000);
+        }
+    }
+    </style>
 </head>
 <body>
+
     <!-- ----------------------------------------------------------------------
     TOP PANEL 
     ----------------------------------------------------------------------- -->
@@ -324,11 +358,12 @@
                 </label>
             </div>
 
-            <button id="buttonSettings" class="button1" onclick="toggleModal('modalSettings', true)">⚙️</button>
-            <button id="buttonTimer"    class="button1" onclick="toggleModal('modalTimer', true)">⏰</button>
+            <!-- <button id="buttonSettings" class="button1" onclick="toggleModal('modalSettings', true)">⚙️</button> -->
+            <button id="buttonSettings" class="button1">⚙️</button>
+            <button id="buttonTimer"    class="button1">⏰</button>
             <button id="buttonHR"       class="button1">❤️</button>
 
-            <div class="verticalBox-HR">
+            <div class="top-right-bottom">
                 <span id="textHRStatus">Disconnected</span>
                 <span id="textHRDisplay">--</span> <span class="unit">BPM</span>
             </div>
@@ -356,78 +391,149 @@
             <h3>Settings</h3>
 
             <div class="session-settings">
-                <h4>Alert Modes</h4>
+                <h4>Audio Alert (Beep) - rest start</h4>
 
-                <div class="verticalBox-switches"> 
-                    <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="toggleAudio" onchange="currentState.audio = this.checked"><span class="slider-switch"></span></label>
-                        <span>Audio Alerts (Beep)</span>
-                    </div>
+                <div class="row-switcher">
+                    <span>On/Off</span>
+                    <label class="switch"> <input type="checkbox" id="toggleAudioStart" onchange="currentState.audio.start.isEnabled = this.checked"><span class="slider-switch"></span></label>
+                </div>
 
-                    <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="toggleVisual" onchange="currentState.visual = this.checked"><span class="slider-switch"></span></label>
-                        <span>Visual Alerts (Flicker)</span>
-                    </div>
-
-                    <div class="row-switcher">
-                        <label class="switch"> <input type="checkbox" id="toggleVoice" onchange="currentState.voice = this.checked"><span class="slider-switch"></span></label>
-                        <span>Voice Alerts</span>
-                    </div>
-
-                </div> 
-            </div>
-
-            <div class="session-settings">
-                <h4>Voice controls</h4>
-                <div class="row-text"><label for="voicePhrase">Voice Phrase:</label><input type="text" id="textVoicePhrase" value="Rest over" onchange="currentState.voicePhrase = this.value"></div>
-            </div>
-
-            <div class="session-settings">
-                <h4>Alert volume</h4>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><label>Audio Vol:</label><span id="sliderLabelAudioVolume">100%</span></div>
-                    <input type="range" id="sliderAudioVolume" min="0" max="100" value="10" oninput="elements.sliderLabelAudioVolume.innerText = this.value + '%'; currentState.audioVolume = this.value;">
+                    <div class="row-sliderLabel"><label>Volume</label><span id="sliderLabelAudioStartVolume">100%</span></div>
+                    <input type="range" id="sliderAudioStartVolume" min="0" max="100" oninput="elements.audio.start.volumeLabel.innerText = this.value + '%'; currentState.audio.start.volume = this.value;">
                 </div>
-                <div class="row-slider" style="margin-top: 10px;">
-                    <div class="row-sliderLabel"><label>Voice Vol:</label><span id="sliderLabelVoiceVolume">100%</span></div>
-                    <input type="range" id="sliderVoiceVolume" min="0" max="100" value="100" oninput="elements.sliderLabelVoiceVolume.innerText = this.value + '%'; currentState.voiceVolume = this.value;">
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Duration</label><span id="sliderLabelAudioStartDuration">2s</span></div>
+                    <input type="range" id="sliderAudioStartDuration" min="1" max="5" oninput="elements.audio.start.durationLabel.innerText = this.value + 's'; currentState.audio.start.duration = this.value;">
+                </div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Frequency</label><span id="sliderLabelAudioStartFrequency">2Hz</span></div>
+                    <input type="range" id="sliderAudioStartFrequency" min="300" max="1000" oninput="elements.audio.start.frequencyLabel.innerText = this.value + 'Hz'; currentState.audio.start.frequency = this.value;">
+                </div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Pulse Interval</label><span id="sliderLabelAudioStartPulseInterval">2ms</span></div>
+                    <input type="range" id="sliderAudioStartPulseInterval" min="0" max="1000" oninput="elements.audio.start.pulseIntervalLabel.innerText = this.value + 'ms'; currentState.audio.start.pulseInterval = this.value;">
                 </div>
             </div>
 
             <div class="session-settings">
-                <h4>Alert Durations</h4>
-                <div class="row-slider">
-                    <div class="row-sliderLabel"><label>Audio Alert</label><span id="sliderLabelAudioDuration">2s</span></div>
-                    <input type="range" id="sliderAudioDuration" min="1" max="5" value="2" oninput="elements.sliderLabelAudioDuration.innerText = this.value + 's'; currentState.audioDuration = this.value;">
+                <h4>Voice Alert - rest start</h4>
+
+                <div class="row-switcher">
+                    <span>On/Off</span>
+                    <label class="switch"> <input type="checkbox" id="toggleVoiceStart" onchange="currentState.voice.start.isEnabled = this.checked"><span class="slider-switch"></span></label>
                 </div>
+
+                <div class="row-text"><label for="voicePhrase">Voice Phrase:</label><input type="text" id="textVoiceStartPhrase" value="Rest over" onchange="currentState.voice.start.phrase = this.value"></div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Volume</label><span id="sliderLabelVoiceStartVolume">100%</span></div>
+                    <input type="range" id="sliderVoiceStartVolume" min="0" max="100" oninput="elements.voice.start.volumeLabel.innerText = this.value + '%'; currentState.voice.start.volume = this.value;">
+                </div>
+            </div>
+
+            <div class="session-settings">
+                <h4>Visual Alert - rest start</h4>
+
+                <div class="row-switcher">
+                    <span>On/Off</span>
+                    <label class="switch"> <input type="checkbox" id="toggleVisualStart" onchange="currentState.visual.start.isEnabled = this.checked"><span class="slider-switch"></span></label>
+                </div>
+
+                <div class="row-picker">
+                    <div class="row-pickerWrapper"><input type="color" id="pickerColor1Start" value="#ffffff" onchange="currentState.visual.start.color1 = this.value"><span>1</span></div>
+                    <div class="row-pickerWrapper"><input type="color" id="pickerColor2Start" value="#ff3b30" onchange="currentState.visual.start.color2 = this.value"><span>2</span></div>
+                </div>                
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Duration</label><span id="sliderLabelVisualStartDuration">2s</span></div>
+                    <input type="range" id="sliderVisualStartDuration" min="1" max="5" oninput="elements.visual.start.durationLabel.innerText = this.value + 's'; currentState.visual.start.duration = this.value;">
+                </div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Speed</label><span id="sliderLabelVisualStartSpeed">50ms</span></div>
+                    <input type="range" id="sliderVisualStartSpeed" min="1" max="100" oninput="elements.visual.start.speedLabel.innerText = this.value + 'ms'; currentState.visual.start.speed = this.value;">
+                </div>
+            </div>
+
+            <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="stopAllAlerts(); triggerStartAlert()">⚡ Test Start Alert</button>
+
+
+
+            <div class="session-settings">
+                <h4>Audio Alert (Beep) - rest stop</h4>
+
+                <div class="row-switcher">
+                    <span>On/Off</span>
+                    <label class="switch"> <input type="checkbox" id="toggleAudioStop" onchange="currentState.audio.stop.isEnabled = this.checked"><span class="slider-switch"></span></label>
+                </div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Volume</label><span id="sliderLabelAudioStopVolume">100%</span></div>
+                    <input type="range" id="sliderAudioStopVolume" min="0" max="100" oninput="elements.audio.stop.volumeLabel.innerText = this.value + '%'; currentState.audio.stop.volume = this.value;">
+                </div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Duration</label><span id="sliderLabelAudioStopDuration">2s</span></div>
+                    <input type="range" id="sliderAudioStopDuration" min="1" max="5" oninput="elements.audio.stop.durationLabel.innerText = this.value + 's'; currentState.audio.stop.duration = this.value;">
+                </div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Frequency</label><span id="sliderLabelAudioStopFrequency">2Hz</span></div>
+                    <input type="range" id="sliderAudioStopFrequency" min="300" max="1000" oninput="elements.audio.stop.frequencyLabel.innerText = this.value + 'Hz'; currentState.audio.stop.frequency = this.value;">
+                </div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Pulse Interval</label><span id="sliderLabelAudioStopPulseInterval">2ms</span></div>
+                    <input type="range" id="sliderAudioStopPulseInterval" min="0" max="1000" oninput="elements.audio.stop.pulseIntervalLabel.innerText = this.value + 'ms'; currentState.audio.stop.pulseInterval = this.value;">
+                </div>
+            </div>
+
+            <div class="session-settings">
+                <h4>Voice Alert - rest stop</h4>
+
+                <div class="row-switcher">
+                    <span>On/Off</span>
+                    <label class="switch"> <input type="checkbox" id="toggleVoiceStop" onchange="currentState.voice.stop.isEnabled = this.checked"><span class="slider-switch"></span></label>
+                </div>
+
+                <div class="row-text"><label for="voicePhrase">Voice Phrase:</label><input type="text" id="textVoiceStopPhrase" value="Rest over" onchange="currentState.voice.stop.phrase = this.value"></div>
+
+                <div class="row-slider">
+                    <div class="row-sliderLabel"><label>Volume</label><span id="sliderLabelVoiceStopVolume">100%</span></div>
+                    <input type="range" id="sliderVoiceStopVolume" min="0" max="100" oninput="elements.voice.stop.volumeLabel.innerText = this.value + '%'; currentState.voice.stop.volume = this.value;">
+                </div>
+            </div>
+
+            <div class="session-settings">
+                <h4>Visual Alert - rest stop</h4>
+
+                <div class="row-switcher">
+                    <span>On/Off</span>
+                    <label class="switch"> <input type="checkbox" id="toggleVisualStop" onchange="currentState.visual.stop.isEnabled = this.checked"><span class="slider-switch"></span></label>
+                </div>
+
+                <div class="row-picker">
+                    <div class="row-pickerWrapper"><input type="color" id="pickerColor1Stop" value="#ffffff" onchange="currentState.visual.stop.color1 = this.value"><span>1</span></div>
+                    <div class="row-pickerWrapper"><input type="color" id="pickerColor2Stop" value="#ff3b30" onchange="currentState.visual.stop.color2 = this.value"><span>2</span></div>
+                </div>     
                 
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><label>Visual Alert</label><span id="sliderLabelVisualDuration">2s</span></div>
-                    <input type="range" id="sliderVisualDuration" min="1" max="5" value="2" oninput="elements.sliderLabelVisualDuration.innerText = this.value + 's'; currentState.visualDuration = this.value;">
+                    <div class="row-sliderLabel"><label>Duration</label><span id="sliderLabelVisualStopDuration">2s</span></div>
+                    <input type="range" id="sliderVisualStopDuration" min="1" max="5" oninput="elements.visual.stop.durationLabel.innerText = this.value + 's'; currentState.visual.stop.duration = this.value;">
                 </div>
-            </div>
 
-            <div class="session-settings">
-                <h4>Flicker Palette</h4>
-                <div class="row-picker">
-                    <div class="row-pickerWrapper"><input type="color" id="pickerFlickerColor1" value="#ffffff" onchange="currentState.flickerColor1 = this.value"><span>1</span></div>
-                    <div class="row-pickerWrapper"><input type="color" id="pickerFlickerColor2" value="#ff3b30" onchange="currentState.flickerColor2 = this.value"><span>2</span></div>
-                </div>
-            </div>
-
-            <div class="session-settings">
-                <h4>Flicker speed</h4>
                 <div class="row-slider">
-                    <div class="row-sliderLabel"><span>Flicker speed:</span><span id="sliderLabelFlickerSpeed">120ms</span></div>
-                    <input type="range" id="sliderFlickerSpeed" min="10" max="300" value="120" oninput="elements.sliderLabelFlickerSpeed.innerText = this.value + 'ms'; currentState.flickerSpeed = this.value;">
+                    <div class="row-sliderLabel"><label>Speed</label><span id="sliderLabelVisualStopSpeed">50ms</span></div>
+                    <input type="range" id="sliderVisualStopSpeed" min="1" max="100" oninput="elements.visual.stop.speedLabel.innerText = this.value + 'ms'; currentState.visual.stop.speed = this.value;">
                 </div>
             </div>
 
-            
-  
-            <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="stopAllAlerts(); triggerActiveAlerts()">⚡ Test Alert</button>
+            <button class="button2" style="width:100%; margin-bottom: 10px;" onclick="stopAllAlerts(); triggerStopAlert()">⚡ Test Stop Alert</button>
             <button class="button4" style="width:100%;" onclick="closeSettings()">Save & Close</button>
-
 
         </div>
     </div>
@@ -443,19 +549,19 @@
                 <h4>Buttons preset values (5s - 300s)</h4>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 1:</span><span id="sliderLabelPreset1">40s</span></div>
-                    <input type="range" id="sliderPreset1" min="5" max="300" value="40" oninput="elements.sliderLabelPreset1.innerText = this.value + 's'; currentState.presets[1] = this.value;">
+                    <input type="range" id="sliderPreset1" min="5" max="300" value="40" oninput="elements.sliderLabelPreset[1].innerText = this.value + 's'; currentState.presets[1] = this.value;">
                 </div>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 2:</span><span id="sliderLabelPreset2">60s</span></div>
-                    <input type="range" id="sliderPreset2" min="5" max="300" value="60" oninput="elements.sliderLabelPreset2.innerText = this.value + 's'; currentState.presets[2] = this.value;">
+                    <input type="range" id="sliderPreset2" min="5" max="300" value="60" oninput="elements.sliderLabelPreset[2].innerText = this.value + 's'; currentState.presets[2] = this.value;">
                 </div>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 3:</span><span id="sliderLabelPreset3">90s</span></div>
-                    <input type="range" id="sliderPreset3" min="5" max="300" value="90" oninput="elements.sliderLabelPreset3.innerText = this.value + 's'; currentState.presets[3] = this.value;">
+                    <input type="range" id="sliderPreset3" min="5" max="300" value="90" oninput="elements.sliderLabelPreset[3].innerText = this.value + 's'; currentState.presets[3] = this.value;">
                 </div>
                 <div class="row-slider">
                     <div class="row-sliderLabel"><span>Preset 4:</span><span id="sliderLabelPreset4">120s</span></div>
-                    <input type="range" id="sliderPreset4" min="5" max="300" value="120" oninput="elements.sliderLabelPreset4.innerText = this.value + 's'; currentState.presets[4] = this.value;">
+                    <input type="range" id="sliderPreset4" min="5" max="300" value="120" oninput="elements.sliderLabelPreset[4].innerText = this.value + 's'; currentState.presets[4] = this.value;">
                 </div>
             </div>
 
@@ -502,29 +608,70 @@
                                 4: document.getElementById('sliderLabelPreset4')},
 
             // settings
-            toggleDragToRefresh:       document.getElementById(`toggleDragToRefresh`),
-            toggleAudio:               document.getElementById(`toggleAudio`),
-            toggleVisual:              document.getElementById(`toggleVisual`),
-            toggleVoice:               document.getElementById(`toggleVoice`),
-            textVoicePhrase:           document.getElementById(`textVoicePhrase`),
-            sliderAudioVolume:         document.getElementById(`sliderAudioVolume`),
-            sliderLabelAudioVolume:    document.getElementById(`sliderLabelAudioVolume`),
-            sliderVoiceVolume:         document.getElementById(`sliderVoiceVolume`),
-            sliderLabelVoiceVolume:    document.getElementById(`sliderLabelVoiceVolume`),
-            sliderAudioDuration:       document.getElementById(`sliderAudioDuration`),
-            sliderLabelAudioDuration:  document.getElementById(`sliderLabelAudioDuration`),
-            sliderVisualDuration:      document.getElementById(`sliderVisualDuration`),
-            sliderLabelVisualDuration: document.getElementById(`sliderLabelVisualDuration`),
-            pickerFlickerColor1:       document.getElementById(`pickerFlickerColor1`),
-            pickerFlickerColor2:       document.getElementById(`pickerFlickerColor2`),
-            sliderFlickerSpeed:        document.getElementById(`sliderFlickerSpeed`),
-            sliderLabelFlickerSpeed:   document.getElementById(`sliderLabelFlickerSpeed`),
-            };
+            audio: {
+                start:{
+                    toggle:             document.getElementById(`toggleAudioStart`),
+                    volume:             document.getElementById(`sliderAudioStartVolume`),
+                    volumeLabel:        document.getElementById(`sliderLabelAudioStartVolume`),
+                    duration:           document.getElementById(`sliderAudioStartDuration`),
+                    durationLabel:      document.getElementById(`sliderLabelAudioStartDuration`),
+                    frequency:          document.getElementById(`sliderAudioStartFrequency`),
+                    frequencyLabel:     document.getElementById(`sliderLabelAudioStartFrequency`),
+                    pulseInterval:      document.getElementById(`sliderAudioStartPulseInterval`),
+                    pulseIntervalLabel: document.getElementById(`sliderLabelAudioStartPulseInterval`),
+                },
+                stop:{
+                    toggle:             document.getElementById(`toggleAudioStop`),
+                    volume:             document.getElementById(`sliderAudioStopVolume`),
+                    volumeLabel:        document.getElementById(`sliderLabelAudioStopVolume`),
+                    duration:           document.getElementById(`sliderAudioStopDuration`),
+                    durationLabel:      document.getElementById(`sliderLabelAudioStopDuration`),
+                    frequency:          document.getElementById(`sliderAudioStopFrequency`),
+                    frequencyLabel:     document.getElementById(`sliderLabelAudioStopFrequency`),
+                    pulseInterval:      document.getElementById(`sliderAudioStopPulseInterval`),
+                    pulseIntervalLabel: document.getElementById(`sliderLabelAudioStopPulseInterval`),
+                }
+            },
+            voice: {
+                start:{
+                    toggle:      document.getElementById(`toggleVoiceStart`),
+                    volume:      document.getElementById(`sliderVoiceStartVolume`),
+                    volumeLabel: document.getElementById(`sliderLabelVoiceStartVolume`),
+                    phrase:      document.getElementById(`textVoiceStartPhrase`)
+                },
+                stop:{
+                    toggle:      document.getElementById(`toggleVoiceStop`),
+                    volume:      document.getElementById(`sliderVoiceStopVolume`),
+                    volumeLabel: document.getElementById(`sliderLabelVoiceStopVolume`),
+                    phrase:      document.getElementById(`textVoiceStopPhrase`)
+                }
+            },
+            visual: {
+                start:{
+                    toggle:        document.getElementById(`toggleVisualStart`),
+                    duration:      document.getElementById(`sliderVisualStartDuration`),
+                    durationLabel: document.getElementById(`sliderLabelVisualStartDuration`),
+                    speed:         document.getElementById(`sliderVisualStartSpeed`),
+                    speedLabel:    document.getElementById(`sliderLabelVisualStartSpeed`),
+                    color1:        document.getElementById(`pickerColor1Start`),
+                    color2:        document.getElementById(`pickerColor2Start`),
+                },
+                stop:{
+                    toggle:        document.getElementById(`toggleVisualStop`),
+                    duration:      document.getElementById(`sliderVisualStopDuration`),
+                    durationLabel: document.getElementById(`sliderLabelVisualStopDuration`),
+                    speed:         document.getElementById(`sliderVisualStopSpeed`),
+                    speedLabel:    document.getElementById(`sliderLabelVisualStopSpeed`),
+                    color1:        document.getElementById(`pickerColor1Stop`),
+                    color2:        document.getElementById(`pickerColor2Stop`),
+                }
+            },
+        };
 
         // ====================================================================
         // STATE LOGIC
         // ====================================================================
-        // FOR TESTING             document.getElementById('textbox2').value = 'ssss'
+        // FOR TESTING             elements.textHRDisplay.textContent = "ssss";
         const defaultState = {
             text: `Use # to name sessions (e.g., # Chest);
             Write your workout routine here...`,
@@ -536,17 +683,52 @@
             isRefreshActive: false,
 
             // settings
-            audio:  true,
-            visual: false,
-            voice:  false,
-            voicePhrase: `Rest over`,
-            audioVolume: 100,
-            voiceVolume: 100,
-            audioDuration: 2,
-            visualDuration: 2,
-            flickerColor1: "#ffffff",
-            flickerColor2: "#ff3b30",
-            flickerSpeed: 120,
+            audio: {
+                start: {
+                    isEnabled: true,
+                    volume: 100,
+                    duration: 2,
+                    frequency: 880,
+                    pulseInterval: 550,
+                },
+                stop: {
+                    isEnabled: true,
+                    volume: 100,
+                    duration: 2,
+                    frequency: 880,
+                    pulseInterval: 550,
+                }
+            },
+
+            voice: {
+                start: {
+                    isEnabled: true,
+                    volume: 100,
+                    phrase: 'rest start',
+                },
+                stop: {
+                    isEnabled: true,
+                    volume: 100,
+                    phrase: 'rest over',
+                }
+            },
+
+            visual: {
+                start: {
+                    isEnabled: true,
+                    duration: 2,
+                    speed: 50,
+                    color1: "#ffffff",
+                    color2: "#ff3b30",
+                },
+                stop: {
+                    isEnabled: true,
+                    duration: 2,
+                    speed: 50,
+                    color1: "#ffffff",
+                    color2: "#ff3b30",
+                }
+            },
 
             // timer
             presets: { 1: 40, 2: 60, 3: 90, 4: 120 },
@@ -561,44 +743,70 @@
         function applyState() {
             elements.textbox.value = currentState.text;
 
-            // rest
-            for (let i = 1; i <= 4; i++) elements.buttonPreset[i].innerText = currentState.presets[i] + 's';
+            // rest timer
+            for (let i = 1; i <= 4; i++) elements.buttonPreset[i].innerText      = currentState.presets[i] + 's';
+            for (let i = 1; i <= 4; i++) elements.sliderLabelPreset[i].innerText = currentState.presets[i] + 's';
+            for (let i = 1; i <= 4; i++) elements.sliderPreset[i].value          = currentState.presets[i];
 
             // block
             elements.toggleText.checked    = currentState.isTextActive;
             elements.toggleScroll.checked  = currentState.isScrollActive;
             elements.toggleButtons.checked = currentState.isButtonsActive;
             elements.toggleRefresh.checked = currentState.isRefreshActive;
-
-
+    
             // settings
-            elements.toggleAudio.checked                 = currentState.audio;
-            elements.toggleVisual.checked                = currentState.visual;
-            elements.toggleVoice.checked                 = currentState.voice;
-            elements.textVoicePhrase.value               = currentState.voicePhrase;
-            elements.sliderAudioVolume.value             = currentState.audioVolume;
-            elements.sliderLabelAudioVolume.innerText    = currentState.audioVolume + '%';
-            elements.sliderVoiceVolume.value             = currentState.voiceVolume;
-            elements.sliderLabelVoiceVolume.innerText    = currentState.voiceVolume + '%';
-            elements.sliderAudioDuration.value           = currentState.audioDuration;
-            elements.sliderLabelAudioDuration.innerText  = currentState.audioDuration + 's';
-            elements.sliderVisualDuration.value          = currentState.visualDuration;
-            elements.sliderLabelVisualDuration.innerText = currentState.visualDuration + 's';
-            elements.pickerFlickerColor1.value           = currentState.flickerColor1;
-            elements.pickerFlickerColor2.value           = currentState.flickerColor2;
-            elements.sliderFlickerSpeed.value            = currentState.flickerSpeed;
-            elements.sliderLabelFlickerSpeed.innerText   = currentState.flickerSpeed + 'ms';
+            elements.audio.start.toggle.checked               = currentState.audio.start.isEnabled;
+            elements.audio.start.volume.value                 = currentState.audio.start.volume;
+            elements.audio.start.volumeLabel.innerText        = currentState.audio.start.volume + '%';
+            elements.audio.start.duration.value               = currentState.audio.start.duration;
+            elements.audio.start.durationLabel.innerText      = currentState.audio.start.duration + 's';
+            elements.audio.start.frequency.value              = currentState.audio.start.frequency;
+            elements.audio.start.frequencyLabel.innerText     = currentState.audio.start.frequency + 'Hz';
+            elements.audio.start.pulseInterval.value          = currentState.audio.start.pulseInterval;
+            elements.audio.start.pulseIntervalLabel.innerText = currentState.audio.start.pulseInterval + 'ms';
 
-            // timer
-            elements.sliderPreset1.value          = currentState.presets[1];
-            elements.sliderPreset2.value          = currentState.presets[2];
-            elements.sliderPreset3.value          = currentState.presets[3];
-            elements.sliderPreset4.value          = currentState.presets[4];
-            elements.sliderLabelPreset1.innerText = currentState.presets[1] + 's';
-            elements.sliderLabelPreset2.innerText = currentState.presets[2] + 's';
-            elements.sliderLabelPreset3.innerText = currentState.presets[3] + 's';
-            elements.sliderLabelPreset4.innerText = currentState.presets[4] + 's';
-            
+            elements.voice.start.toggle.checked        = currentState.voice.start.isEnabled;
+            elements.voice.start.volume.value          = currentState.voice.start.volume;
+            elements.voice.start.volumeLabel.innerText = currentState.voice.start.volume + '%';
+            elements.voice.start.phrase.value          = currentState.voice.start.phrase;
+
+            elements.visual.start.toggle.checked           = currentState.visual.start.isEnabled;
+            elements.visual.start.duration.value           = currentState.visual.start.duration;
+            elements.visual.start.durationLabel.innerText  = currentState.visual.start.duration + 's';
+            elements.visual.start.speed.value              = currentState.visual.start.speed;
+            elements.visual.start.speedLabel.innerText     = currentState.visual.start.speed + 'ms';
+            elements.visual.start.color1.value             = currentState.visual.start.color1;
+            elements.visual.start.color2.value             = currentState.visual.start.color2;
+
+
+            elements.audio.stop.toggle.checked               = currentState.audio.stop.isEnabled;
+            elements.audio.stop.volume.value                 = currentState.audio.stop.volume;
+            elements.audio.stop.volumeLabel.innerText        = currentState.audio.stop.volume + '%';
+            elements.audio.stop.duration.value               = currentState.audio.stop.duration;
+            elements.audio.stop.durationLabel.innerText      = currentState.audio.stop.duration + 's';
+            elements.audio.stop.frequency.value              = currentState.audio.stop.frequency;
+            elements.audio.stop.frequencyLabel.innerText     = currentState.audio.stop.frequency + 'Hz';
+            elements.audio.stop.pulseInterval.value          = currentState.audio.stop.pulseInterval;
+            elements.audio.stop.pulseIntervalLabel.innerText = currentState.audio.stop.pulseInterval + 'ms';
+
+            elements.voice.stop.toggle.checked        = currentState.voice.stop.isEnabled;
+            elements.voice.stop.volume.value          = currentState.voice.stop.volume;
+            elements.voice.stop.volumeLabel.innerText = currentState.voice.stop.volume + '%';
+            elements.voice.stop.phrase.value          = currentState.voice.stop.phrase;
+
+            elements.visual.stop.toggle.checked           = currentState.visual.stop.isEnabled;
+            elements.visual.stop.duration.value           = currentState.visual.stop.duration;
+            elements.visual.stop.durationLabel.innerText  = currentState.visual.stop.duration + 's';
+            elements.visual.stop.speed.value              = currentState.visual.stop.speed;
+            elements.visual.stop.speedLabel.innerText     = currentState.visual.stop.speed + 'ms';
+            elements.visual.stop.color1.value             = currentState.visual.stop.color1;
+            elements.visual.stop.color2.value             = currentState.visual.stop.color2;
+
+
+            elements.textHRDisplay.textContent = "ffff";
+
+
+
             // functions
             selectPreset(currentState.presetIndex);
 
@@ -607,7 +815,6 @@
             updateScroll(!currentState.isScrollActive)
             updateButtons(!currentState.isButtonsActive)
             updateDragToRefresh(!currentState.isRefreshActive)
-
         }
 
         function saveState() {
@@ -617,8 +824,6 @@
         // ====================================================================
         // BLOCK LOGIC
         // ====================================================================
-        let activeTouchHandler = null;
-
         function applyBlockRules() {
             // text
             const isChecked1 = elements.toggleText.checked
@@ -649,7 +854,7 @@
             }
             
             // save current state
-            localStorage.setItem('currentState', JSON.stringify(currentState));
+            saveState()
         }   
 
         function updateText(isBlocked) {
@@ -673,6 +878,7 @@
             elements.buttonHR.disabled       = isBlocked;
         }
 
+        let activeTouchHandler = null;
         function updateDragToRefresh(isBlocked) {
             // drag to refresh
             const value = isBlocked ? 'none' : 'auto';
@@ -723,7 +929,6 @@
         // ====================================================================
         function closeSettings() {
             saveState()
-            updateDragToRefresh()
 
             // close modal
             document.getElementById("modalSettings").style.display = false ? 'flex' : 'none';
@@ -744,6 +949,17 @@
             parseWorkoutHeaders();
             saveState();
         });
+
+        // Settings button
+        elements.buttonSettings.addEventListener('click', () => {
+            toggleModal('modalSettings', true)
+        });
+
+        // timer settings button
+        elements.buttonTimer.addEventListener('click', () => {
+            toggleModal('modalTimer', true)
+        });
+
         // reset dropdown if scroll text (DID NOT WORK)
         // let scrollDebounce;
         // elements.textbox.addEventListener('scroll', () => {
@@ -945,9 +1161,9 @@
 
         function selectPreset(index) {
             if (isCountingDown) return; 
-            for (let i = 1; i <= 4; i++) document.getElementById(`buttonPreset${i}`).classList.remove('selected-preset');
+            for (let i = 1; i <= 4; i++) elements.buttonPreset[i].classList.remove('selected-preset');
             
-            document.getElementById(`buttonPreset${index}`).classList.add('selected-preset');
+            elements.buttonPreset[index].classList.add('selected-preset');
             timeRemainingSeconds = currentState.presets[index]; 
 
             // save state
@@ -956,8 +1172,8 @@
         }
 
         function startRestCountdown() {
-            runAudioAlert();
-            
+            triggerStartAlert();
+            elements.textHRDisplay.textContent = "ssss";
 
             if (isCountingDown) {
                 clearInterval(countdownInterval); 
@@ -967,8 +1183,6 @@
                 stopAllAlerts(); 
                 return;
             }
-            stopAllAlerts(); 
-            triggerActiveAlerts()
             isCountingDown = true; 
             elements.buttonRest.innerText = `Resting... ${timeRemainingSeconds}s`;
             countdownInterval = setInterval(() => {
@@ -977,7 +1191,7 @@
                     clearInterval(countdownInterval); 
                     isCountingDown = false; 
                     elements.buttonRest.innerText = "Rest";
-                    triggerActiveAlerts(); 
+                    triggerStopAlert(); 
                     timeRemainingSeconds = currentState.presets[currentState.presetIndex];
                 } else elements.buttonRest.innerText = `Resting... ${timeRemainingSeconds}s`;
             }, 1000);
@@ -986,68 +1200,142 @@
         // ====================================================================
         // ALARMS 
         // ====================================================================
-        // audio (beep)
-        let audioCtx = null;
-        let audioTimeout = null;
-        let activeOscillator = null;
+        function triggerStartAlert() {
+            const audioVolume        = parseInt(currentState.audio.start.volume, 10) / 100;
+            const audioDuration      = parseInt(currentState.audio.start.duration, 10) || 3;
+            const audioFrequency     = parseInt(currentState.audio.start.frequency, 10);
+            const audioPulseInterval = parseInt(currentState.audio.start.pulseInterval, 10);
+            if (currentState.audio.start.isEnabled) audioAlert(audioVolume, audioDuration, audioFrequency, audioPulseInterval);
 
-        // visual (flicker)
-        let visualTimeout = null;
+            const voicePhrase = currentState.voice.start.phrase || "Rest start";
+            const voiceVolume = parseInt(currentState.voice.start.volume, 10) / 100;
+            if (currentState.voice.start.isEnabled) voiceAlert(voicePhrase, voiceVolume);
 
-        function triggerActiveAlerts() {
-            if (currentState.audio) runAudioAlert();
-            if (currentState.visual) runVisualAlert();
-            if (currentState.voice) runVoiceAlert();
+            const visualColor1    = currentState.visual.start.color1
+            const visualColor2    = currentState.visual.start.color2
+            const visualFrequency = currentState.visual.start.speed
+            const visualDuration  = currentState.visual.start.duration
+            if (currentState.visual.start.isEnabled) visualAlert(visualColor1, visualColor2, visualFrequency, visualDuration);
         }
+
+        function triggerStopAlert() {
+            const audioVolume        = parseInt(currentState.audio.stop.volume, 10) / 100;
+            const audioDuration      = parseInt(currentState.audio.stop.duration, 10) || 3;
+            const audioFrequency     = parseInt(currentState.audio.stop.frequency, 10);
+            const audioPulseInterval = parseInt(currentState.audio.stop.pulseInterval, 10);
+            if (currentState.audio.stop.isEnabled) audioAlert(audioVolume, audioDuration, audioFrequency, audioPulseInterval);
+
+            const voicePhrase = currentState.voice.stop.phrase || "Rest stop";
+            const voiceVolume = parseInt(currentState.voice.stop.volume, 10) / 100;
+            if (currentState.voice.stop.isEnabled) voiceAlert(voicePhrase, voiceVolume);
+
+            const visualColor1    = currentState.visual.stop.color1
+            const visualColor2    = currentState.visual.stop.color2
+            const visualFrequency = currentState.visual.stop.speed
+            const visualDuration  = currentState.visual.stop.duration
+            if (currentState.visual.stop.isEnabled) visualAlert(visualColor1, visualColor2, visualFrequency, visualDuration);
+        }
+
         function stopAllAlerts() {
             if (audioTimeout) clearTimeout(audioTimeout);
-            if (activeOscillator) { try { activeOscillator.stop(); } catch(e){} activeOscillator = null; }
             if (visualTimeout) clearTimeout(visualTimeout);
             document.body.classList.remove('flickering-active'); document.body.style.backgroundColor = "#0b0f19"; 
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         }
-        function runAudioAlert() {
+
+        let audioCtx = null;
+        let audioTimeout = null;
+        let alarmInterval = null; // Add this globally with your other variables (like audioTimeout)
+        function audioAlert(volume, duration, freq, pulseInterval) {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                activeOscillator = audioCtx.createOscillator(); 
                 
-                const gainNode = audioCtx.createGain();
-                const beepVolLevel = parseInt(currentState.audioVolume, 10) / 100;
+                // 1. Clear any existing alarms so they don't pile up
+                clearInterval(alarmInterval);
+                clearTimeout(audioTimeout);
 
-                activeOscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
-                activeOscillator.type = 'sine'; 
-                activeOscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(beepVolLevel * 0.3, audioCtx.currentTime); 
-                activeOscillator.start();
-                audioTimeout = setTimeout(() => { if (activeOscillator) { activeOscillator.stop(); 
-                    activeOscillator = null; } }, (parseInt(currentState.audioDuration, 10) || 3) * 1000);
-            } catch (e) { console.error(e); }
+                // 2. Helper function to play a single, short "beep" pulse
+                const playSinglePulse = () => {
+                    // Web Audio API oscillators can only be started and stopped ONCE.
+                    // We must create a fresh one for every single pulse.
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime); // Pitch (880Hz)
+                    
+                    // Fade-in/Fade-out cleanly to prevent speaker clipping clicks
+                    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(volume * 0.3, audioCtx.currentTime + 0.02);
+                    gainNode.gain.setValueAtTime(volume * 0.3, audioCtx.currentTime + 0.15); // Length of the sound pulse
+                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2); // Stop the oscillator completely after 0.2 seconds
+                };
+
+                // 3. Start the pulsing loop immediately
+                playSinglePulse(); // Play the very first beep instantly
+                alarmInterval = setInterval(playSinglePulse, pulseInterval); // Repeat every 500ms (fast alarm clock pacing)
+
+                // 4. Set a timer to completely kill the repeating loop when total duration is reached
+                audioTimeout = setTimeout(() => {
+                    clearInterval(alarmInterval);
+                    alarmInterval = null;
+                }, (duration * 1000) + 250); 
+
+            } catch (e) { 
+                console.error(e); 
+            }
         }
-        function runVisualAlert() {
-            document.documentElement.style.setProperty('--flicker-c1', currentState.flickerColor1);
-            document.documentElement.style.setProperty('--flicker-c2', currentState.flickerColor2);
-            document.body.classList.add('flickering-active');
-            visualTimeout = setTimeout(() => {
-                document.body.classList.remove('flickering-active');
-                if (!document.body.classList.contains('flickering-active')) document.body.style.backgroundColor = "#0b0f19";
-            }, (parseInt(currentState.visualDuration, 10) || 3) * 1000);
-        }
-        function runVoiceAlert(repeatCount) {
+
+        function voiceAlert(phrase, volume) {
             if ('speechSynthesis' in window) {
-                const customText = currentState.voicePhrase || "Rest over";
-                const voiceVolLevel = parseInt(currentState.voiceVolume, 10) / 100;
-
-                const utterance = new SpeechSynthesisUtterance(customText);
-                utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = voiceVolLevel; utterance.lang = 'en-US'; 
+                const utterance = new SpeechSynthesisUtterance(phrase);
+                utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = volume; utterance.lang = 'en-US'; 
                 window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        let visualTimeout = null;
+        function visualAlert(color1, color2, frequencyHz, durationSec) {
+            try {
+                clearTimeout(visualTimeout);
+                
+                const c1 = color1 || '#ff3333'; 
+                const c2 = color2 || '#0b0f19'; 
+                const hz = parseFloat(frequencyHz) || 2; // Handled in Hz now
+                const totalSec = parseInt(durationSec, 10) || 3;
+
+                // Convert Hz frequency to animation duration segment
+                const animationDuration = 1 / hz;
+
+                document.documentElement.style.setProperty('--flicker-c1', c1);
+                document.documentElement.style.setProperty('--flicker-c2', c2);
+                document.documentElement.style.setProperty('--flicker-speed', animationDuration + 's');
+
+                document.body.classList.add('flickering-active');
+
+                visualTimeout = setTimeout(() => {
+                    // Removing the class now instantly snaps everything back to normal 
+                    document.body.classList.remove('flickering-active');
+                }, totalSec * 1000);
+
+            } catch (e) {
+                console.error("Visual alert error:", e);
             }
         }
 
         // ====================================================================
         // INITIALIZATION 
         // ====================================================================
+        // localStorage.clear()
         applyState()
         parseWorkoutHeaders()
+        
 
     </script>
 </body>
