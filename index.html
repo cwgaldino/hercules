@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;  /* Use the operating system's native UI font */
             margin: 0;                      /* Remove the browser's default page margin */
             padding: 10px;                  /* Add spacing between the window edge and the content */
-            background-color: #bb4b29;    /* Background color */
+            background-color: #bb298a;    /* Background color */
             color: #ffffff;               /* Text color */
             box-sizing: border-box;         /* Include padding and borders when calculating element sizes */
             display: flex;                  /* Turns the body into a Flexbox container. All direct children become flex items */
@@ -747,32 +747,38 @@
             for (let i = 1; i <= 4; i++) elements.buttonPreset[i].innerText      = currentState.presets[i] + 's';
             for (let i = 1; i <= 4; i++) elements.sliderLabelPreset[i].innerText = currentState.presets[i] + 's';
             for (let i = 1; i <= 4; i++) elements.sliderPreset[i].value          = currentState.presets[i];
-            elements.textHRDisplay.textContent = "hhhh1";
 
             // block
             elements.toggleText.checked    = currentState.isTextActive;
             elements.toggleScroll.checked  = currentState.isScrollActive;
             elements.toggleButtons.checked = currentState.isButtonsActive;
             elements.toggleRefresh.checked = currentState.isRefreshActive;
-            elements.textHRDisplay.textContent = "hhhh2";
     
             // settings
+            elements.textHRDisplay.textContent = "hhhh1";
             elements.audio.start.toggle.checked               = currentState.audio.start.isEnabled;
+            elements.textHRDisplay.textContent = "hhhh2";
             elements.audio.start.volume.value                 = currentState.audio.start.volume;
-            elements.audio.start.volumeLabel.innerText        = currentState.audio.start.volume + '%';
-            elements.audio.start.duration.value               = currentState.audio.start.duration;
-            elements.audio.start.durationLabel.innerText      = currentState.audio.start.duration + 's';
-            elements.audio.start.frequency.value              = currentState.audio.start.frequency;
-            elements.audio.start.frequencyLabel.innerText     = currentState.audio.start.frequency + 'Hz';
-            elements.audio.start.pulseInterval.value          = currentState.audio.start.pulseInterval;
-            elements.audio.start.pulseIntervalLabel.innerText = currentState.audio.start.pulseInterval + 'ms';
             elements.textHRDisplay.textContent = "hhhh3";
+            elements.audio.start.volumeLabel.innerText        = currentState.audio.start.volume + '%';
+            elements.textHRDisplay.textContent = "hhhh4";
+            elements.audio.start.duration.value               = currentState.audio.start.duration;
+            elements.textHRDisplay.textContent = "hhhh5";
+            elements.audio.start.durationLabel.innerText      = currentState.audio.start.duration + 's';
+            elements.textHRDisplay.textContent = "hhhh6";
+            elements.audio.start.frequency.value              = currentState.audio.start.frequency;
+            elements.textHRDisplay.textContent = "hhhh7";
+            elements.audio.start.frequencyLabel.innerText     = currentState.audio.start.frequency + 'Hz';
+            elements.textHRDisplay.textContent = "hhhh8";
+            elements.audio.start.pulseInterval.value          = currentState.audio.start.pulseInterval;
+            elements.textHRDisplay.textContent = "hhhh9";
+            elements.audio.start.pulseIntervalLabel.innerText = currentState.audio.start.pulseInterval + 'ms';
+            elements.textHRDisplay.textContent = "hhhh10";
 
             elements.voice.start.toggle.checked        = currentState.voice.start.isEnabled;
             elements.voice.start.volume.value          = currentState.voice.start.volume;
             elements.voice.start.volumeLabel.innerText = currentState.voice.start.volume + '%';
             elements.voice.start.phrase.value          = currentState.voice.start.phrase;
-            elements.textHRDisplay.textContent = "hhhh4";
 
             elements.visual.start.toggle.checked           = currentState.visual.start.isEnabled;
             elements.visual.start.duration.value           = currentState.visual.start.duration;
@@ -781,7 +787,6 @@
             elements.visual.start.speedLabel.innerText     = currentState.visual.start.speed + 'ms';
             elements.visual.start.color1.value             = currentState.visual.start.color1;
             elements.visual.start.color2.value             = currentState.visual.start.color2;
-            elements.textHRDisplay.textContent = "hhhh5";
 
 
             elements.audio.stop.toggle.checked               = currentState.audio.stop.isEnabled;
@@ -793,13 +798,11 @@
             elements.audio.stop.frequencyLabel.innerText     = currentState.audio.stop.frequency + 'Hz';
             elements.audio.stop.pulseInterval.value          = currentState.audio.stop.pulseInterval;
             elements.audio.stop.pulseIntervalLabel.innerText = currentState.audio.stop.pulseInterval + 'ms';
-            elements.textHRDisplay.textContent = "hhhh6";
 
             elements.voice.stop.toggle.checked        = currentState.voice.stop.isEnabled;
             elements.voice.stop.volume.value          = currentState.voice.stop.volume;
             elements.voice.stop.volumeLabel.innerText = currentState.voice.stop.volume + '%';
             elements.voice.stop.phrase.value          = currentState.voice.stop.phrase;
-            elements.textHRDisplay.textContent = "hhhh7";
 
             elements.visual.stop.toggle.checked           = currentState.visual.stop.isEnabled;
             elements.visual.stop.duration.value           = currentState.visual.stop.duration;
@@ -808,7 +811,6 @@
             elements.visual.stop.speedLabel.innerText     = currentState.visual.stop.speed + 'ms';
             elements.visual.stop.color1.value             = currentState.visual.stop.color1;
             elements.visual.stop.color2.value             = currentState.visual.stop.color2;
-            elements.textHRDisplay.textContent = "hhhh8";
 
 
             elements.textHRDisplay.textContent = "ffff";
