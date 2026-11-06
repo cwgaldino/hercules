@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;  /* Use the operating system's native UI font */
             margin: 0;                      /* Remove the browser's default page margin */
             padding: 10px;                  /* Add spacing between the window edge and the content */
-            background-color: #1edbac;    /* Background color */
+            background-color: #9f1edb;    /* Background color */
             color: #ffffff;               /* Text color */
             box-sizing: border-box;         /* Include padding and borders when calculating element sizes */
             display: flex;                  /* Turns the body into a Flexbox container. All direct children become flex items */
@@ -755,7 +755,8 @@
             elements.toggleRefresh.checked = currentState.isRefreshActive;
     
             // settings
-            elements.textHRDisplay.textContent = "hhhh1";
+            elements.textHRDisplay.textContent = "hhhh000";
+            elements.textHRDisplay.textContent = currentState.audio.start.isEnabled;
             elements.audio.start.toggle.checked               = currentState.audio.start.isEnabled;
             elements.textHRDisplay.textContent = "hhhh2";
             elements.audio.start.volume.value                 = currentState.audio.start.volume;
