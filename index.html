@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;  /* Use the operating system's native UI font */
             margin: 0;                      /* Remove the browser's default page margin */
             padding: 10px;                  /* Add spacing between the window edge and the content */
-            background-color: #1e70db;    /* Background color */
+            background-color: #0b0f19;    /* Background color */
             color: #ffffff;               /* Text color */
             box-sizing: border-box;         /* Include padding and borders when calculating element sizes */
             display: flex;                  /* Turns the body into a Flexbox container. All direct children become flex items */
@@ -756,26 +756,15 @@
             elements.toggleRefresh.checked = currentState.isRefreshActive;
     
             // settings
-            elements.textHRDisplay.textContent = "hhhh000";
-            elements.textHRDisplay.textContent = currentState.audio.start.isEnabled;
             elements.audio.start.toggle.checked               = currentState.audio.start.isEnabled;
-            elements.textHRDisplay.textContent = "hhhh2";
             elements.audio.start.volume.value                 = currentState.audio.start.volume;
-            elements.textHRDisplay.textContent = "hhhh3";
             elements.audio.start.volumeLabel.innerText        = currentState.audio.start.volume + '%';
-            elements.textHRDisplay.textContent = "hhhh4";
             elements.audio.start.duration.value               = currentState.audio.start.duration;
-            elements.textHRDisplay.textContent = "hhhh5";
             elements.audio.start.durationLabel.innerText      = currentState.audio.start.duration + 's';
-            elements.textHRDisplay.textContent = "hhhh6";
             elements.audio.start.frequency.value              = currentState.audio.start.frequency;
-            elements.textHRDisplay.textContent = "hhhh7";
             elements.audio.start.frequencyLabel.innerText     = currentState.audio.start.frequency + 'Hz';
-            elements.textHRDisplay.textContent = "hhhh8";
             elements.audio.start.pulseInterval.value          = currentState.audio.start.pulseInterval;
-            elements.textHRDisplay.textContent = "hhhh9";
             elements.audio.start.pulseIntervalLabel.innerText = currentState.audio.start.pulseInterval + 'ms';
-            elements.textHRDisplay.textContent = "hhhh10";
 
             elements.voice.start.toggle.checked        = currentState.voice.start.isEnabled;
             elements.voice.start.volume.value          = currentState.voice.start.volume;
@@ -815,23 +804,14 @@
             elements.visual.stop.color2.value             = currentState.visual.stop.color2;
 
 
-            elements.textHRDisplay.textContent = "ffff";
-
-
-
             // functions
             selectPreset(currentState.presetIndex);
-            elements.textHRDisplay.textContent = "hhhh9";
 
             // update block
             updateText(!currentState.isTextActive)
-            elements.textHRDisplay.textContent = "hhhh10";
             updateScroll(!currentState.isScrollActive)
-            elements.textHRDisplay.textContent = "hhhh11";
             updateButtons(!currentState.isButtonsActive)
-            elements.textHRDisplay.textContent = "hhhh12";
             updateDragToRefresh(!currentState.isRefreshActive)
-            elements.textHRDisplay.textContent = "hhhh13";
         }
 
         function saveState() {
@@ -1350,9 +1330,7 @@
         // ====================================================================
         // localStorage.clear()
         applyState()
-        elements.textHRDisplay.textContent = "gggg";
         parseWorkoutHeaders()
-        elements.textHRDisplay.textContent = "tttt";
 
     </script>
 </body>
