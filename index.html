@@ -1160,11 +1160,11 @@
         }
 
         function selectPreset(index) {
-            if (isCountingDown) return; 
+            // if (isCountingDown) return; 
             for (let i = 1; i <= 4; i++) elements.buttonPreset[i].classList.remove('selected-preset');
             
             elements.buttonPreset[index].classList.add('selected-preset');
-            timeRemainingSeconds = currentState.presets[index]; 
+            // timeRemainingSeconds = currentState.presets[index]; 
 
             // save state
             currentState.presetIndex = index
@@ -1176,6 +1176,7 @@
             elements.textHRDisplay.textContent = "ssss";
 
             if (isCountingDown) {
+                elements.textHRDisplay.textContent = "aaaaaa";
                 clearInterval(countdownInterval); 
                 isCountingDown = false; 
                 elements.buttonRest.innerText = "Rest";
